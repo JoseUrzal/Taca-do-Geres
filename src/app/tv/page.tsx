@@ -14,7 +14,15 @@ type TvData = {
   feed: FeedItem[];
   camera: { name: string; emoji: string } | null;
   round: TvRound;
+  draw: TvDraw;
 };
+
+type TvDraw = {
+  reveal: number;
+  total: number;
+  players: { name: string; emoji: string; team_id: string }[];
+  teams: { id: string; name: string; colour: string }[];
+} | null;
 
 type TvRound =
   | ({ id: string; prompt: string; total_players: number } & (
@@ -47,12 +55,13 @@ export default function TvPage() {
   const { data } = useSWR<TvData>("/api/tv", fetcher, POLL);
   const [panel, setPanel] = useState(0);
 
-  // rotação de 12 em 12 segundos quando não há ronda ativa
+  // rotação de 12 em 12 segundos quando não há ronda nem sorteio ativos
+  const takeover = !!data?.round || !!data?.draw;
   useEffect(() => {
-    if (data?.round) return;
+    if (takeover) return;
     const t = setInterval(() => setPanel((p) => (p + 1) % PANELS.length), 12000);
     return () => clearInterval(t);
-  }, [data?.round]);
+  }, [takeover]);
 
   return (
     <div className="flex min-h-dvh flex-col bg-granito p-10 text-cal">
@@ -73,6 +82,8 @@ export default function TvPage() {
       <main className="flex flex-1 flex-col justify-center py-8">
         {!data ? null : data.round ? (
           <TvRoundView round={data.round} />
+        ) : data.draw ? (
+          <TvDrawView draw={data.draw} />
         ) : PANELS[panel] === "top5" ? (
           <section>
             <h2 className="display mb-6 text-4xl font-bold text-rosa">Classificação</h2>
@@ -130,7 +141,7 @@ export default function TvPage() {
         )}
       </main>
 
-      {!data?.round && (
+      {!takeover && (
         <footer className="flex justify-center gap-3 pb-2">
           {PANELS.map((p, i) => (
             <span
@@ -141,6 +152,86 @@ export default function TvPage() {
         </footer>
       )}
     </div>
+  );
+}
+
+function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
+  const [busy, setBusy] = useState(false);
+  const revealed = draw.players.slice(0, draw.reveal);
+  const latest = revealed[revealed.length - 1] ?? null;
+  const finished = draw.reveal >= draw.total;
+  const [teamA, teamB] = draw.teams;
+
+  async function proxima() {
+    if (busy) return;
+    setBusy(true);
+    await post("/api/sorteio/proxima");
+    setBusy(false);
+  }
+
+  const column = (team: { id: string; name: string; colour: string }) => (
+    <div
+      className="flex-1 rounded-xl border-t-8 bg-pinhal p-6"
+      style={{ borderTopColor: team.colour }}
+    >
+      <p className="display text-center text-4xl font-bold">{team.name}</p>
+      <ul className="mt-5 space-y-3">
+        {revealed
+          .filter((p) => p.team_id === team.id)
+          .map((p, i) => (
+            <li key={i} className="display rounded-md bg-granito px-4 py-3 text-center text-3xl font-bold">
+              {p.emoji} {p.name}
+            </li>
+          ))}
+      </ul>
+    </div>
+  );
+
+  return (
+    <section>
+      <p className="display text-center text-3xl font-bold tracking-widest text-rosa">
+        🎲 SORTEIO DAS EQUIPAS
+      </p>
+
+      {latest && !finished && (
+        <p className="display mt-4 text-center text-6xl font-bold">
+          {latest.emoji} {latest.name}
+          <span className="text-cal-fraca"> → </span>
+          <span
+            style={{
+              color: draw.teams.find((t) => t.id === latest.team_id)?.colour,
+            }}
+          >
+            {draw.teams.find((t) => t.id === latest.team_id)?.name}
+          </span>
+        </p>
+      )}
+      {finished && (
+        <p className="display mt-4 text-center text-5xl font-bold text-ouro">
+          Equipas fechadas. Que ganhe a melhor.
+        </p>
+      )}
+
+      <div className="mx-auto mt-6 flex max-w-6xl gap-8">
+        {teamA && column(teamA)}
+        {teamB && column(teamB)}
+      </div>
+
+      <div className="mt-8 text-center">
+        <button
+          onClick={proxima}
+          disabled={busy}
+          className="display min-h-20 rounded-xl bg-rosa px-16 text-4xl font-bold text-granito disabled:opacity-50"
+        >
+          {finished ? "Fechar sorteio" : draw.reveal === 0 ? "Começar →" : "Próxima →"}
+        </button>
+        {!finished && (
+          <p className="num mt-3 text-2xl text-cal-fraca">
+            {draw.reveal}/{draw.total}
+          </p>
+        )}
+      </div>
+    </section>
   );
 }
 

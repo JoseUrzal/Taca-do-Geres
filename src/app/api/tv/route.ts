@@ -16,6 +16,26 @@ export async function GET() {
       : Promise.resolve({ data: null }),
   ]);
 
+  // sorteio de equipas em curso: todos têm equipa mas a revelação na TV
+  // ainda não acabou (reveal ≤ nº de jogadores)
+  const players = individual.map((r) => r.player);
+  const allAssigned = players.length > 0 && players.every((p) => p.team_id);
+  const draw =
+    allAssigned && state.draw_reveal <= players.length
+      ? {
+          reveal: state.draw_reveal,
+          total: players.length,
+          players: [...players]
+            .sort((a, b) => a.id.localeCompare(b.id))
+            .map((p) => ({ name: p.name, emoji: p.emoji, team_id: p.team_id })),
+          teams: teams.map((t) => ({
+            id: t.team.id,
+            name: t.team.name,
+            colour: t.team.colour_hex,
+          })),
+        }
+      : null;
+
   return NextResponse.json({
     day: state.current_day,
     top5: individual.slice(0, 5),
@@ -23,5 +43,6 @@ export async function GET() {
     feed,
     camera: camera && "data" in camera ? camera.data : null,
     round,
+    draw,
   });
 }

@@ -3,13 +3,15 @@
 import { useState } from "react";
 import useSWR from "swr";
 import { fetcher, post, POLL } from "@/lib/client";
-import type { Player } from "@/lib/types";
+import type { Player, Team } from "@/lib/types";
 
 type Admin = {
   admin: boolean;
   day: number;
   camera_player_id: string | null;
+  draw_reveal: number;
   players: Player[];
+  teams: Team[];
   prompts: { id: string; text: string }[];
   round: { id: string; prompt: string; status: string; reveal_index: number } | null;
 };
@@ -80,6 +82,7 @@ export default function AdminPage() {
         </p>
       )}
 
+      <Sorteio data={data} mutate={mutate} flash={flash} />
       <QuemDisseControlo data={data} mutate={mutate} flash={flash} />
       <PontosManuais players={data.players} flash={flash} />
       <Evento players={data.players} flash={flash} />
@@ -94,6 +97,97 @@ function Sec({ title, children }: { title: string; children: React.ReactNode }) 
       <h2 className="display mb-3 text-xl font-bold text-rosa">{title}</h2>
       {children}
     </section>
+  );
+}
+
+function Sorteio({
+  data,
+  mutate,
+  flash,
+}: {
+  data: Admin;
+  mutate: () => void;
+  flash: (m: string) => void;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const drawn = data.players.length > 0 && data.players.every((p) => p.team_id);
+
+  async function sortear() {
+    if (busy) return;
+    setBusy(true);
+    const res = await post("/api/admin/sorteio");
+    setBusy(false);
+    setConfirming(false);
+    if (res.ok) {
+      flash("Sorteado! A TV está em modo revelação — toca em «Começar» lá.");
+      mutate();
+    }
+  }
+
+  return (
+    <Sec title="Sorteio de equipas">
+      {!drawn ? (
+        <>
+          <p className="text-sm text-cal-fraca">
+            Divide os 10 em duas equipas ao calhas e põe a TV a revelar um a um.
+            Faz isto com toda a gente em frente à televisão.
+          </p>
+          <button
+            onClick={sortear}
+            disabled={busy}
+            className="display mt-3 min-h-14 w-full rounded-md bg-rosa font-bold text-granito disabled:opacity-50"
+          >
+            🎲 Sortear equipas (aparece na TV)
+          </button>
+        </>
+      ) : (
+        <>
+          <div className="space-y-2">
+            {data.teams.map((t) => (
+              <p key={t.id} className="text-sm">
+                <span className="font-semibold" style={{ color: t.colour_hex }}>
+                  {t.name}:
+                </span>{" "}
+                {data.players
+                  .filter((p) => p.team_id === t.id)
+                  .map((p) => p.name)
+                  .join(", ")}
+              </p>
+            ))}
+          </div>
+          {!confirming ? (
+            <button
+              onClick={() => setConfirming(true)}
+              className="display mt-3 min-h-12 w-full rounded-md border border-cal-fraca/30 font-bold text-cal-fraca"
+            >
+              Re-sortear…
+            </button>
+          ) : (
+            <div className="mt-3 rounded-md border-2 border-rosa p-3">
+              <p className="text-sm">
+                Baralha as equipas outra vez e repete a revelação na TV. De certeza?
+              </p>
+              <div className="mt-2 flex gap-2">
+                <button
+                  onClick={sortear}
+                  disabled={busy}
+                  className="display min-h-12 flex-1 rounded-md bg-rosa font-bold text-granito disabled:opacity-50"
+                >
+                  Sim, re-sortear
+                </button>
+                <button
+                  onClick={() => setConfirming(false)}
+                  className="display min-h-12 rounded-md border border-cal-fraca/30 px-4 font-bold text-cal-fraca"
+                >
+                  Não
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </Sec>
   );
 }
 

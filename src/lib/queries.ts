@@ -9,6 +9,7 @@ export async function getGameState() {
     current_day: number;
     active_round_id: string | null;
     camera_player_id: string | null;
+    draw_reveal: number;
   };
 }
 

@@ -32,18 +32,18 @@ const TEAMS = [
   { name: "Javalis da Serra", colour_hex: "#3AA76D" },
 ];
 
-// 10 jogadores, 5 por equipa (index 0-4 → equipa 1, 5-9 → equipa 2)
+// 10 jogadores, SEM equipa — o sorteio faz-se ao vivo no /admin e revela-se na TV
 const PLAYERS = [
-  { name: "Zé", short_name: "Zé", emoji: "🦦" },
+  { name: "José", short_name: "José", emoji: "🦦" },
+  { name: "Joana M.", short_name: "Joana M", emoji: "🌻" },
+  { name: "Maria", short_name: "Maria", emoji: "🦋" },
+  { name: "Cristian", short_name: "Cristian", emoji: "🌶️" },
   { name: "Gil", short_name: "Gil", emoji: "🍺" },
-  { name: "Rita", short_name: "Rita", emoji: "🌊" },
-  { name: "Marta", short_name: "Marta", emoji: "🔥" },
-  { name: "Nuno", short_name: "Nuno", emoji: "🎣" },
-  { name: "Tiago", short_name: "Tiago", emoji: "🐗" },
-  { name: "Inês", short_name: "Inês", emoji: "⛰️" },
-  { name: "Sofia", short_name: "Sofia", emoji: "🌲" },
-  { name: "Pedro", short_name: "Pedro", emoji: "🥩" },
-  { name: "João", short_name: "João", emoji: "🛶" },
+  { name: "Maike", short_name: "Maike", emoji: "🎸" },
+  { name: "Falcão", short_name: "Falcão", emoji: "🦅" },
+  { name: "Ana", short_name: "Ana", emoji: "🌊" },
+  { name: "Joana C.", short_name: "Joana C", emoji: "🍀" },
+  { name: "João D.", short_name: "João D", emoji: "🎣" },
 ];
 
 function shuffle<T>(arr: T[]): T[] {
@@ -77,7 +77,7 @@ async function main() {
   const { data: teams, error: te } = await db.from("teams").insert(TEAMS).select();
   if (te || !teams) throw new Error(te?.message);
 
-  const playerRows = PLAYERS.map((p, i) => ({ ...p, team_id: teams[i < 5 ? 0 : 1].id }));
+  const playerRows = PLAYERS.map((p) => ({ ...p, team_id: null }));
   const { data: players, error: pe } = await db.from("players").insert(playerRows).select();
   if (pe || !players) throw new Error(pe?.message);
 
@@ -94,7 +94,7 @@ async function main() {
   console.log("Estado do jogo…");
   const camera = players[Math.floor(Math.random() * players.length)];
   const { error: ge } = await db.from("game_state").insert({
-    id: 1, current_day: 1, camera_player_id: camera.id,
+    id: 1, current_day: 1, camera_player_id: camera.id, draw_reveal: 0,
   });
   if (ge) throw new Error(ge.message);
 

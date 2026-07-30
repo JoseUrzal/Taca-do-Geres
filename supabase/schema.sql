@@ -21,12 +21,17 @@ create table if not exists players (
 );
 
 -- linha única (id = 1)
+-- draw_reveal: quantos jogadores já foram revelados no sorteio de equipas na TV
 create table if not exists game_state (
   id                int primary key default 1 check (id = 1),
   current_day       int not null default 1,
   active_round_id   uuid,
-  camera_player_id  uuid references players(id)
+  camera_player_id  uuid references players(id),
+  draw_reveal       int not null default 0
 );
+
+-- para bases de dados criadas antes do sorteio existir
+alter table game_state add column if not exists draw_reveal int not null default 0;
 
 -- ---------------------------------------------------- Missões Secretas
 
