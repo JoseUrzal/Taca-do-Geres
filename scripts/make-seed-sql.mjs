@@ -8,8 +8,8 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 
 const TEAMS = [
-  { name: "Lontras do Rio", colour_hex: "#FF3D7F" },
-  { name: "Javalis da Serra", colour_hex: "#3AA76D" },
+  { name: "Um Gajo FC", colour_hex: "#FF3D7F" },
+  { name: "Que Inferno SC", colour_hex: "#3AA76D" },
 ];
 
 const PLAYERS = [

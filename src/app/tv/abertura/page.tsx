@@ -29,7 +29,7 @@ const SLIDES: Slide[] = [
     lines: [
       "Cada um abre o link e escolhe o seu nome — uma vez.",
       "Tudo o que acontece dá pontos: jogos, missões, palpites.",
-      "Há um vencedor individual e uma equipa campeã.",
+      "Vencedor individual e equipa campeã. As crianças dormem; os adultos competem.",
     ],
   },
   {
