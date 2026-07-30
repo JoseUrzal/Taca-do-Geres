@@ -142,13 +142,19 @@ export default function TvPage() {
       </main>
 
       {!takeover && (
-        <footer className="flex justify-center gap-3 pb-2">
-          {PANELS.map((p, i) => (
-            <span
-              key={p}
-              className={`h-2 w-10 rounded-full ${i === panel ? "bg-rosa" : "bg-pinhal-claro"}`}
-            />
-          ))}
+        <footer className="flex items-center justify-between pb-2">
+          <span className="w-28" aria-hidden />
+          <div className="flex gap-3">
+            {PANELS.map((p, i) => (
+              <span
+                key={p}
+                className={`h-2 w-10 rounded-full ${i === panel ? "bg-rosa" : "bg-pinhal-claro"}`}
+              />
+            ))}
+          </div>
+          <a href="/tv/abertura" className="display w-28 text-right text-xl text-cal-fraca/60">
+            ▶ Abertura
+          </a>
         </footer>
       )}
     </div>

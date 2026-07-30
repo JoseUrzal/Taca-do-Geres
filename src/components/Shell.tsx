@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import useSWR from "swr";
 import { fetcher, POLL } from "@/lib/client";
-import { Home, ScrollText, Gavel, Crosshair, Trophy, Tv2 } from "lucide-react";
+import { Home, ScrollText, Gavel, Crosshair, Trophy, Tv2, HelpCircle } from "lucide-react";
 
 const TABS = [
   { href: "/casa", label: "Casa", icon: Home },
@@ -43,6 +43,13 @@ export default function Shell({
           {data && (
             <span className="num text-sm text-cal-fraca">Dia {data.day}</span>
           )}
+          <Link
+            href="/regras"
+            aria-label="Regras"
+            className="flex min-h-11 min-w-11 items-center justify-center text-cal-fraca"
+          >
+            <HelpCircle size={22} />
+          </Link>
         </div>
       </header>
 
