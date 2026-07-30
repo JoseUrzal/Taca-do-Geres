@@ -14,6 +14,9 @@ export function slugify(name: string) {
     .replace(/^-|-$/g, "");
 }
 
+// tenta .jpg, depois .png, depois cai para o emoji
+const EXTS = ["jpg", "png"];
+
 export default function Avatar({
   name,
   emoji,
@@ -25,7 +28,8 @@ export default function Avatar({
   size?: number;
   className?: string;
 }) {
-  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const failed = attempt >= EXTS.length;
 
   if (failed) {
     return (
@@ -42,11 +46,11 @@ export default function Avatar({
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={`/avatars/${slugify(name)}.jpg`}
+      src={`/avatars/${slugify(name)}.${EXTS[attempt]}`}
       alt=""
       width={size}
       height={size}
-      onError={() => setFailed(true)}
+      onError={() => setAttempt((a) => a + 1)}
       className={`shrink-0 rounded-full object-cover ${className}`}
       style={{ width: size, height: size }}
     />
