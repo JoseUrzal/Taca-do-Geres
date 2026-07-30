@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@theme {
+  --color-granito: #14181a;
+  --color-pinhal: #1e2b26;
+  --color-pinhal-claro: #2a3b34;
+  --color-rosa: #ff3d7f;
+  --color-ouro: #e8b33a;
+  --color-cal: #f2efe6;
+  --color-cal-fraca: #a8a89c;
+
+  --font-display: var(--font-oswald), "Arial Narrow", sans-serif;
+  --font-num: var(--font-space-mono), ui-monospace, monospace;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+}
+
+html {
+  background: var(--color-granito);
+}
+
+body {
+  background: var(--color-granito);
+  color: var(--color-cal);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+
+/* números: sempre tabulares */
+.num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+
+.display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+/* transições de estado: 120ms, nada mais */
+button,
+a {
+  transition: background-color 120ms ease, color 120ms ease, opacity 120ms ease,
+    border-color 120ms ease;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--color-rosa);
+  outline-offset: 2px;
+}
+
+/* flip-digit do scoreboard — a única animação da app */
+@keyframes flipdigit {
+  0% {
+    transform: rotateX(0deg);
+  }
+  49% {
+    transform: rotateX(90deg);
+  }
+  51% {
+    transform: rotateX(-90deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+.flip {
+  display: inline-block;
+  animation: flipdigit 360ms ease-in-out;
+  transform-style: preserve-3d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip {
+    animation: none;
+  }
+  button,
+  a {
+    transition: none;
+  }
+}
