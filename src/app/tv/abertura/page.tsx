@@ -137,18 +137,18 @@ export default function AberturaPage() {
 
   return (
     <div
-      className="flex min-h-dvh cursor-pointer flex-col bg-granito p-12 text-cal"
+      className="flex min-h-dvh cursor-pointer flex-col bg-granito p-5 md:p-12 text-cal"
       onClick={() => !last && next()}
     >
       <main className="flex flex-1 flex-col items-center justify-center text-center">
-        {slide.big && <p className="text-9xl">{slide.big}</p>}
+        {slide.big && <p className="text-5xl md:text-9xl">{slide.big}</p>}
         {slide.kicker && (
-          <p className="display mt-8 text-3xl font-bold tracking-widest text-rosa">
+          <p className="display mt-8 text-xl md:text-3xl font-bold tracking-widest text-rosa">
             {slide.kicker}
           </p>
         )}
         <h1
-          className={`display mt-3 text-8xl font-bold leading-none ${
+          className={`display mt-3 text-4xl md:text-8xl font-bold leading-none ${
             slide.gold ? "text-ouro" : ""
           }`}
         >
@@ -157,7 +157,7 @@ export default function AberturaPage() {
         {slide.lines && (
           <div className="mt-10 space-y-4">
             {slide.lines.map((l, k) => (
-              <p key={k} className="text-4xl leading-snug text-cal">
+              <p key={k} className="text-2xl md:text-4xl leading-snug text-cal">
                 {l}
               </p>
             ))}
@@ -170,7 +170,7 @@ export default function AberturaPage() {
               e.stopPropagation();
               router.push("/tv");
             }}
-            className="display mt-14 min-h-20 rounded-xl bg-rosa px-16 text-4xl font-bold text-granito"
+            className="display mt-14 min-h-14 md:min-h-20 rounded-xl bg-rosa px-8 md:px-16 text-2xl md:text-4xl font-bold text-granito"
           >
             Para o sorteio →
           </button>
@@ -178,10 +178,10 @@ export default function AberturaPage() {
       </main>
 
       <footer className="flex items-center justify-between">
-        <p className="num text-2xl text-cal-fraca">
+        <p className="num text-lg md:text-2xl text-cal-fraca">
           {i + 1}/{SLIDES.length}
         </p>
-        <p className="display text-2xl text-cal-fraca">
+        <p className="display text-lg md:text-2xl text-cal-fraca">
           {last ? "" : "toca no ecrã ou → para avançar"}
         </p>
       </footer>

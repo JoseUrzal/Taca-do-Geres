@@ -65,18 +65,18 @@ export default function TvPage() {
   }, [takeover]);
 
   return (
-    <div className="flex min-h-dvh flex-col bg-granito p-10 text-cal">
+    <div className="flex min-h-dvh flex-col bg-granito p-4 md:p-10 text-cal">
       <header className="flex items-baseline justify-between border-b-2 border-pinhal-claro pb-4">
-        <h1 className="display text-6xl font-bold">
+        <h1 className="display text-3xl md:text-6xl font-bold">
           Taça do <span className="text-rosa">Gerês</span>
         </h1>
         <div className="flex items-baseline gap-8">
           {data?.camera && (
-            <p className="display text-2xl text-cal-fraca">
+            <p className="display text-lg md:text-2xl text-cal-fraca">
               🎥 Câmara: <span className="font-bold text-cal">{data.camera.name}</span>
             </p>
           )}
-          <p className="num text-3xl text-cal-fraca">Dia {data?.day ?? "—"}</p>
+          <p className="num text-xl md:text-3xl text-cal-fraca">Dia {data?.day ?? "—"}</p>
         </div>
       </header>
 
@@ -87,25 +87,25 @@ export default function TvPage() {
           <TvDrawView draw={data.draw} />
         ) : PANELS[panel] === "top5" ? (
           <section>
-            <h2 className="display mb-6 text-4xl font-bold text-rosa">Classificação</h2>
+            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-rosa">Classificação</h2>
             <Scoreboard rows={data.top5} big />
           </section>
         ) : PANELS[panel] === "equipas" ? (
           <section>
-            <h2 className="display mb-6 text-4xl font-bold text-rosa">Equipas</h2>
-            <div className="grid grid-cols-2 gap-8">
+            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-rosa">Equipas</h2>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-8">
               {data.teams.map((t) => (
                 <div
                   key={t.team.id}
-                  className="rounded-xl border-t-8 bg-pinhal p-10 text-center"
+                  className="rounded-xl border-t-8 bg-pinhal p-5 md:p-10 text-center"
                   style={{ borderTopColor: t.team.colour_hex }}
                 >
-                  <p className={`display text-5xl font-bold ${t.rank === 1 ? "text-ouro" : ""}`}>
+                  <p className={`display text-2xl md:text-5xl font-bold ${t.rank === 1 ? "text-ouro" : ""}`}>
                     {t.team.name}
                   </p>
                   <FlipNumber
                     value={t.points}
-                    className={`mt-4 text-9xl font-bold ${t.rank === 1 ? "text-ouro" : ""}`}
+                    className={`mt-4 text-5xl md:text-9xl font-bold ${t.rank === 1 ? "text-ouro" : ""}`}
                   />
                 </div>
               ))}
@@ -113,18 +113,18 @@ export default function TvPage() {
           </section>
         ) : PANELS[panel] === "feed" ? (
           <section>
-            <h2 className="display mb-6 text-4xl font-bold text-rosa">Últimas jogadas</h2>
+            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-rosa">Últimas jogadas</h2>
             <ul className="space-y-4">
               {data.feed.slice(0, 6).map((f) => (
                 <li key={f.id} className="flex items-baseline gap-6 border-b border-pinhal-claro pb-4">
                   <span
-                    className={`num w-24 shrink-0 text-right text-4xl font-bold ${
+                    className={`num w-24 shrink-0 text-right text-2xl md:text-4xl font-bold ${
                       f.points >= 0 ? "text-rosa" : "text-cal-fraca"
                     }`}
                   >
                     {f.points >= 0 ? `+${f.points}` : f.points}
                   </span>
-                  <p className="text-3xl leading-snug">
+                  <p className="text-xl md:text-3xl leading-snug">
                     <span className="display font-bold">{f.player?.name}</span>{" "}
                     <span className="text-cal-fraca">{f.reason}</span>
                   </p>
@@ -134,7 +134,7 @@ export default function TvPage() {
           </section>
         ) : (
           <section className="text-center">
-            <p className="display text-4xl font-bold text-rosa">Câmara do dia</p>
+            <p className="display text-2xl md:text-4xl font-bold text-rosa">Câmara do dia</p>
             <div className="mt-8 flex justify-center">
               <Avatar
                 name={data.camera?.name ?? ""}
@@ -143,8 +143,8 @@ export default function TvPage() {
                 className="border-8 border-rosa"
               />
             </div>
-            <p className="display mt-6 text-8xl font-bold">{data.camera?.name ?? "—"}</p>
-            <p className="mt-4 text-4xl text-cal-fraca">— filma tudo.</p>
+            <p className="display mt-6 text-4xl md:text-8xl font-bold">{data.camera?.name ?? "—"}</p>
+            <p className="mt-4 text-2xl md:text-4xl text-cal-fraca">— filma tudo.</p>
           </section>
         )}
       </main>
@@ -188,14 +188,14 @@ function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
       className="flex-1 rounded-xl border-t-8 bg-pinhal p-6"
       style={{ borderTopColor: team.colour }}
     >
-      <p className="display text-center text-4xl font-bold">{team.name}</p>
+      <p className="display text-center text-2xl md:text-4xl font-bold">{team.name}</p>
       <ul className="mt-5 space-y-3">
         {revealed
           .filter((p) => p.team_id === team.id)
           .map((p, i) => (
             <li
               key={i}
-              className="display flex items-center justify-center gap-3 rounded-md bg-granito px-4 py-3 text-center text-3xl font-bold"
+              className="display flex items-center justify-center gap-3 rounded-md bg-granito px-4 py-3 text-center text-xl md:text-3xl font-bold"
             >
               <Avatar name={p.name} emoji={p.emoji} size={48} /> {p.name}
             </li>
@@ -206,12 +206,12 @@ function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
 
   return (
     <section>
-      <p className="display text-center text-3xl font-bold tracking-widest text-rosa">
+      <p className="display text-center text-xl md:text-3xl font-bold tracking-widest text-rosa">
         🎲 SORTEIO DAS EQUIPAS
       </p>
 
       {latest && !finished && (
-        <p className="display mt-4 text-center text-6xl font-bold">
+        <p className="display mt-4 text-center text-3xl md:text-6xl font-bold">
           {latest.emoji} {latest.name}
           <span className="text-cal-fraca"> → </span>
           <span
@@ -224,12 +224,12 @@ function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
         </p>
       )}
       {finished && (
-        <p className="display mt-4 text-center text-5xl font-bold text-ouro">
+        <p className="display mt-4 text-center text-2xl md:text-5xl font-bold text-ouro">
           Equipas fechadas. Que ganhe a melhor.
         </p>
       )}
 
-      <div className="mx-auto mt-6 flex max-w-6xl gap-8">
+      <div className="mx-auto mt-6 flex max-w-6xl flex-col gap-3 md:flex-row md:gap-8">
         {teamA && column(teamA)}
         {teamB && column(teamB)}
       </div>
@@ -238,12 +238,12 @@ function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
         <button
           onClick={proxima}
           disabled={busy}
-          className="display min-h-20 rounded-xl bg-rosa px-16 text-4xl font-bold text-granito disabled:opacity-50"
+          className="display min-h-14 md:min-h-20 rounded-xl bg-rosa px-8 md:px-16 text-2xl md:text-4xl font-bold text-granito disabled:opacity-50"
         >
           {finished ? "Fechar sorteio" : draw.reveal === 0 ? "Começar →" : "Próxima →"}
         </button>
         {!finished && (
-          <p className="num mt-3 text-2xl text-cal-fraca">
+          <p className="num mt-3 text-lg md:text-2xl text-cal-fraca">
             {draw.reveal}/{draw.total}
           </p>
         )}
@@ -265,18 +265,18 @@ function TvRoundView({ round }: { round: NonNullable<TvRound> }) {
   if (round.status === "a_responder") {
     return (
       <section className="text-center">
-        <p className="display text-3xl font-bold tracking-widest text-rosa">
+        <p className="display text-xl md:text-3xl font-bold tracking-widest text-rosa">
           QUEM DISSE ISTO? · RESPONDAM NO TELEMÓVEL
         </p>
-        <p className="display mx-auto mt-8 max-w-5xl text-7xl font-bold leading-tight">
+        <p className="display mx-auto mt-8 max-w-5xl text-4xl md:text-7xl font-bold leading-tight">
           {round.prompt}
         </p>
-        <p className="num mt-12 text-4xl text-cal-fraca">
+        <p className="num mt-12 text-2xl md:text-4xl text-cal-fraca">
           {round.answered_count}/{round.total_players} responderam
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-4">
           {round.answered.map((p, i) => (
-            <span key={i} className="display rounded-md bg-pinhal px-5 py-2 text-3xl font-bold">
+            <span key={i} className="display rounded-md bg-pinhal px-5 py-2 text-xl md:text-3xl font-bold">
               {p.emoji} {p.name}
             </span>
           ))}
@@ -288,21 +288,21 @@ function TvRoundView({ round }: { round: NonNullable<TvRound> }) {
   if (round.status === "a_adivinhar") {
     return (
       <section>
-        <p className="display text-center text-3xl font-bold tracking-widest text-rosa">
+        <p className="display text-center text-xl md:text-3xl font-bold tracking-widest text-rosa">
           QUEM ESCREVEU O QUÊ? · MARQUEM NO TELEMÓVEL
         </p>
-        <p className="display mx-auto mt-2 max-w-4xl text-center text-3xl text-cal-fraca">
+        <p className="display mx-auto mt-2 max-w-4xl text-center text-xl md:text-3xl text-cal-fraca">
           {round.prompt}
         </p>
-        <ul className="mx-auto mt-8 grid max-w-6xl grid-cols-2 gap-5">
+        <ul className="mx-auto mt-8 grid max-w-6xl grid-cols-1 gap-3 md:grid-cols-2 md:gap-5">
           {round.answers.map((a) => (
             <li key={a.id} className="flex items-start gap-4 rounded-lg bg-pinhal p-5">
-              <span className="num text-4xl font-bold text-rosa">{a.n}</span>
-              <p className="text-3xl leading-snug">«{a.text}»</p>
+              <span className="num text-2xl md:text-4xl font-bold text-rosa">{a.n}</span>
+              <p className="text-xl md:text-3xl leading-snug">«{a.text}»</p>
             </li>
           ))}
         </ul>
-        <p className="num mt-8 text-center text-3xl text-cal-fraca">
+        <p className="num mt-8 text-center text-xl md:text-3xl text-cal-fraca">
           {round.done_count}/{round.total_players} já entregaram
         </p>
       </section>
@@ -315,21 +315,21 @@ function TvRoundView({ round }: { round: NonNullable<TvRound> }) {
 
   return (
     <section className="text-center">
-      <p className="display text-3xl font-bold tracking-widest text-rosa">A REVELAÇÃO</p>
+      <p className="display text-xl md:text-3xl font-bold tracking-widest text-rosa">A REVELAÇÃO</p>
 
       {!current ? (
-        <p className="display mt-10 text-5xl text-cal-fraca">Toca em «Próxima» para começar…</p>
+        <p className="display mt-10 text-2xl md:text-5xl text-cal-fraca">Toca em «Próxima» para começar…</p>
       ) : (
         <div className="mx-auto mt-8 max-w-5xl">
-          <p className="display text-6xl font-bold leading-tight">«{current.text}»</p>
-          <p className="display mt-6 text-5xl font-bold text-rosa">
+          <p className="display text-3xl md:text-6xl font-bold leading-tight">«{current.text}»</p>
+          <p className="display mt-6 text-2xl md:text-5xl font-bold text-rosa">
             — {current.author.emoji} {current.author.name}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             {current.guesses.map((g, i) => (
               <span
                 key={i}
-                className={`num rounded-md px-4 py-2 text-2xl ${
+                className={`num rounded-md px-4 py-2 text-lg md:text-2xl ${
                   g.correct ? "bg-rosa text-granito" : "bg-pinhal text-cal-fraca"
                 }`}
               >
@@ -338,7 +338,7 @@ function TvRoundView({ round }: { round: NonNullable<TvRound> }) {
             ))}
           </div>
           {current.fooled > 0 && (
-            <p className="num mt-6 text-3xl text-cal-fraca">
+            <p className="num mt-6 text-xl md:text-3xl text-cal-fraca">
               enganou {current.fooled} {current.fooled === 1 ? "pessoa" : "pessoas"} (+
               {current.fooled * 3})
             </p>
@@ -348,10 +348,10 @@ function TvRoundView({ round }: { round: NonNullable<TvRound> }) {
 
       {finished && round.mais_enganador && (
         <div className="mx-auto mt-10 max-w-3xl rounded-xl border-4 border-ouro p-8">
-          <p className="display text-3xl font-bold tracking-widest text-ouro">
+          <p className="display text-xl md:text-3xl font-bold tracking-widest text-ouro">
             🏆 MAIS ENGANADOR DA RONDA
           </p>
-          <p className="display mt-3 text-7xl font-bold text-ouro">
+          <p className="display mt-3 text-4xl md:text-7xl font-bold text-ouro">
             {round.mais_enganador.name}
           </p>
         </div>
@@ -361,7 +361,7 @@ function TvRoundView({ round }: { round: NonNullable<TvRound> }) {
         <button
           onClick={proxima}
           disabled={busy}
-          className="display mt-12 min-h-20 rounded-xl bg-rosa px-16 text-4xl font-bold text-granito disabled:opacity-50"
+          className="display mt-12 min-h-14 md:min-h-20 rounded-xl bg-rosa px-8 md:px-16 text-2xl md:text-4xl font-bold text-granito disabled:opacity-50"
         >
           Próxima →
         </button>
