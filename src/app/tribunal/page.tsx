@@ -3,6 +3,7 @@
 import useSWR from "swr";
 import Shell from "@/components/Shell";
 import { fetcher, post, POLL } from "@/lib/client";
+import Avatar from "@/components/Avatar";
 import { Check, X } from "lucide-react";
 
 type Tribunal = {
@@ -52,9 +53,10 @@ export default function TribunalPage() {
       <ul className="space-y-3">
         {data?.claims.map((c) => (
           <li key={c.id} className="rounded-lg bg-pinhal p-4">
-            <p className="display text-lg font-bold">
-              {c.player.emoji} {c.player.name}
-            </p>
+            <div className="flex items-center gap-2">
+              <Avatar name={c.player.name} emoji={c.player.emoji} size={36} />
+              <p className="display text-lg font-bold">{c.player.name}</p>
+            </div>
             <p className="mt-1 leading-snug">
               diz que cumpriu: <span className="font-semibold">«{c.mission.text}»</span>{" "}
               <span className="num text-rosa">+{c.mission.points}</span>

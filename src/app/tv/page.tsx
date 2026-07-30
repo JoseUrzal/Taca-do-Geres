@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 import Scoreboard from "@/components/Scoreboard";
 import FlipNumber from "@/components/FlipNumber";
+import Avatar from "@/components/Avatar";
 import { fetcher, post, POLL } from "@/lib/client";
 import type { FeedItem, LeaderboardRow, Team } from "@/lib/types";
 
@@ -134,7 +135,14 @@ export default function TvPage() {
         ) : (
           <section className="text-center">
             <p className="display text-4xl font-bold text-rosa">Câmara do dia</p>
-            <p className="mt-8 text-9xl">{data.camera?.emoji ?? "🎥"}</p>
+            <div className="mt-8 flex justify-center">
+              <Avatar
+                name={data.camera?.name ?? ""}
+                emoji={data.camera?.emoji ?? "🎥"}
+                size={240}
+                className="border-8 border-rosa"
+              />
+            </div>
             <p className="display mt-6 text-8xl font-bold">{data.camera?.name ?? "—"}</p>
             <p className="mt-4 text-4xl text-cal-fraca">— filma tudo.</p>
           </section>
@@ -185,8 +193,11 @@ function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
         {revealed
           .filter((p) => p.team_id === team.id)
           .map((p, i) => (
-            <li key={i} className="display rounded-md bg-granito px-4 py-3 text-center text-3xl font-bold">
-              {p.emoji} {p.name}
+            <li
+              key={i}
+              className="display flex items-center justify-center gap-3 rounded-md bg-granito px-4 py-3 text-center text-3xl font-bold"
+            >
+              <Avatar name={p.name} emoji={p.emoji} size={48} /> {p.name}
             </li>
           ))}
       </ul>

@@ -1,6 +1,7 @@
 "use client";
 
 import FlipNumber from "./FlipNumber";
+import Avatar from "./Avatar";
 import type { LeaderboardRow } from "@/lib/types";
 
 // O elemento-assinatura: marcador de estádio. Rank em mono, nome condensado
@@ -36,12 +37,13 @@ export default function Scoreboard({
                 aria-hidden
               />
             )}
+            <Avatar name={r.player.name} emoji={r.player.emoji} size={big ? 56 : 32} />
             <span
               className={`display min-w-0 flex-1 truncate font-bold ${
                 big ? "text-4xl" : "text-xl"
               } ${gold ? "text-ouro" : ""}`}
             >
-              {r.player.emoji} {r.player.name}
+              {r.player.name}
             </span>
             <FlipNumber
               value={r.points}

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { fetcher, post } from "@/lib/client";
+import Avatar from "@/components/Avatar";
 import type { Player, Team } from "@/lib/types";
 
 // Primeira visita: escolher quem és. Fica num cookie e pronto — sem login.
@@ -55,7 +56,7 @@ export default function NamePicker() {
             className="flex min-h-20 items-center gap-3 rounded-lg border-l-4 bg-pinhal px-4 text-left active:bg-pinhal-claro disabled:opacity-50"
             style={{ borderLeftColor: teamColour(p) }}
           >
-            <span className="text-3xl">{p.emoji}</span>
+            <Avatar name={p.name} emoji={p.emoji} size={48} />
             <span className="display text-xl font-bold">
               {busy === p.id ? "…" : p.name}
             </span>
