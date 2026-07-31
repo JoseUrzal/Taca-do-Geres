@@ -21,6 +21,7 @@ type TvData = {
   }[];
   round: TvRound;
   draw: TvDraw;
+  draw_pending: boolean;
 };
 
 type TvDraw = {
@@ -68,7 +69,7 @@ export default function TvPage() {
   const current = panels[panel % panels.length];
 
   // rotação de 12 em 12 segundos quando não há ronda nem sorteio ativos
-  const takeover = !!data?.round || !!data?.draw;
+  const takeover = !!data?.round || !!data?.draw || !!data?.draw_pending;
   useEffect(() => {
     if (takeover) return;
     const n = panels.length;
@@ -90,6 +91,22 @@ export default function TvPage() {
           <TvRoundView round={data.round} />
         ) : data.draw ? (
           <TvDrawView draw={data.draw} />
+        ) : data.draw_pending ? (
+          <section className="text-center">
+            <p className="text-8xl md:text-9xl">🎩</p>
+            <p className="display mt-6 text-xl md:text-3xl font-bold tracking-widest text-coral">
+              SORTEIO DAS EQUIPAS
+            </p>
+            <h2 className="display mt-3 text-4xl md:text-7xl font-bold leading-tight">
+              Está tudo dentro do chapéu.
+            </h2>
+            <p className="mt-8 text-2xl md:text-4xl text-muted">
+              José: no teu telemóvel, <b className="text-ink">Mais → Admin → 🎲 Sortear equipas</b>
+            </p>
+            <p className="mt-3 text-xl md:text-3xl text-muted">
+              …e os nomes começam a sair aqui, um a um.
+            </p>
+          </section>
         ) : current === "top5" ? (
           <section>
             <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">Classificação</h2>

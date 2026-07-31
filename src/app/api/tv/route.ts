@@ -54,5 +54,8 @@ export async function GET() {
     tribunal: tribunal ?? [],
     round,
     draw,
+    // ainda ninguém tem equipa → o fim de semana abre com o sorteio;
+    // a TV espera nesse ecrã em vez de rodar painéis
+    draw_pending: players.length > 0 && !allAssigned,
   });
 }
