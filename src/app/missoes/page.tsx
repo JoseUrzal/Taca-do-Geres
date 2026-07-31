@@ -40,7 +40,7 @@ export default function MissoesPage() {
           >
             <div className="flex items-start justify-between gap-3">
               <p className="leading-snug">{m.text}</p>
-              <span className="num shrink-0 font-bold text-indigo">+{m.points}</span>
+              <span className="num shrink-0 font-bold text-coral">+{m.points}</span>
             </div>
             <div className="mt-1.5 flex items-center gap-2 text-xs text-muted">
               <span className="num">{"★".repeat(m.difficulty)}</span>

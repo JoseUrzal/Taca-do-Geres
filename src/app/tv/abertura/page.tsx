@@ -143,7 +143,7 @@ export default function AberturaPage() {
       <main className="flex flex-1 flex-col items-center justify-center text-center">
         {slide.big && <p className="text-5xl md:text-9xl">{slide.big}</p>}
         {slide.kicker && (
-          <p className="display mt-8 text-xl md:text-3xl font-bold tracking-widest text-indigo">
+          <p className="display mt-8 text-xl md:text-3xl font-bold tracking-widest text-coral">
             {slide.kicker}
           </p>
         )}

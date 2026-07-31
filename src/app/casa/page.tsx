@@ -93,7 +93,7 @@ export default function CasaPage() {
               href="/missoes"
               className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-lg bg-surface p-2 text-center active:bg-surface-2"
             >
-              <ScrollText size={20} className="text-indigo" />
+              <ScrollText size={20} className="text-coral" />
               <span className="display text-xs">Missões</span>
               <span className="text-[11px] text-muted">
                 {data.missions.length} tuas hoje
@@ -107,7 +107,7 @@ export default function CasaPage() {
                   : "bg-surface active:bg-surface-2"
               }`}
             >
-              <Mic2 size={20} className={data.active_round ? "" : "text-indigo"} />
+              <Mic2 size={20} className={data.active_round ? "" : "text-coral"} />
               <span className="display text-xs">Quizz</span>
               <span className={`text-[11px] ${data.active_round ? "" : "text-muted"}`}>
                 {data.active_round ? "AO VIVO — joga!" : "à noite, na TV"}
@@ -117,7 +117,7 @@ export default function CasaPage() {
               href="/eventos"
               className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-lg bg-surface p-2 text-center active:bg-surface-2"
             >
-              <CalendarClock size={20} className="text-indigo" />
+              <CalendarClock size={20} className="text-coral" />
               <span className="display text-xs">Eventos</span>
               <span className="line-clamp-1 text-[11px] text-muted">
                 {data.next_event ? data.next_event.name : "nada anunciado"}
@@ -140,7 +140,7 @@ export default function CasaPage() {
                 <li key={a.id} className="rounded-lg bg-surface p-4">
                   <div className="flex items-start justify-between gap-3">
                     <p className="leading-snug">{a.mission.text}</p>
-                    <span className="num shrink-0 font-bold text-indigo">
+                    <span className="num shrink-0 font-bold text-coral">
                       +{a.mission.points}
                     </span>
                   </div>
@@ -168,7 +168,7 @@ export default function CasaPage() {
               className="flex min-h-20 flex-col items-center justify-center rounded-lg bg-surface p-3 active:bg-surface-2"
             >
               <span className="flex items-center gap-2">
-                <Crosshair size={18} className="text-indigo" />
+                <Crosshair size={18} className="text-coral" />
                 <span className="num text-3xl font-bold">{data.accusations_left}</span>
               </span>
               <span className="display text-sm font-bold text-muted">
@@ -179,7 +179,7 @@ export default function CasaPage() {
               onClick={() => setMomentoOpen(true)}
               className="flex min-h-20 flex-col items-center justify-center rounded-lg bg-surface p-3 active:bg-surface-2"
             >
-              <Video size={26} className="text-indigo" />
+              <Video size={26} className="text-coral" />
               <span className="display text-sm font-bold text-muted">
                 {saved ? "Guardado ✓" : "Guardar momento"}
               </span>

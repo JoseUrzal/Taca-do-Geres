@@ -61,9 +61,9 @@ export default function AcusarPage() {
           {result === "certo" ? (
             <>
               <p className="text-5xl">🎯</p>
-              <p className="display mt-3 text-3xl font-bold text-indigo">Apanhado!</p>
+              <p className="display mt-3 text-3xl font-bold text-coral">Apanhado!</p>
               <p className="mt-2 text-muted">
-                {target?.name} tinha mesmo essa missão. <span className="num text-indigo">+15</span>{" "}
+                {target?.name} tinha mesmo essa missão. <span className="num text-coral">+15</span>{" "}
                 para ti, missão queimada para {target?.name}.
               </p>
             </>
@@ -91,7 +91,7 @@ export default function AcusarPage() {
     <Shell title="Acusar">
       <div className="mb-4 flex items-center justify-between rounded-lg border border-line bg-surface px-4 py-3">
         <span className="display font-bold">Acusações restantes hoje</span>
-        <span className="num text-3xl font-bold text-indigo">{left}</span>
+        <span className="num text-3xl font-bold text-coral">{left}</span>
       </div>
 
       {left === 0 ? (
@@ -140,8 +140,8 @@ export default function AcusarPage() {
           </ul>
         </>
       ) : (
-        <div className="rounded-lg border-2 border-indigo bg-surface p-4">
-          <h2 className="display text-xl font-bold text-indigo">3. Tens a certeza?</h2>
+        <div className="rounded-lg border-2 border-coral bg-surface p-4">
+          <h2 className="display text-xl font-bold text-coral">3. Tens a certeza?</h2>
           <p className="mt-3 leading-snug">
             Acusas <span className="display font-bold">{target.name}</span> de
             andar a tentar:

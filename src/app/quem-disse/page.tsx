@@ -89,8 +89,8 @@ function Responder({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border-2 border-indigo bg-surface p-4">
-        <p className="display text-sm font-bold tracking-widest text-indigo">A PERGUNTA</p>
+      <div className="rounded-lg border-2 border-coral bg-surface p-4">
+        <p className="display text-sm font-bold tracking-widest text-coral">A PERGUNTA</p>
         <p className="display mt-1 text-2xl font-bold leading-tight">{round.prompt}</p>
       </div>
 
@@ -185,7 +185,7 @@ function Adivinhar({
   return (
     <div className="space-y-4 pb-20">
       <div className="rounded-lg bg-surface p-4">
-        <p className="display text-sm font-bold tracking-widest text-indigo">
+        <p className="display text-sm font-bold tracking-widest text-coral">
           QUEM DISSE O QUÊ?
         </p>
         <p className="mt-1 text-sm text-muted">
@@ -196,7 +196,7 @@ function Adivinhar({
       {toGuess.map((a) => (
         <div key={a.id} className="rounded-lg bg-surface p-4">
           <p className="leading-snug">
-            <span className="num font-bold text-indigo">{a.n}.</span> «{a.text}»
+            <span className="num font-bold text-coral">{a.n}.</span> «{a.text}»
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {players
@@ -262,7 +262,7 @@ function Revelado({
       {shown.map((a) => (
         <div key={a.id} className="rounded-lg bg-surface p-4">
           <p className="leading-snug">«{a.text}»</p>
-          <p className="display mt-1 flex items-center gap-2 font-bold text-indigo">
+          <p className="display mt-1 flex items-center gap-2 font-bold text-coral">
             <Avatar name={a.author.name} emoji={a.author.emoji} size={24} /> {a.author.name}
             {a.fooled > 0 && (
               <span className="num ml-2 text-sm text-muted">

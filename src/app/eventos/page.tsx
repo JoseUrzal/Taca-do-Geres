@@ -28,7 +28,7 @@ export default function EventosPage() {
       </p>
 
       <h2 className="display mb-2 flex items-center gap-2 text-lg">
-        <CalendarClock size={18} className="text-indigo" /> Anunciados
+        <CalendarClock size={18} className="text-coral" /> Anunciados
       </h2>
       {previstos.length === 0 && (
         <p className="rounded-xl bg-surface p-4 text-sm text-muted">

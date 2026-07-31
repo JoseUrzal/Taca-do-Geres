@@ -50,7 +50,7 @@ export default function IdeiasPage() {
     <Shell title="Ideias">
       <div className="rounded-xl border border-line bg-surface p-4">
         <p className="display flex items-center gap-2">
-          <Lightbulb size={18} className="text-indigo" /> Propõe algo ao campeonato
+          <Lightbulb size={18} className="text-coral" /> Propõe algo ao campeonato
         </p>
         <p className="mt-1 text-sm text-muted">
           Um evento novo, uma missão, uma pergunta para o Quizz… O José aprova e

@@ -69,7 +69,7 @@ export default function TacaPage() {
             <li key={f.id} className="flex items-start gap-3 p-3">
               <span
                 className={`num shrink-0 font-bold ${
-                  f.points >= 0 ? "text-indigo" : "text-muted"
+                  f.points >= 0 ? "text-coral" : "text-muted"
                 }`}
               >
                 {f.points >= 0 ? `+${f.points}` : f.points}
