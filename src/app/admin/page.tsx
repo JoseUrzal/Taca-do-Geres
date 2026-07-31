@@ -14,6 +14,8 @@ type Admin = {
   players: Player[];
   teams: Team[];
   prompts: { id: string; text: string }[];
+  events: { id: string; name: string; when_hint: string | null }[];
+  ideas: { id: string; kind: string; text: string; player: { name: string } }[];
   round: { id: string; prompt: string; status: string; reveal_index: number } | null;
 };
 
@@ -85,8 +87,9 @@ export default function AdminPage() {
 
       <Sorteio data={data} mutate={mutate} flash={flash} />
       <QuemDisseControlo data={data} mutate={mutate} flash={flash} />
+      <Eventos data={data} mutate={mutate} flash={flash} />
+      <Ideias data={data} mutate={mutate} flash={flash} />
       <PontosManuais players={data.players} flash={flash} />
-      <Evento players={data.players} flash={flash} />
       <Dia data={data} mutate={mutate} flash={flash} />
     </div>
   );
@@ -112,7 +115,24 @@ function Sorteio({
 }) {
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [names, setNames] = useState<Record<string, string>>({});
   const drawn = data.players.length > 0 && data.players.every((p) => p.team_id);
+
+  async function guardarNomes() {
+    if (busy) return;
+    const changed = data.teams
+      .filter((t) => names[t.id] !== undefined && names[t.id].trim() && names[t.id] !== t.name)
+      .map((t) => ({ id: t.id, name: names[t.id] }));
+    if (changed.length === 0) return;
+    setBusy(true);
+    const res = await post("/api/admin/equipas", { teams: changed });
+    setBusy(false);
+    if (res.ok) {
+      flash("Nomes das equipas guardados.");
+      setNames({});
+      mutate();
+    }
+  }
 
   async function sortear() {
     if (busy) return;
@@ -128,6 +148,30 @@ function Sorteio({
 
   return (
     <Sec title="Sorteio de equipas">
+      {/* nomes decididos ao vivo na abertura */}
+      <div className="mb-3 space-y-2">
+        {data.teams.map((t) => (
+          <div key={t.id} className="flex items-center gap-2">
+            <span
+              className="h-6 w-1.5 shrink-0 rounded"
+              style={{ background: t.colour_hex }}
+              aria-hidden
+            />
+            <input
+              value={names[t.id] ?? t.name}
+              onChange={(e) => setNames((n) => ({ ...n, [t.id]: e.target.value }))}
+              className="min-h-12 flex-1 rounded-md border border-line bg-page px-3 text-ink"
+            />
+          </div>
+        ))}
+        <button
+          onClick={guardarNomes}
+          disabled={busy}
+          className="display min-h-11 w-full rounded-md border border-line text-sm font-bold text-muted disabled:opacity-50"
+        >
+          Guardar nomes das equipas
+        </button>
+      </div>
       {!drawn ? (
         <>
           <p className="text-sm text-muted">
@@ -243,7 +287,7 @@ function QuemDisseControlo({
   }
 
   return (
-    <Sec title="Quem Disse Isto?">
+    <Sec title="Quizz (Quem Disse Isto?)">
       {data.round ? (
         <>
           <p className="text-sm text-muted">Ronda ativa:</p>
@@ -394,10 +438,46 @@ const EVENTOS_SUGERIDOS = [
   "Corrida de boias",
 ];
 
-function Evento({ players, flash }: { players: Player[]; flash: (m: string) => void }) {
+function Eventos({
+  data,
+  mutate,
+  flash,
+}: {
+  data: Admin;
+  mutate: () => void;
+  flash: (m: string) => void;
+}) {
   const [name, setName] = useState("");
-  const [podium, setPodium] = useState<{ first?: string; second?: string; third?: string }>({});
+  const [whenHint, setWhenHint] = useState("");
   const [busy, setBusy] = useState(false);
+  const [playing, setPlaying] = useState<string | null>(null);
+  const [podium, setPodium] = useState<{ first?: string; second?: string; third?: string }>({});
+
+  async function anunciar() {
+    if (busy || !name.trim()) return;
+    setBusy(true);
+    const res = await post("/api/admin/eventos", { name, when_hint: whenHint });
+    setBusy(false);
+    if (res.ok) {
+      flash(`«${name}» anunciado — já aparece na app de todos.`);
+      setName("");
+      setWhenHint("");
+      mutate();
+    }
+  }
+
+  async function registar(eventId: string) {
+    if (busy || !podium.first) return;
+    setBusy(true);
+    const res = await post("/api/admin/eventos/jogar", { event_id: eventId, ...podium });
+    setBusy(false);
+    if (res.ok) {
+      flash("Pódio registado — pontos na Taça.");
+      setPlaying(null);
+      setPodium({});
+      mutate();
+    }
+  }
 
   const places = [
     { key: "first" as const, label: "1.º · 10 pts", colour: "text-gold" },
@@ -405,20 +485,11 @@ function Evento({ players, flash }: { players: Player[]; flash: (m: string) => v
     { key: "third" as const, label: "3.º · 3 pts", colour: "" },
   ];
 
-  async function registar() {
-    if (busy || !name.trim() || !podium.first) return;
-    setBusy(true);
-    const res = await post("/api/admin/evento", { name, ...podium });
-    setBusy(false);
-    if (res.ok) {
-      flash(`Evento «${name}» registado.`);
-      setName("");
-      setPodium({});
-    }
-  }
-
   return (
-    <Sec title="Evento (pódio 10/6/3)">
+    <Sec title="Eventos (pódio 10/6/3)">
+      <p className="mb-2 text-sm text-muted">
+        1. Anuncia antes de jogar (fica visível a todos). 2. No fim, regista o pódio.
+      </p>
       <div className="mb-2 flex flex-wrap gap-1.5">
         {EVENTOS_SUGERIDOS.map((ev) => (
           <button
@@ -438,43 +509,151 @@ function Evento({ players, flash }: { players: Player[]; flash: (m: string) => v
         placeholder="…ou escreve outro nome"
         className="min-h-12 w-full rounded-md border border-line bg-page px-3 text-ink"
       />
-      {places.map(({ key, label, colour }) => (
-        <div key={key} className="mt-3">
-          <p className={`display text-sm font-bold ${colour}`}>{label}</p>
-          <div className="mt-1 flex flex-wrap gap-1.5">
-            {players.map((p) => {
-              const takenElsewhere = Object.entries(podium).some(
-                ([k, v]) => v === p.id && k !== key
-              );
-              return (
+      <div className="mt-2 flex gap-2">
+        <input
+          value={whenHint}
+          onChange={(e) => setWhenHint(e.target.value)}
+          placeholder="Quando? (ex.: hoje às 17h)"
+          className="min-h-12 flex-1 rounded-md border border-line bg-page px-3 text-ink"
+        />
+        <button
+          onClick={anunciar}
+          disabled={busy || !name.trim()}
+          className="display min-h-12 rounded-md bg-indigo px-4 font-bold text-white disabled:opacity-40"
+        >
+          Anunciar
+        </button>
+      </div>
+
+      {data.events.length > 0 && (
+        <ul className="mt-4 space-y-2">
+          {data.events.map((e) => (
+            <li key={e.id} className="rounded-md border border-line p-3">
+              <div className="flex items-center justify-between gap-2">
+                <p className="display">
+                  {e.name}
+                  {e.when_hint && (
+                    <span className="ml-2 text-xs font-normal text-muted">{e.when_hint}</span>
+                  )}
+                </p>
                 <button
-                  key={p.id}
-                  onClick={() =>
-                    setPodium((pd) => ({ ...pd, [key]: pd[key] === p.id ? undefined : p.id }))
-                  }
-                  disabled={takenElsewhere}
-                  className={`display min-h-11 rounded-md px-2.5 text-sm font-bold ${
-                    podium[key] === p.id
-                      ? "bg-coral text-white"
-                      : takenElsewhere
-                        ? "bg-page text-muted/50"
-                        : "bg-page text-ink"
-                  }`}
+                  onClick={() => {
+                    setPlaying(playing === e.id ? null : e.id);
+                    setPodium({});
+                  }}
+                  className="display min-h-11 shrink-0 rounded-md bg-coral px-3 text-sm font-bold text-white"
                 >
-                  {p.name}
+                  {playing === e.id ? "Fechar" : "Registar pódio"}
                 </button>
-              );
-            })}
-          </div>
-        </div>
-      ))}
-      <button
-        onClick={registar}
-        disabled={busy || !name.trim() || !podium.first}
-        className="display mt-4 min-h-14 w-full rounded-md bg-coral font-bold text-white disabled:opacity-40"
-      >
-        Registar evento
-      </button>
+              </div>
+              {playing === e.id && (
+                <div className="mt-2">
+                  {places.map(({ key, label, colour }) => (
+                    <div key={key} className="mt-2">
+                      <p className={`display text-sm font-bold ${colour}`}>{label}</p>
+                      <div className="mt-1 flex flex-wrap gap-1.5">
+                        {data.players.map((p) => {
+                          const takenElsewhere = Object.entries(podium).some(
+                            ([k, v]) => v === p.id && k !== key
+                          );
+                          return (
+                            <button
+                              key={p.id}
+                              onClick={() =>
+                                setPodium((pd) => ({
+                                  ...pd,
+                                  [key]: pd[key] === p.id ? undefined : p.id,
+                                }))
+                              }
+                              disabled={takenElsewhere}
+                              className={`display min-h-11 rounded-md px-2.5 text-sm font-bold ${
+                                podium[key] === p.id
+                                  ? "bg-coral text-white"
+                                  : takenElsewhere
+                                    ? "bg-page text-muted/50"
+                                    : "bg-page text-ink"
+                              }`}
+                            >
+                              {p.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => registar(e.id)}
+                    disabled={busy || !podium.first}
+                    className="display mt-3 min-h-14 w-full rounded-md bg-coral font-bold text-white disabled:opacity-40"
+                  >
+                    Confirmar pódio
+                  </button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </Sec>
+  );
+}
+
+const KIND_LABEL: Record<string, string> = {
+  missao: "🕵️ Missão",
+  evento: "🏊 Evento",
+  quizz: "🎤 Pergunta",
+  outro: "💡 Outra",
+};
+
+function Ideias({
+  data,
+  mutate,
+  flash,
+}: {
+  data: Admin;
+  mutate: () => void;
+  flash: (m: string) => void;
+}) {
+  const [busy, setBusy] = useState(false);
+
+  async function aprovar(id: string) {
+    if (busy) return;
+    setBusy(true);
+    const res = await post("/api/admin/ideias/aprovar", { idea_id: id });
+    setBusy(false);
+    if (res.ok) {
+      flash("Ideia aceite e posta em jogo.");
+      mutate();
+    }
+  }
+
+  if (data.ideas.length === 0) return null;
+
+  return (
+    <Sec title={`Ideias do grupo (${data.ideas.length})`}>
+      <ul className="space-y-2">
+        {data.ideas.map((i) => (
+          <li key={i.id} className="rounded-md border border-line p-3">
+            <p className="text-xs text-muted">
+              {KIND_LABEL[i.kind] ?? i.kind} · {i.player?.name}
+            </p>
+            <p className="mt-1 text-sm leading-snug">{i.text}</p>
+            <button
+              onClick={() => aprovar(i.id)}
+              disabled={busy}
+              className="display mt-2 min-h-11 w-full rounded-md bg-indigo text-sm font-bold text-white disabled:opacity-50"
+            >
+              {i.kind === "missao"
+                ? "Aceitar → catálogo de missões"
+                : i.kind === "evento"
+                  ? "Aceitar → anunciar evento"
+                  : i.kind === "quizz"
+                    ? "Aceitar → perguntas do Quizz"
+                    : "Marcar como vista"}
+            </button>
+          </li>
+        ))}
+      </ul>
     </Sec>
   );
 }
@@ -516,7 +695,9 @@ function Dia({
       ) : (
         <div className="mt-3 rounded-md border-2 border-indigo p-3">
           <p className="text-sm">
-            Expira as missões ativas de hoje e dá 3 novas a cada jogador. De certeza?
+            O que muda: as missões de hoje não cumpridas expiram, cada jogador
+            recebe 3 novas, e as 2 acusações renovam-se. O que NÃO muda: pontos,
+            Quizz e eventos. Fazer ao pequeno-almoço. De certeza?
           </p>
           <div className="mt-2 flex gap-2">
             <button

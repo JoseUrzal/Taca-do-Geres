@@ -46,7 +46,7 @@ export default function QuemDissePage() {
   );
 
   return (
-    <Shell title="Quem Disse Isto?">
+    <Shell title="Quizz">
       {!data ? (
         <div className="h-64 rounded-lg bg-surface" />
       ) : !data.round ? (

@@ -7,7 +7,7 @@ import Shell from "@/components/Shell";
 import FlipNumber from "@/components/FlipNumber";
 import Avatar from "@/components/Avatar";
 import { fetcher, post, POLL } from "@/lib/client";
-import { Video, Crosshair } from "lucide-react";
+import { Video, Crosshair, Mic2, CalendarClock, ScrollText } from "lucide-react";
 
 type Casa = {
   me: { name: string; emoji: string };
@@ -21,6 +21,8 @@ type Casa = {
     mission: { text: string; points: number; difficulty: number };
   }[];
   accusations_left: number;
+  active_round: boolean;
+  next_event: { name: string; when_hint: string | null } | null;
 };
 
 export default function CasaPage() {
@@ -83,6 +85,44 @@ export default function CasaPage() {
                 <span className="text-lg text-muted">/{data.total_players}</span>
               </p>
             </div>
+          </section>
+
+          {/* as 3 vertentes do campeonato */}
+          <section className="grid grid-cols-3 gap-2">
+            <Link
+              href="/missoes"
+              className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-lg bg-surface p-2 text-center active:bg-surface-2"
+            >
+              <ScrollText size={20} className="text-indigo" />
+              <span className="display text-xs">Missões</span>
+              <span className="text-[11px] text-muted">
+                {data.missions.length} tuas hoje
+              </span>
+            </Link>
+            <Link
+              href="/quem-disse"
+              className={`flex min-h-20 flex-col items-center justify-center gap-1 rounded-lg p-2 text-center ${
+                data.active_round
+                  ? "bg-coral text-white"
+                  : "bg-surface active:bg-surface-2"
+              }`}
+            >
+              <Mic2 size={20} className={data.active_round ? "" : "text-indigo"} />
+              <span className="display text-xs">Quizz</span>
+              <span className={`text-[11px] ${data.active_round ? "" : "text-muted"}`}>
+                {data.active_round ? "AO VIVO — joga!" : "à noite, na TV"}
+              </span>
+            </Link>
+            <Link
+              href="/eventos"
+              className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-lg bg-surface p-2 text-center active:bg-surface-2"
+            >
+              <CalendarClock size={20} className="text-indigo" />
+              <span className="display text-xs">Eventos</span>
+              <span className="line-clamp-1 text-[11px] text-muted">
+                {data.next_event ? data.next_event.name : "nada anunciado"}
+              </span>
+            </Link>
           </section>
 
           {/* missões de hoje */}

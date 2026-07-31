@@ -9,10 +9,21 @@ export async function GET() {
   if (!(await isAdmin())) return NextResponse.json({ admin: false }, { status: 200 });
 
   const state = await getGameState();
-  const [players, teams, { data: prompts }, round] = await Promise.all([
+  const [players, teams, { data: prompts }, { data: events }, { data: ideas }, round] =
+    await Promise.all([
     getPlayers(),
     getTeams(),
     db().from("prompts").select("id, text").eq("used", false).order("text"),
+    db()
+      .from("events")
+      .select("id, name, when_hint, status")
+      .eq("status", "previsto")
+      .order("created_at"),
+    db()
+      .from("ideas")
+      .select("id, kind, text, player:player_id(name)")
+      .eq("done", false)
+      .order("created_at"),
     state.active_round_id
       ? db()
           .from("rounds")
@@ -31,6 +42,8 @@ export async function GET() {
     players,
     teams,
     prompts: prompts ?? [],
+    events: events ?? [],
+    ideas: ideas ?? [],
     round,
   });
 }

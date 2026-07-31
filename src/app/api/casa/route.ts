@@ -16,6 +16,7 @@ export async function GET() {
     { data: missions },
     { count: accusationsUsed },
     { count: tribunalPending },
+    { data: nextEvent },
   ] = await Promise.all([
     getLeaderboard(),
     db()
@@ -34,6 +35,13 @@ export async function GET() {
       .from("assignments")
       .select("id", { count: "exact", head: true })
       .eq("status", "reclamada"),
+    db()
+      .from("events")
+      .select("name, when_hint")
+      .eq("status", "previsto")
+      .order("created_at")
+      .limit(1)
+      .maybeSingle(),
   ]);
 
   const meRow = individual.find((r) => r.player.id === playerId);
@@ -49,5 +57,6 @@ export async function GET() {
     accusations_left: Math.max(0, 2 - (accusationsUsed ?? 0)),
     tribunal_pending: tribunalPending ?? 0,
     active_round: !!state.active_round_id,
+    next_event: nextEvent,
   });
 }

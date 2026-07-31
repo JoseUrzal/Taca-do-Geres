@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import Scoreboard from "@/components/Scoreboard";
 import FlipNumber from "@/components/FlipNumber";
@@ -174,13 +174,35 @@ export default function TvPage() {
 
 function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
   const [busy, setBusy] = useState(false);
+  // suspense: quando sai um nome novo, o saco abana (1.8s) e só depois o
+  // cartão salta cá para fora (2.2s) e desliza para a equipa
+  const [anim, setAnim] = useState<"idle" | "shake" | "pop">("idle");
+  const prevReveal = useRef(draw.reveal);
+
+  useEffect(() => {
+    if (draw.reveal > prevReveal.current && draw.reveal <= draw.total) {
+      setAnim("shake");
+      const t1 = setTimeout(() => setAnim("pop"), 1800);
+      const t2 = setTimeout(() => setAnim("idle"), 4200);
+      prevReveal.current = draw.reveal;
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    }
+    prevReveal.current = draw.reveal;
+  }, [draw.reveal, draw.total]);
+
   const revealed = draw.players.slice(0, draw.reveal);
   const latest = revealed[revealed.length - 1] ?? null;
+  // durante a animação, o último ainda não aparece na coluna
+  const placed = anim === "idle" ? revealed : revealed.slice(0, -1);
   const finished = draw.reveal >= draw.total;
   const [teamA, teamB] = draw.teams;
+  const latestTeam = latest ? draw.teams.find((t) => t.id === latest.team_id) : null;
 
   async function proxima() {
-    if (busy) return;
+    if (busy || anim !== "idle") return;
     setBusy(true);
     await post("/api/sorteio/proxima");
     setBusy(false);
@@ -193,7 +215,7 @@ function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
     >
       <p className="display text-center text-2xl md:text-4xl font-bold">{team.name}</p>
       <ul className="mt-5 space-y-3">
-        {revealed
+        {placed
           .filter((p) => p.team_id === team.id)
           .map((p, i) => (
             <li
@@ -210,30 +232,42 @@ function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
   return (
     <section>
       <p className="display text-center text-xl md:text-3xl font-bold tracking-widest text-indigo">
-        🎲 SORTEIO DAS EQUIPAS
+        🎩 SORTEIO DAS EQUIPAS
       </p>
 
-      {latest && !finished && (
-        <p className="display mt-4 flex items-center justify-center gap-4 text-center text-3xl md:text-6xl font-bold">
-          <Avatar name={latest.name} emoji={latest.emoji} size={72} />
-          {latest.name}
-          <span className="text-muted"> → </span>
-          <span
-            style={{
-              color: draw.teams.find((t) => t.id === latest.team_id)?.colour,
-            }}
+      {/* palco do suspense */}
+      <div className="flex min-h-40 items-center justify-center md:min-h-56">
+        {anim === "shake" ? (
+          <div className="text-center">
+            <p className="hat-shake text-8xl md:text-9xl">🎩</p>
+            <p className="display mt-2 text-xl md:text-3xl text-muted">a tirar um nome…</p>
+          </div>
+        ) : anim === "pop" && latest ? (
+          <div
+            className="card-pop flex items-center gap-4 rounded-2xl border-4 bg-surface px-8 py-4"
+            style={{ borderColor: latestTeam?.colour }}
           >
-            {draw.teams.find((t) => t.id === latest.team_id)?.name}
-          </span>
-        </p>
-      )}
-      {finished && (
-        <p className="display mt-4 text-center text-2xl md:text-5xl font-bold text-gold">
-          Equipas fechadas. Que ganhe a melhor.
-        </p>
-      )}
+            <Avatar name={latest.name} emoji={latest.emoji} size={96} />
+            <div className="text-left">
+              <p className="display text-4xl md:text-6xl font-bold">{latest.name}</p>
+              <p
+                className="display text-xl md:text-3xl font-bold"
+                style={{ color: latestTeam?.colour }}
+              >
+                → {latestTeam?.name}
+              </p>
+            </div>
+          </div>
+        ) : finished ? (
+          <p className="display text-center text-2xl md:text-5xl font-bold text-gold">
+            Equipas fechadas. Que ganhe a melhor.
+          </p>
+        ) : (
+          <p className="text-8xl md:text-9xl">🎩</p>
+        )}
+      </div>
 
-      <div className="mx-auto mt-6 flex max-w-6xl flex-col gap-3 md:flex-row md:gap-8">
+      <div className="mx-auto mt-2 flex max-w-6xl flex-col gap-3 md:flex-row md:gap-8">
         {teamA && column(teamA)}
         {teamB && column(teamB)}
       </div>
@@ -241,10 +275,14 @@ function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
       <div className="mt-8 text-center">
         <button
           onClick={proxima}
-          disabled={busy}
+          disabled={busy || anim !== "idle"}
           className="display min-h-14 md:min-h-20 rounded-xl bg-coral px-8 md:px-16 text-2xl md:text-4xl font-bold text-white disabled:opacity-50"
         >
-          {finished ? "Fechar sorteio" : draw.reveal === 0 ? "Começar →" : "Próxima →"}
+          {finished
+            ? "Fechar sorteio"
+            : draw.reveal === 0
+              ? "Tirar o primeiro nome →"
+              : "Próximo nome →"}
         </button>
         {!finished && (
           <p className="num mt-3 text-lg md:text-2xl text-muted">
