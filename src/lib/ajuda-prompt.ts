@@ -22,7 +22,7 @@ IDEIAS
 Em Mais → Ideias qualquer um propõe eventos novos, missões novas ou perguntas para o Quizz. O admin aprova e entra no jogo.
 
 QUEM VÊ, FILMA
-Não há câmara oficial: se está a acontecer algo bom, quem está mais perto filma 10 segundos. Podes combinar em segredo com um colega de equipa para te filmar a cumprir uma missão — serve de prova no Tribunal. Guarda os momentos com «Guardar momento» na Casa — essa lista é o guião do vídeo de domingo.
+Não há câmara oficial: se está a acontecer algo bom, filma quem estiver mais perto. Um vídeo é a melhor prova no Tribunal — se duvidarem de uma missão, mostra-se antes da votação (vale combinar em segredo com um colega de equipa para filmar). O botão «Guardar momento» na Casa NÃO grava vídeo: é uma nota de texto com autor e hora, que fica em Mais → Momentos e serve de guião para montar o vídeo de domingo (diz o que aconteceu e a quem pedir as imagens).
 
 A APP (navegação)
 - Casa: os teus pontos e lugar, as tuas 3 missões (Reclamar), acusações restantes, atalhos para Quizz e Eventos, Guardar momento.

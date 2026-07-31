@@ -86,9 +86,9 @@ const SLIDES: Slide[] = [
     kicker: "REGRA SAGRADA",
     title: "Quem vê, filma",
     lines: [
-      "Se está a acontecer algo bom, quem está mais perto filma 10 segundos.",
-      "Combina com um colega de equipa para te filmar numa missão — prova para o Tribunal.",
-      "Guarda tudo com «Guardar momento» na app — é o guião do vídeo de domingo.",
+      "Se está a acontecer algo bom, filma — quem estiver mais perto.",
+      "Um vídeo é a melhor prova no Tribunal: se duvidarem da tua missão, mostra-o antes da votação.",
+      "E aponta o que aconteceu com «Guardar momento» na app — essa lista é o guião do vídeo de domingo.",
     ],
     big: "🎥",
   },

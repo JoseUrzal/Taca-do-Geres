@@ -47,13 +47,14 @@ export default function RegrasPage() {
         </Regra>
 
         <Regra emoji="🎥" titulo="Quem vê, filma">
-          Não há câmara oficial: se está a acontecer algo bom, <b>filma 10
-          segundos</b> — quem estiver mais perto. Truques que valem pontos de
-          estilo: combina em segredo com um colega de equipa para ele te filmar
-          a cumprir uma missão (a prova convence o Tribunal); e deixa um
-          telemóvel pousado a filmar a piscina, a cozinha ou o jantar. Depois
-          toca em <b>Guardar momento</b> na Casa — essa lista é o guião do
-          vídeo de domingo.
+          Não há câmara oficial: se está a acontecer algo bom, <b>filma</b> —
+          quem estiver mais perto. Um vídeo é a melhor prova no Tribunal: se
+          duvidarem de uma missão tua, mostra-o antes da votação (vale combinar
+          em segredo com um colega de equipa para ele te filmar). O botão{" "}
+          <b>Guardar momento</b> na Casa não grava vídeo — aponta por escrito o
+          que aconteceu, com autor e hora. Essa lista (Mais → Momentos) é o
+          guião do vídeo de domingo: diz-nos o que aconteceu e a quem pedir as
+          imagens.
         </Regra>
 
         <p className="rounded-lg border border-line bg-surface p-4 text-center text-sm text-muted">
