@@ -203,6 +203,24 @@ function QuemDisseControlo({
 }) {
   const [custom, setCustom] = useState("");
   const [busy, setBusy] = useState(false);
+  const [cancelArmed, setCancelArmed] = useState(false);
+
+  async function cancelar() {
+    if (busy) return;
+    if (!cancelArmed) {
+      setCancelArmed(true);
+      setTimeout(() => setCancelArmed(false), 3000);
+      return;
+    }
+    setBusy(true);
+    const res = await post("/api/admin/ronda/cancelar");
+    setBusy(false);
+    setCancelArmed(false);
+    if (res.ok) {
+      flash("Ronda cancelada — respostas apagadas, sem pontos.");
+      mutate();
+    }
+  }
 
   async function criar(body: { prompt?: string; prompt_id?: string }) {
     if (busy) return;
@@ -239,6 +257,13 @@ function QuemDisseControlo({
             className="display mt-3 min-h-14 w-full rounded-md bg-coral font-bold text-white disabled:opacity-50"
           >
             {AVANCAR_LABEL[data.round.status] ?? "Avançar"}
+          </button>
+          <button
+            onClick={cancelar}
+            disabled={busy}
+            className="display mt-2 min-h-12 w-full rounded-md border border-line font-bold text-muted disabled:opacity-50"
+          >
+            {cancelArmed ? "De certeza? Toca outra vez" : "Cancelar ronda (sem pontos)"}
           </button>
         </>
       ) : (
@@ -359,6 +384,16 @@ function PontosManuais({ players, flash }: { players: Player[]; flash: (m: strin
   );
 }
 
+// os clássicos do grupo — um toque preenche o nome; editável à vontade
+const EVENTOS_SUGERIDOS = [
+  "Campeonato de Saltos",
+  "Olimpíadas Parvas",
+  "Mölkky",
+  "Prova cega de vinho verde",
+  "Torneio de cartas",
+  "Corrida de boias",
+];
+
 function Evento({ players, flash }: { players: Player[]; flash: (m: string) => void }) {
   const [name, setName] = useState("");
   const [podium, setPodium] = useState<{ first?: string; second?: string; third?: string }>({});
@@ -384,10 +419,23 @@ function Evento({ players, flash }: { players: Player[]; flash: (m: string) => v
 
   return (
     <Sec title="Evento (pódio 10/6/3)">
+      <div className="mb-2 flex flex-wrap gap-1.5">
+        {EVENTOS_SUGERIDOS.map((ev) => (
+          <button
+            key={ev}
+            onClick={() => setName(ev)}
+            className={`display min-h-11 rounded-md px-3 text-sm font-bold ${
+              name === ev ? "bg-coral text-white" : "bg-page text-ink"
+            }`}
+          >
+            {ev}
+          </button>
+        ))}
+      </div>
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="Nome do evento (ex.: Campeonato de Saltos)"
+        placeholder="…ou escreve outro nome"
         className="min-h-12 w-full rounded-md border border-line bg-page px-3 text-ink"
       />
       {places.map(({ key, label, colour }) => (
