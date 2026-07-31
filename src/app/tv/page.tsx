@@ -22,6 +22,7 @@ type TvData = {
   round: TvRound;
   draw: TvDraw;
   draw_pending: boolean;
+  can_control: boolean;
 };
 
 type TvDraw = {
@@ -88,9 +89,9 @@ export default function TvPage() {
 
       <main className="flex flex-1 flex-col justify-center py-8">
         {!data ? null : data.round ? (
-          <TvRoundView round={data.round} />
+          <TvRoundView round={data.round} canControl={data.can_control} />
         ) : data.draw ? (
-          <TvDrawView draw={data.draw} />
+          <TvDrawView draw={data.draw} canControl={data.can_control} />
         ) : data.draw_pending ? (
           <section className="text-center">
             <p className="text-8xl md:text-9xl">🎩</p>
@@ -227,7 +228,13 @@ export default function TvPage() {
   );
 }
 
-function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
+function TvDrawView({
+  draw,
+  canControl,
+}: {
+  draw: NonNullable<TvDraw>;
+  canControl: boolean;
+}) {
   const [busy, setBusy] = useState(false);
   // suspense: quando sai um nome novo, o saco abana (1.8s) e só depois o
   // cartão salta cá para fora (2.2s) e desliza para a equipa
@@ -328,17 +335,25 @@ function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
       </div>
 
       <div className="mt-8 text-center">
-        <button
-          onClick={proxima}
-          disabled={busy || anim !== "idle"}
-          className="display min-h-14 md:min-h-20 rounded-xl bg-coral px-8 md:px-16 text-2xl md:text-4xl font-bold text-white disabled:opacity-50"
-        >
-          {finished
-            ? "Fechar sorteio"
-            : draw.reveal === 0
-              ? "Tirar o primeiro nome →"
-              : "Próximo nome →"}
-        </button>
+        {canControl ? (
+          <button
+            onClick={proxima}
+            disabled={busy || anim !== "idle"}
+            className="display min-h-14 md:min-h-20 rounded-xl bg-coral px-8 md:px-16 text-2xl md:text-4xl font-bold text-white disabled:opacity-50"
+          >
+            {finished
+              ? "Fechar sorteio"
+              : draw.reveal === 0
+                ? "Tirar o primeiro nome →"
+                : "Próximo nome →"}
+          </button>
+        ) : (
+          !finished && (
+            <p className="display text-lg md:text-2xl text-muted">
+              o José tira os nomes do chapéu…
+            </p>
+          )
+        )}
         {!finished && (
           <p className="num mt-3 text-lg md:text-2xl text-muted">
             {draw.reveal}/{draw.total}
@@ -349,7 +364,13 @@ function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
   );
 }
 
-function TvRoundView({ round }: { round: NonNullable<TvRound> }) {
+function TvRoundView({
+  round,
+  canControl,
+}: {
+  round: NonNullable<TvRound>;
+  canControl: boolean;
+}) {
   const [busy, setBusy] = useState(false);
 
   async function proxima() {
@@ -418,7 +439,9 @@ function TvRoundView({ round }: { round: NonNullable<TvRound> }) {
       <p className="display text-xl md:text-3xl font-bold tracking-widest text-coral">A REVELAÇÃO</p>
 
       {!current ? (
-        <p className="display mt-10 text-2xl md:text-5xl text-muted">Toca em «Próxima» para começar…</p>
+        <p className="display mt-10 text-2xl md:text-5xl text-muted">
+          {canControl ? "Toca em «Próxima» para começar…" : "A revelação vai começar…"}
+        </p>
       ) : (
         <div className="mx-auto mt-8 max-w-5xl">
           <p className="display text-3xl md:text-6xl font-bold leading-tight">«{current.text}»</p>
@@ -458,15 +481,20 @@ function TvRoundView({ round }: { round: NonNullable<TvRound> }) {
         </div>
       )}
 
-      {!finished && (
-        <button
-          onClick={proxima}
-          disabled={busy}
-          className="display mt-12 min-h-14 md:min-h-20 rounded-xl bg-coral px-8 md:px-16 text-2xl md:text-4xl font-bold text-white disabled:opacity-50"
-        >
-          Próxima →
-        </button>
-      )}
+      {!finished &&
+        (canControl ? (
+          <button
+            onClick={proxima}
+            disabled={busy}
+            className="display mt-12 min-h-14 md:min-h-20 rounded-xl bg-coral px-8 md:px-16 text-2xl md:text-4xl font-bold text-white disabled:opacity-50"
+          >
+            Próxima →
+          </button>
+        ) : (
+          <p className="display mt-12 text-lg md:text-2xl text-muted">
+            o José avança a revelação
+          </p>
+        ))}
     </section>
   );
 }

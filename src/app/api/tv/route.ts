@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/supabase";
+import { isAdmin } from "@/lib/identity";
 import { getFeed, getGameState, getLeaderboard } from "@/lib/queries";
 import { serializeRound } from "@/lib/round";
 
@@ -57,5 +58,8 @@ export async function GET() {
     // ainda ninguém tem equipa → o fim de semana abre com o sorteio;
     // a TV espera nesse ecrã em vez de rodar painéis
     draw_pending: players.length > 0 && !allAssigned,
+    // o /tv também serve de segundo ecrã nos telemóveis: os botões de
+    // avançar (sorteio, revelação) só aparecem a quem tem sessão de admin
+    can_control: await isAdmin(),
   });
 }
