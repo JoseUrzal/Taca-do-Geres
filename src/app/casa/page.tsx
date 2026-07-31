@@ -5,6 +5,7 @@ import Link from "next/link";
 import useSWR from "swr";
 import Shell from "@/components/Shell";
 import FlipNumber from "@/components/FlipNumber";
+import Avatar from "@/components/Avatar";
 import { fetcher, post, POLL } from "@/lib/client";
 import { Video, Crosshair } from "lucide-react";
 
@@ -65,10 +66,11 @@ export default function CasaPage() {
           {/* pontos + rank */}
           <section className="flex items-stretch gap-3">
             <div className="flex-1 rounded-lg bg-surface p-4">
-              <p className="display text-xs font-bold tracking-widest text-muted">
-                {data.me.emoji} {data.me.name} · Pontos
-              </p>
-              <FlipNumber value={data.points} className="text-5xl font-bold" />
+              <div className="flex items-center gap-2">
+                <Avatar name={data.me.name} emoji={data.me.emoji} size={32} />
+                <p className="display text-sm text-muted">{data.me.name} · Pontos</p>
+              </div>
+              <FlipNumber value={data.points} className="mt-1 text-5xl font-bold" />
             </div>
             <div className="rounded-lg bg-surface p-4 text-right">
               <p className="display text-xs font-bold tracking-widest text-muted">

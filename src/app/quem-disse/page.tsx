@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 import Shell from "@/components/Shell";
 import { fetcher, post, POLL } from "@/lib/client";
+import Avatar from "@/components/Avatar";
 
 type PlayerLite = { id: string; name: string; emoji: string };
 
@@ -208,7 +209,7 @@ function Adivinhar({
                     key={p.id}
                     onClick={() => pick(a.id, p.id)}
                     disabled={taken}
-                    className={`display min-h-11 rounded-md px-3 text-sm font-bold ${
+                    className={`display flex min-h-11 items-center gap-1.5 rounded-md px-3 text-sm font-bold ${
                       chosen
                         ? "bg-coral text-white"
                         : taken
@@ -216,7 +217,7 @@ function Adivinhar({
                           : "bg-page text-ink active:bg-surface-2"
                     }`}
                   >
-                    {p.emoji} {p.name}
+                    <Avatar name={p.name} emoji={p.emoji} size={22} /> {p.name}
                   </button>
                 );
               })}
@@ -261,8 +262,8 @@ function Revelado({
       {shown.map((a) => (
         <div key={a.id} className="rounded-lg bg-surface p-4">
           <p className="leading-snug">«{a.text}»</p>
-          <p className="display mt-1 font-bold text-indigo">
-            — {a.author.emoji} {a.author.name}
+          <p className="display mt-1 flex items-center gap-2 font-bold text-indigo">
+            <Avatar name={a.author.name} emoji={a.author.emoji} size={24} /> {a.author.name}
             {a.fooled > 0 && (
               <span className="num ml-2 text-sm text-muted">
                 enganou {a.fooled}

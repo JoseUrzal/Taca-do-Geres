@@ -4,6 +4,7 @@ import { useState } from "react";
 import useSWR from "swr";
 import Shell from "@/components/Shell";
 import { fetcher, post, POLL } from "@/lib/client";
+import Avatar from "@/components/Avatar";
 import type { Player } from "@/lib/types";
 
 type Catalogo = {
@@ -109,7 +110,7 @@ export default function AcusarPage() {
                   onClick={() => setTarget(p)}
                   className="flex min-h-16 items-center gap-2 rounded-lg bg-surface px-3 text-left active:bg-surface-2"
                 >
-                  <span className="text-2xl">{p.emoji}</span>
+                  <Avatar name={p.name} emoji={p.emoji} size={40} />
                   <span className="display font-bold">{p.name}</span>
                 </button>
               ))}
@@ -142,7 +143,7 @@ export default function AcusarPage() {
         <div className="rounded-lg border-2 border-indigo bg-surface p-4">
           <h2 className="display text-xl font-bold text-indigo">3. Tens a certeza?</h2>
           <p className="mt-3 leading-snug">
-            Acusas <span className="display font-bold">{target.emoji} {target.name}</span> de
+            Acusas <span className="display font-bold">{target.name}</span> de
             andar a tentar:
           </p>
           <p className="mt-2 rounded-md bg-page p-3 font-semibold">«{mission?.text}»</p>

@@ -3,6 +3,7 @@
 import useSWR from "swr";
 import Shell from "@/components/Shell";
 import { fetcher, POLL } from "@/lib/client";
+import Avatar from "@/components/Avatar";
 
 type Momentos = {
   moments: {
@@ -30,8 +31,9 @@ export default function MomentosPage() {
         {data?.moments.map((m) => (
           <li key={m.id} className="rounded-lg bg-surface p-4">
             <p className="leading-snug">{m.text}</p>
-            <p className="mt-2 text-xs text-muted">
-              {m.player.emoji} {m.player.name} ·{" "}
+            <p className="mt-2 flex items-center gap-1.5 text-xs text-muted">
+              <Avatar name={m.player.name} emoji={m.player.emoji} size={18} />
+              {m.player.name} ·{" "}
               <span className="num">
                 {new Date(m.created_at).toLocaleString("pt-PT", {
                   weekday: "short",

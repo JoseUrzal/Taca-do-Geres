@@ -3,6 +3,7 @@
 import { useState } from "react";
 import useSWR from "swr";
 import { fetcher, post, POLL } from "@/lib/client";
+import Avatar from "@/components/Avatar";
 import type { Player, Team } from "@/lib/types";
 
 type Admin = {
@@ -314,11 +315,11 @@ function PontosManuais({ players, flash }: { players: Player[]; flash: (m: strin
           <button
             key={p.id}
             onClick={() => toggle(p.id)}
-            className={`display min-h-11 rounded-md px-3 text-sm font-bold ${
+            className={`display flex min-h-11 items-center gap-1.5 rounded-md px-3 text-sm font-bold ${
               selected.has(p.id) ? "bg-coral text-white" : "bg-page text-ink"
             }`}
           >
-            {p.emoji} {p.name}
+            <Avatar name={p.name} emoji={p.emoji} size={22} /> {p.name}
           </button>
         ))}
       </div>

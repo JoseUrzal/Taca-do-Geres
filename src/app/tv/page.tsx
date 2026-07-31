@@ -140,8 +140,9 @@ export default function TvPage() {
                 {data.moments.map((m) => (
                   <li key={m.id} className="rounded-xl bg-surface p-4 md:p-6">
                     <p className="text-lg md:text-3xl leading-snug">«{m.text}»</p>
-                    <p className="display mt-1 text-base md:text-xl text-muted">
-                      — {m.player?.emoji} {m.player?.name}
+                    <p className="display mt-1 flex items-center gap-2 text-base md:text-xl text-muted">
+                      <Avatar name={m.player?.name ?? ""} emoji={m.player?.emoji ?? ""} size={24} />
+                      {m.player?.name}
                     </p>
                   </li>
                 ))}
@@ -213,8 +214,9 @@ function TvDrawView({ draw }: { draw: NonNullable<TvDraw> }) {
       </p>
 
       {latest && !finished && (
-        <p className="display mt-4 text-center text-3xl md:text-6xl font-bold">
-          {latest.emoji} {latest.name}
+        <p className="display mt-4 flex items-center justify-center gap-4 text-center text-3xl md:text-6xl font-bold">
+          <Avatar name={latest.name} emoji={latest.emoji} size={72} />
+          {latest.name}
           <span className="text-muted"> → </span>
           <span
             style={{
@@ -278,8 +280,11 @@ function TvRoundView({ round }: { round: NonNullable<TvRound> }) {
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-4">
           {round.answered.map((p, i) => (
-            <span key={i} className="display rounded-md bg-surface px-5 py-2 text-xl md:text-3xl font-bold">
-              {p.emoji} {p.name}
+            <span
+              key={i}
+              className="display flex items-center gap-3 rounded-md bg-surface px-5 py-2 text-xl md:text-3xl font-bold"
+            >
+              <Avatar name={p.name} emoji={p.emoji} size={40} /> {p.name}
             </span>
           ))}
         </div>
@@ -324,8 +329,9 @@ function TvRoundView({ round }: { round: NonNullable<TvRound> }) {
       ) : (
         <div className="mx-auto mt-8 max-w-5xl">
           <p className="display text-3xl md:text-6xl font-bold leading-tight">«{current.text}»</p>
-          <p className="display mt-6 text-2xl md:text-5xl font-bold text-indigo">
-            — {current.author.emoji} {current.author.name}
+          <p className="display mt-6 flex items-center justify-center gap-4 text-2xl md:text-5xl font-bold text-indigo">
+            <Avatar name={current.author.name} emoji={current.author.emoji} size={64} />
+            {current.author.name}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             {current.guesses.map((g, i) => (
