@@ -9,7 +9,7 @@ export default function RegrasPage() {
       <div className="space-y-4">
         <Regra emoji="🏆" titulo="A Taça">
           Tudo dá pontos: missões, acusações, palpites e jogos físicos. Há um
-          campeão individual e uma equipa vencedora, decididos domingo à noite.
+          campeão individual e uma equipa vencedora, decididos domingo à tarde.
           O marcador vive em <b>Taça</b> e na TV.
         </Regra>
 

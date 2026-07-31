@@ -97,7 +97,7 @@ const SLIDES: Slide[] = [
     title: "Como se ganha",
     lines: [
       "O marcador está sempre nesta TV e no /taca de cada um.",
-      "Domingo à noite: campeão individual e equipa vencedora.",
+      "Domingo à tarde: campeão individual e equipa vencedora.",
       "O ouro não se pede. Conquista-se.",
     ],
     big: "🥇",

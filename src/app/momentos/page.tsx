@@ -20,7 +20,7 @@ export default function MomentosPage() {
   return (
     <Shell title="Momentos">
       <p className="mb-4 text-sm text-muted">
-        A matéria-prima do vídeo de domingo à noite.
+        A matéria-prima do vídeo de domingo.
       </p>
       {data && data.moments.length === 0 && (
         <p className="rounded-lg bg-surface p-6 text-center text-muted">

@@ -6,7 +6,7 @@ import useSWR from "swr";
 import Avatar from "@/components/Avatar";
 import { fetcher } from "@/lib/client";
 
-// Cerimónia de encerramento — domingo à noite, na TV. Clique/toque avança.
+// Cerimónia de encerramento — domingo à tarde, na TV. Clique/toque avança.
 // Ordem: intro → medalhas (uma a uma) → 3.º → 2.º → CAMPEÃO → equipa → fim.
 
 type Final = {
