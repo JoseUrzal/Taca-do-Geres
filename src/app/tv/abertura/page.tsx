@@ -68,7 +68,7 @@ const SLIDES: Slide[] = [
     lines: [
       "Uma pergunta aparece nesta TV e nos telemóveis.",
       "Todos respondem em segredo. As respostas aparecem aqui, anónimas.",
-      "Depois: quem escreveu o quê? +5 por acerto, +3 por cada enganado.",
+      "Adivinha quem escreveu o quê: +5 por acerto. E se a TUA resposta enganar alguém, ganhas +3 por cabeça.",
     ],
     big: "🎤",
   },
