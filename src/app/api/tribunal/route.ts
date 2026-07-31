@@ -20,7 +20,7 @@ export async function GET() {
   return NextResponse.json({
     me: playerId,
     claims: (claims ?? []).map((c) => {
-      const approvals = (c.approvals ?? []) as {
+      const approvals = (c.approvals ?? []) as unknown as {
         player_id: string;
         vote: boolean;
         voter: { name: string } | null;
