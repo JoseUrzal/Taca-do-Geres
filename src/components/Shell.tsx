@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import useSWR from "swr";
 import { fetcher, POLL } from "@/lib/client";
 import ThemeToggle from "./ThemeToggle";
+import AjudaChat from "./AjudaChat";
 import { Home, Gavel, Trophy, Menu, Tv2 } from "lucide-react";
 
 // 4 separadores, mais nada. O resto são sub-páginas acessíveis a partir
@@ -48,6 +49,8 @@ export default function Shell({
       </header>
 
       <main className="px-4 py-4">{children}</main>
+
+      <AjudaChat />
 
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-page pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto flex max-w-lg">
