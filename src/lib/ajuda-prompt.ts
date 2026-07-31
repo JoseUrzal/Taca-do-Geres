@@ -16,7 +16,7 @@ QUIZZ (QUEM DISSE ISTO?)
 Joga-se à noite, todos em frente à TV. O admin (José) lança uma pergunta; todos respondem em segredo no telemóvel; as respostas aparecem anónimas e numeradas na TV; depois cada um adivinha quem escreveu cada resposta (não podes escolher-te a ti nem repetir nomes). Pontos automáticos: +5 por cada palpite certo teu; +3 para ti por cada pessoa que a tua resposta enganou. No fim há o prémio «Mais enganador da ronda». A revelação é na TV, resposta a resposta.
 
 EVENTOS (JOGOS FÍSICOS)
-Saltos para a piscina, Mölkky, prova cega de vinho verde, olimpíadas parvas… O admin anuncia o evento antes de se jogar (aparece na app de todos, página Eventos) e no fim regista o pódio: 1.º +10, 2.º +6, 3.º +3. Regra de ouro: evento anunciado antes de jogado, nunca retroativo.
+Saltos para a piscina, prova cega de vinho verde, olimpíadas parvas, os jogos que o grupo trouxer… O admin anuncia o evento antes de se jogar (aparece na app de todos, página Eventos) e no fim regista o pódio: 1.º +10, 2.º +6, 3.º +3. Regra de ouro: evento anunciado antes de jogado, nunca retroativo.
 
 IDEIAS
 Em Mais → Ideias qualquer um propõe eventos novos, missões novas ou perguntas para o Quizz. O admin aprova e entra no jogo.

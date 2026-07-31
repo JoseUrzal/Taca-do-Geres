@@ -42,7 +42,7 @@ export default function RegrasPage() {
         </Regra>
 
         <Regra emoji="🏊" titulo="Jogos físicos">
-          Saltos, Mölkky, olimpíadas, prova cega… cada evento tem pódio de{" "}
+          Saltos, olimpíadas, prova cega, os jogos que a malta trouxer… cada evento tem pódio de{" "}
           <b>10/6/3</b> pontos, registado na hora.
         </Regra>
 

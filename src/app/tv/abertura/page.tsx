@@ -76,7 +76,7 @@ const SLIDES: Slide[] = [
     kicker: "JOGOS FÍSICOS",
     title: "Tudo conta para a Taça",
     lines: [
-      "Saltos para a piscina, Mölkky, olimpíadas parvas, prova cega…",
+      "Saltos para a piscina, olimpíadas parvas, prova cega, os jogos que trouxerem…",
       "Cada evento tem pódio: 10 / 6 / 3 pontos.",
       "Fica tudo registado no marcador — sem discussões. (Quase.)",
     ],

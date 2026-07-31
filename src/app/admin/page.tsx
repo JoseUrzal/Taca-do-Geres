@@ -432,7 +432,6 @@ function PontosManuais({ players, flash }: { players: Player[]; flash: (m: strin
 const EVENTOS_SUGERIDOS = [
   "Campeonato de Saltos",
   "Olimpíadas Parvas",
-  "Mölkky",
   "Prova cega de vinho verde",
   "Torneio de cartas",
   "Corrida de boias",
