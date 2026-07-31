@@ -52,7 +52,7 @@ export default function RegrasPage() {
           <b>Guardar momento</b>: é o guião do vídeo de domingo.
         </Regra>
 
-        <p className="rounded-lg border border-rosa/40 bg-pinhal p-4 text-center text-sm text-cal-fraca">
+        <p className="rounded-lg border border-line bg-surface p-4 text-center text-sm text-muted">
           Dúvidas? Grita pelo José. Decisões do Tribunal são soberanas.
         </p>
       </div>
@@ -70,11 +70,11 @@ function Regra({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-lg bg-pinhal p-4">
+    <section className="rounded-lg bg-surface p-4">
       <h2 className="display text-lg font-bold">
         {emoji} {titulo}
       </h2>
-      <p className="mt-1.5 text-sm leading-relaxed text-cal/90">{children}</p>
+      <p className="mt-1.5 text-sm leading-relaxed text-ink/90">{children}</p>
     </section>
   );
 }

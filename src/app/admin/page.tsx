@@ -43,7 +43,7 @@ export default function AdminPage() {
     else flash("PIN errado.");
   }
 
-  if (!data) return <div className="min-h-dvh bg-granito" />;
+  if (!data) return <div className="min-h-dvh bg-page" />;
 
   if (!data.admin) {
     return (
@@ -56,15 +56,15 @@ export default function AdminPage() {
           onChange={(e) => setPin(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && login()}
           placeholder="PIN"
-          className="num mt-6 min-h-14 rounded-md border border-pinhal-claro bg-pinhal px-4 text-2xl text-cal"
+          className="num mt-6 min-h-14 rounded-md border border-line bg-surface px-4 text-2xl text-ink"
         />
         <button
           onClick={login}
-          className="display mt-3 min-h-14 rounded-md bg-rosa text-lg font-bold text-granito"
+          className="display mt-3 min-h-14 rounded-md bg-coral text-lg font-bold text-white"
         >
           Entrar
         </button>
-        {msg && <p className="mt-3 text-rosa">{msg}</p>}
+        {msg && <p className="mt-3 text-indigo">{msg}</p>}
       </div>
     );
   }
@@ -73,11 +73,11 @@ export default function AdminPage() {
     <div className="mx-auto max-w-lg space-y-6 px-4 py-6 pb-16">
       <header className="flex items-baseline justify-between">
         <h1 className="display text-3xl font-bold">Admin</h1>
-        <span className="num text-cal-fraca">Dia {data.day}</span>
+        <span className="num text-muted">Dia {data.day}</span>
       </header>
 
       {msg && (
-        <p className="rounded-md border border-rosa bg-pinhal p-3 text-center font-semibold">
+        <p className="rounded-md border border-indigo bg-surface p-3 text-center font-semibold">
           {msg}
         </p>
       )}
@@ -93,8 +93,8 @@ export default function AdminPage() {
 
 function Sec({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-lg bg-pinhal p-4">
-      <h2 className="display mb-3 text-xl font-bold text-rosa">{title}</h2>
+    <section className="rounded-lg bg-surface p-4">
+      <h2 className="display mb-3 text-xl font-bold text-indigo">{title}</h2>
       {children}
     </section>
   );
@@ -129,14 +129,14 @@ function Sorteio({
     <Sec title="Sorteio de equipas">
       {!drawn ? (
         <>
-          <p className="text-sm text-cal-fraca">
+          <p className="text-sm text-muted">
             Divide os 10 em duas equipas ao calhas e põe a TV a revelar um a um.
             Faz isto com toda a gente em frente à televisão.
           </p>
           <button
             onClick={sortear}
             disabled={busy}
-            className="display mt-3 min-h-14 w-full rounded-md bg-rosa font-bold text-granito disabled:opacity-50"
+            className="display mt-3 min-h-14 w-full rounded-md bg-coral font-bold text-white disabled:opacity-50"
           >
             🎲 Sortear equipas (aparece na TV)
           </button>
@@ -159,12 +159,12 @@ function Sorteio({
           {!confirming ? (
             <button
               onClick={() => setConfirming(true)}
-              className="display mt-3 min-h-12 w-full rounded-md border border-cal-fraca/30 font-bold text-cal-fraca"
+              className="display mt-3 min-h-12 w-full rounded-md border border-line font-bold text-muted"
             >
               Re-sortear…
             </button>
           ) : (
-            <div className="mt-3 rounded-md border-2 border-rosa p-3">
+            <div className="mt-3 rounded-md border-2 border-indigo p-3">
               <p className="text-sm">
                 Baralha as equipas outra vez e repete a revelação na TV. De certeza?
               </p>
@@ -172,13 +172,13 @@ function Sorteio({
                 <button
                   onClick={sortear}
                   disabled={busy}
-                  className="display min-h-12 flex-1 rounded-md bg-rosa font-bold text-granito disabled:opacity-50"
+                  className="display min-h-12 flex-1 rounded-md bg-coral font-bold text-white disabled:opacity-50"
                 >
                   Sim, re-sortear
                 </button>
                 <button
                   onClick={() => setConfirming(false)}
-                  className="display min-h-12 rounded-md border border-cal-fraca/30 px-4 font-bold text-cal-fraca"
+                  className="display min-h-12 rounded-md border border-line px-4 font-bold text-muted"
                 >
                   Não
                 </button>
@@ -227,29 +227,29 @@ function QuemDisseControlo({
     <Sec title="Quem Disse Isto?">
       {data.round ? (
         <>
-          <p className="text-sm text-cal-fraca">Ronda ativa:</p>
+          <p className="text-sm text-muted">Ronda ativa:</p>
           <p className="mt-1 font-semibold">«{data.round.prompt}»</p>
-          <p className="num mt-1 text-sm text-cal-fraca">
+          <p className="num mt-1 text-sm text-muted">
             Fase: {FASE_LABEL[data.round.status] ?? data.round.status}
           </p>
           <button
             onClick={avancar}
             disabled={busy}
-            className="display mt-3 min-h-14 w-full rounded-md bg-rosa font-bold text-granito disabled:opacity-50"
+            className="display mt-3 min-h-14 w-full rounded-md bg-coral font-bold text-white disabled:opacity-50"
           >
             {AVANCAR_LABEL[data.round.status] ?? "Avançar"}
           </button>
         </>
       ) : (
         <>
-          <p className="mb-2 text-sm text-cal-fraca">Escolhe uma pergunta:</p>
+          <p className="mb-2 text-sm text-muted">Escolhe uma pergunta:</p>
           <ul className="max-h-48 space-y-1 overflow-y-auto">
             {data.prompts.map((p) => (
               <li key={p.id}>
                 <button
                   onClick={() => criar({ prompt_id: p.id })}
                   disabled={busy}
-                  className="min-h-11 w-full rounded-md bg-granito p-2 text-left text-sm active:bg-pinhal-claro"
+                  className="min-h-11 w-full rounded-md bg-page p-2 text-left text-sm active:bg-surface-2"
                 >
                   {p.text}
                 </button>
@@ -261,12 +261,12 @@ function QuemDisseControlo({
               value={custom}
               onChange={(e) => setCustom(e.target.value)}
               placeholder="…ou escreve uma nova"
-              className="min-h-12 flex-1 rounded-md border border-pinhal-claro bg-granito px-3 text-cal"
+              className="min-h-12 flex-1 rounded-md border border-line bg-page px-3 text-ink"
             />
             <button
               onClick={() => custom.trim() && criar({ prompt: custom })}
               disabled={busy || !custom.trim()}
-              className="display min-h-12 rounded-md bg-rosa px-4 font-bold text-granito disabled:opacity-40"
+              className="display min-h-12 rounded-md bg-coral px-4 font-bold text-white disabled:opacity-40"
             >
               Criar
             </button>
@@ -315,7 +315,7 @@ function PontosManuais({ players, flash }: { players: Player[]; flash: (m: strin
             key={p.id}
             onClick={() => toggle(p.id)}
             className={`display min-h-11 rounded-md px-3 text-sm font-bold ${
-              selected.has(p.id) ? "bg-rosa text-granito" : "bg-granito text-cal"
+              selected.has(p.id) ? "bg-coral text-white" : "bg-page text-ink"
             }`}
           >
             {p.emoji} {p.name}
@@ -328,7 +328,7 @@ function PontosManuais({ players, flash }: { players: Player[]; flash: (m: strin
             key={v}
             onClick={() => setPoints(v)}
             className={`num min-h-11 min-w-14 rounded-md px-2 font-bold ${
-              points === v ? "bg-rosa text-granito" : "bg-granito text-cal"
+              points === v ? "bg-coral text-white" : "bg-page text-ink"
             }`}
           >
             {v > 0 ? `+${v}` : v}
@@ -338,19 +338,19 @@ function PontosManuais({ players, flash }: { players: Player[]; flash: (m: strin
           type="number"
           value={points}
           onChange={(e) => setPoints(Number(e.target.value))}
-          className="num min-h-11 w-20 rounded-md border border-pinhal-claro bg-granito px-2 text-cal"
+          className="num min-h-11 w-20 rounded-md border border-line bg-page px-2 text-ink"
         />
       </div>
       <input
         value={reason}
         onChange={(e) => setReason(e.target.value)}
         placeholder="Motivo (ex.: Mölkky — vitória)"
-        className="mt-3 min-h-12 w-full rounded-md border border-pinhal-claro bg-granito px-3 text-cal"
+        className="mt-3 min-h-12 w-full rounded-md border border-line bg-page px-3 text-ink"
       />
       <button
         onClick={dar}
         disabled={busy || selected.size === 0 || !reason.trim()}
-        className="display mt-3 min-h-14 w-full rounded-md bg-rosa font-bold text-granito disabled:opacity-40"
+        className="display mt-3 min-h-14 w-full rounded-md bg-coral font-bold text-white disabled:opacity-40"
       >
         Dar pontos
       </button>
@@ -364,7 +364,7 @@ function Evento({ players, flash }: { players: Player[]; flash: (m: string) => v
   const [busy, setBusy] = useState(false);
 
   const places = [
-    { key: "first" as const, label: "1.º · 10 pts", colour: "text-ouro" },
+    { key: "first" as const, label: "1.º · 10 pts", colour: "text-gold" },
     { key: "second" as const, label: "2.º · 6 pts", colour: "" },
     { key: "third" as const, label: "3.º · 3 pts", colour: "" },
   ];
@@ -387,7 +387,7 @@ function Evento({ players, flash }: { players: Player[]; flash: (m: string) => v
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Nome do evento (ex.: Campeonato de Saltos)"
-        className="min-h-12 w-full rounded-md border border-pinhal-claro bg-granito px-3 text-cal"
+        className="min-h-12 w-full rounded-md border border-line bg-page px-3 text-ink"
       />
       {places.map(({ key, label, colour }) => (
         <div key={key} className="mt-3">
@@ -406,10 +406,10 @@ function Evento({ players, flash }: { players: Player[]; flash: (m: string) => v
                   disabled={takenElsewhere}
                   className={`display min-h-11 rounded-md px-2.5 text-sm font-bold ${
                     podium[key] === p.id
-                      ? "bg-rosa text-granito"
+                      ? "bg-coral text-white"
                       : takenElsewhere
-                        ? "bg-granito text-cal-fraca/40"
-                        : "bg-granito text-cal"
+                        ? "bg-page text-muted/50"
+                        : "bg-page text-ink"
                   }`}
                 >
                   {p.name}
@@ -422,7 +422,7 @@ function Evento({ players, flash }: { players: Player[]; flash: (m: string) => v
       <button
         onClick={registar}
         disabled={busy || !name.trim() || !podium.first}
-        className="display mt-4 min-h-14 w-full rounded-md bg-rosa font-bold text-granito disabled:opacity-40"
+        className="display mt-4 min-h-14 w-full rounded-md bg-coral font-bold text-white disabled:opacity-40"
       >
         Registar evento
       </button>
@@ -466,13 +466,13 @@ function Dia({
 
   return (
     <Sec title="Dia & câmara">
-      <p className="text-sm text-cal-fraca">
-        Câmara do dia: <span className="font-semibold text-cal">{camera?.name ?? "—"}</span>
+      <p className="text-sm text-muted">
+        Câmara do dia: <span className="font-semibold text-ink">{camera?.name ?? "—"}</span>
       </p>
       <button
         onClick={reroll}
         disabled={busy}
-        className="display mt-2 min-h-12 w-full rounded-md border border-cal-fraca/30 font-bold disabled:opacity-50"
+        className="display mt-2 min-h-12 w-full rounded-md border border-line font-bold disabled:opacity-50"
       >
         🎲 Re-sortear câmara
       </button>
@@ -480,12 +480,12 @@ function Dia({
       {!confirming ? (
         <button
           onClick={() => setConfirming(true)}
-          className="display mt-3 min-h-14 w-full rounded-md border-2 border-rosa font-bold text-rosa"
+          className="display mt-3 min-h-14 w-full rounded-md border-2 border-indigo font-bold text-indigo"
         >
           Novo dia →
         </button>
       ) : (
-        <div className="mt-3 rounded-md border-2 border-rosa p-3">
+        <div className="mt-3 rounded-md border-2 border-indigo p-3">
           <p className="text-sm">
             Expira as missões ativas, dá 3 novas a cada um e re-sorteia a câmara. De certeza?
           </p>
@@ -493,13 +493,13 @@ function Dia({
             <button
               onClick={novoDia}
               disabled={busy}
-              className="display min-h-12 flex-1 rounded-md bg-rosa font-bold text-granito disabled:opacity-50"
+              className="display min-h-12 flex-1 rounded-md bg-coral font-bold text-white disabled:opacity-50"
             >
               Sim, novo dia
             </button>
             <button
               onClick={() => setConfirming(false)}
-              className="display min-h-12 rounded-md border border-cal-fraca/30 px-4 font-bold text-cal-fraca"
+              className="display min-h-12 rounded-md border border-line px-4 font-bold text-muted"
             >
               Não
             </button>

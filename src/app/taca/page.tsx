@@ -6,7 +6,7 @@ import Shell from "@/components/Shell";
 import Scoreboard from "@/components/Scoreboard";
 import FlipNumber from "@/components/FlipNumber";
 import { fetcher, POLL } from "@/lib/client";
-import type { LeaderboardRow, Team } from "@/lib/types";
+import type { FeedItem, LeaderboardRow, Team } from "@/lib/types";
 
 type Taca = {
   individual: (LeaderboardRow & { team_colour: string | null })[];
@@ -15,6 +15,8 @@ type Taca = {
 
 export default function TacaPage() {
   const { data } = useSWR<Taca>("/api/taca", fetcher, POLL);
+  // mesma key que a Casa/Shell → sem pedidos extra
+  const { data: casa } = useSWR<{ feed: FeedItem[] }>("/api/casa", fetcher, POLL);
   const [tab, setTab] = useState<"individual" | "equipas">("individual");
 
   return (
@@ -25,7 +27,7 @@ export default function TacaPage() {
             key={t}
             onClick={() => setTab(t)}
             className={`display min-h-14 rounded-md text-lg font-bold ${
-              tab === t ? "bg-rosa text-granito" : "bg-pinhal text-cal-fraca"
+              tab === t ? "bg-coral text-white" : "bg-surface text-muted"
             }`}
           >
             {t === "individual" ? "Individual" : "Equipas"}
@@ -34,7 +36,7 @@ export default function TacaPage() {
       </div>
 
       {!data ? (
-        <div className="h-96 rounded-lg bg-pinhal" />
+        <div className="h-96 rounded-lg bg-surface" />
       ) : tab === "individual" ? (
         <Scoreboard rows={data.individual} />
       ) : (
@@ -42,12 +44,12 @@ export default function TacaPage() {
           {data.teams.map((t) => (
             <div
               key={t.team.id}
-              className="flex items-center justify-between rounded-lg border-l-8 bg-pinhal p-5"
+              className="flex items-center justify-between rounded-lg border-l-8 bg-surface p-5"
               style={{ borderLeftColor: t.team.colour_hex }}
             >
               <div>
-                <p className="num text-sm text-cal-fraca">{t.rank}.º</p>
-                <p className={`display text-2xl font-bold ${t.rank === 1 ? "text-ouro" : ""}`}>
+                <p className="num text-sm text-muted">{t.rank}.º</p>
+                <p className={`display text-2xl font-bold ${t.rank === 1 ? "text-gold" : ""}`}>
                   {t.team.name}
                 </p>
               </div>
@@ -56,6 +58,31 @@ export default function TacaPage() {
           ))}
         </div>
       )}
+
+      {/* últimas jogadas */}
+      <section className="mt-6">
+        <h2 className="display mb-2 text-lg">Últimas jogadas</h2>
+        <ul className="divide-y divide-line rounded-xl bg-surface">
+          {(!casa || casa.feed.length === 0) && (
+            <li className="p-4 text-muted">Ainda ninguém marcou. Toca a mexer.</li>
+          )}
+          {casa?.feed.map((f) => (
+            <li key={f.id} className="flex items-start gap-3 p-3">
+              <span
+                className={`num shrink-0 font-bold ${
+                  f.points >= 0 ? "text-indigo" : "text-muted"
+                }`}
+              >
+                {f.points >= 0 ? `+${f.points}` : f.points}
+              </span>
+              <p className="text-sm leading-snug">
+                <span className="font-semibold">{f.player?.name}</span>{" "}
+                <span className="text-muted">{f.reason}</span>
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
     </Shell>
   );
 }

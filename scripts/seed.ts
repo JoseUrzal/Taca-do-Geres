@@ -28,8 +28,8 @@ if (!url || !key) {
 const db = createClient(url, key, { auth: { persistSession: false } });
 
 const TEAMS = [
-  { name: "Um Gajo FC", colour_hex: "#FF3D7F" },
-  { name: "Que Inferno SC", colour_hex: "#3AA76D" },
+  { name: "Um Gajo FC", colour_hex: "#4F46E5" },
+  { name: "Que Inferno SC", colour_hex: "#FF6B57" },
 ];
 
 // 10 jogadores, SEM equipa — o sorteio faz-se ao vivo no /admin e revela-se na TV

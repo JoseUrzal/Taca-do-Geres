@@ -56,13 +56,13 @@ export default function AcusarPage() {
   if (result) {
     return (
       <Shell title="Acusar">
-        <div className="rounded-lg bg-pinhal p-6 text-center">
+        <div className="rounded-lg bg-surface p-6 text-center">
           {result === "certo" ? (
             <>
               <p className="text-5xl">🎯</p>
-              <p className="display mt-3 text-3xl font-bold text-rosa">Apanhado!</p>
-              <p className="mt-2 text-cal-fraca">
-                {target?.name} tinha mesmo essa missão. <span className="num text-rosa">+15</span>{" "}
+              <p className="display mt-3 text-3xl font-bold text-indigo">Apanhado!</p>
+              <p className="mt-2 text-muted">
+                {target?.name} tinha mesmo essa missão. <span className="num text-indigo">+15</span>{" "}
                 para ti, missão queimada para {target?.name}.
               </p>
             </>
@@ -70,14 +70,14 @@ export default function AcusarPage() {
             <>
               <p className="text-5xl">💨</p>
               <p className="display mt-3 text-3xl font-bold">Falhaste.</p>
-              <p className="mt-2 text-cal-fraca">
+              <p className="mt-2 text-muted">
                 {target?.name} não tinha essa missão. <span className="num">−5</span> pontos.
               </p>
             </>
           )}
           <button
             onClick={reset}
-            className="display mt-6 min-h-14 w-full rounded-md bg-rosa font-bold text-granito"
+            className="display mt-6 min-h-14 w-full rounded-md bg-coral font-bold text-white"
           >
             Voltar
           </button>
@@ -88,13 +88,13 @@ export default function AcusarPage() {
 
   return (
     <Shell title="Acusar">
-      <div className="mb-4 flex items-center justify-between rounded-lg border border-rosa/40 bg-pinhal px-4 py-3">
+      <div className="mb-4 flex items-center justify-between rounded-lg border border-line bg-surface px-4 py-3">
         <span className="display font-bold">Acusações restantes hoje</span>
-        <span className="num text-3xl font-bold text-rosa">{left}</span>
+        <span className="num text-3xl font-bold text-indigo">{left}</span>
       </div>
 
       {left === 0 ? (
-        <p className="rounded-lg bg-pinhal p-6 text-center text-cal-fraca">
+        <p className="rounded-lg bg-surface p-6 text-center text-muted">
           Gastaste as duas de hoje. Amanhã há mais.
         </p>
       ) : !target ? (
@@ -107,7 +107,7 @@ export default function AcusarPage() {
                 <button
                   key={p.id}
                   onClick={() => setTarget(p)}
-                  className="flex min-h-16 items-center gap-2 rounded-lg bg-pinhal px-3 text-left active:bg-pinhal-claro"
+                  className="flex min-h-16 items-center gap-2 rounded-lg bg-surface px-3 text-left active:bg-surface-2"
                 >
                   <span className="text-2xl">{p.emoji}</span>
                   <span className="display font-bold">{p.name}</span>
@@ -120,7 +120,7 @@ export default function AcusarPage() {
           <h2 className="display mb-2 text-lg font-bold">
             2. {target.name} anda a tentar…
           </h2>
-          <button onClick={() => setTarget(null)} className="mb-3 text-sm text-cal-fraca underline">
+          <button onClick={() => setTarget(null)} className="mb-3 text-sm text-muted underline">
             ← trocar de alvo
           </button>
           <ul className="space-y-2">
@@ -130,7 +130,7 @@ export default function AcusarPage() {
                 <li key={m.id}>
                   <button
                     onClick={() => setMissionId(m.id)}
-                    className="min-h-14 w-full rounded-lg bg-pinhal p-3 text-left leading-snug active:bg-pinhal-claro"
+                    className="min-h-14 w-full rounded-lg bg-surface p-3 text-left leading-snug active:bg-surface-2"
                   >
                     {m.text}
                   </button>
@@ -139,27 +139,27 @@ export default function AcusarPage() {
           </ul>
         </>
       ) : (
-        <div className="rounded-lg border-2 border-rosa bg-pinhal p-4">
-          <h2 className="display text-xl font-bold text-rosa">3. Tens a certeza?</h2>
+        <div className="rounded-lg border-2 border-indigo bg-surface p-4">
+          <h2 className="display text-xl font-bold text-indigo">3. Tens a certeza?</h2>
           <p className="mt-3 leading-snug">
             Acusas <span className="display font-bold">{target.emoji} {target.name}</span> de
             andar a tentar:
           </p>
-          <p className="mt-2 rounded-md bg-granito p-3 font-semibold">«{mission?.text}»</p>
-          <p className="num mt-3 text-sm text-cal-fraca">
+          <p className="mt-2 rounded-md bg-page p-3 font-semibold">«{mission?.text}»</p>
+          <p className="num mt-3 text-sm text-muted">
             Certo: +15 · Errado: −5 · Custa 1 das tuas {left}
           </p>
           <div className="mt-4 flex flex-col gap-2">
             <button
               onClick={confirmar}
               disabled={busy}
-              className="display min-h-14 rounded-md bg-rosa text-lg font-bold text-granito active:opacity-80 disabled:opacity-50"
+              className="display min-h-14 rounded-md bg-coral text-lg font-bold text-white active:opacity-80 disabled:opacity-50"
             >
               {busy ? "…" : "Acusar!"}
             </button>
             <button
               onClick={() => setMissionId(null)}
-              className="display min-h-14 rounded-md border border-cal-fraca/30 font-bold text-cal-fraca"
+              className="display min-h-14 rounded-md border border-line font-bold text-muted"
             >
               Não, voltar
             </button>

@@ -25,24 +25,24 @@ export default function MissoesPage() {
 
   return (
     <Shell title="Missões">
-      <p className="mb-4 text-sm text-cal-fraca">
+      <p className="mb-4 text-sm text-muted">
         O catálogo é público: sabes o que anda em jogo, não sabes quem tem o quê.
       </p>
       <ul className="space-y-2">
         {!data &&
           Array.from({ length: 8 }).map((_, i) => (
-            <li key={i} className="h-16 rounded-lg bg-pinhal" />
+            <li key={i} className="h-16 rounded-lg bg-surface" />
           ))}
         {data?.missions.map((m) => (
           <li
             key={m.id}
-            className={`rounded-lg bg-pinhal p-4 ${m.resolved ? "opacity-50" : ""}`}
+            className={`rounded-lg bg-surface p-4 ${m.resolved ? "opacity-50" : ""}`}
           >
             <div className="flex items-start justify-between gap-3">
               <p className="leading-snug">{m.text}</p>
-              <span className="num shrink-0 font-bold text-rosa">+{m.points}</span>
+              <span className="num shrink-0 font-bold text-indigo">+{m.points}</span>
             </div>
-            <div className="mt-1.5 flex items-center gap-2 text-xs text-cal-fraca">
+            <div className="mt-1.5 flex items-center gap-2 text-xs text-muted">
               <span className="num">{"★".repeat(m.difficulty)}</span>
               {m.resolved && (
                 <span>

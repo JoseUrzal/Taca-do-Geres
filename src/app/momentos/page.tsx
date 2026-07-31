@@ -18,19 +18,19 @@ export default function MomentosPage() {
 
   return (
     <Shell title="Momentos">
-      <p className="mb-4 text-sm text-cal-fraca">
+      <p className="mb-4 text-sm text-muted">
         A matéria-prima do vídeo de domingo à noite.
       </p>
       {data && data.moments.length === 0 && (
-        <p className="rounded-lg bg-pinhal p-6 text-center text-cal-fraca">
+        <p className="rounded-lg bg-surface p-6 text-center text-muted">
           Ainda nada. Usa o «Guardar momento» na Casa.
         </p>
       )}
       <ul className="space-y-2">
         {data?.moments.map((m) => (
-          <li key={m.id} className="rounded-lg bg-pinhal p-4">
+          <li key={m.id} className="rounded-lg bg-surface p-4">
             <p className="leading-snug">{m.text}</p>
-            <p className="mt-2 text-xs text-cal-fraca">
+            <p className="mt-2 text-xs text-muted">
               {m.player.emoji} {m.player.name} ·{" "}
               <span className="num">
                 {new Date(m.created_at).toLocaleString("pt-PT", {

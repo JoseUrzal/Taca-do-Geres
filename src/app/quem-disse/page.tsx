@@ -47,9 +47,9 @@ export default function QuemDissePage() {
   return (
     <Shell title="Quem Disse Isto?">
       {!data ? (
-        <div className="h-64 rounded-lg bg-pinhal" />
+        <div className="h-64 rounded-lg bg-surface" />
       ) : !data.round ? (
-        <p className="rounded-lg bg-pinhal p-6 text-center text-cal-fraca">
+        <p className="rounded-lg bg-surface p-6 text-center text-muted">
           Sem ronda ativa. Olha para a TV — quando começar, aparece aqui.
         </p>
       ) : data.round.status === "a_responder" ? (
@@ -88,18 +88,18 @@ function Responder({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border-2 border-rosa bg-pinhal p-4">
-        <p className="display text-sm font-bold tracking-widest text-rosa">A PERGUNTA</p>
+      <div className="rounded-lg border-2 border-indigo bg-surface p-4">
+        <p className="display text-sm font-bold tracking-widest text-indigo">A PERGUNTA</p>
         <p className="display mt-1 text-2xl font-bold leading-tight">{round.prompt}</p>
       </div>
 
       {already || sent ? (
-        <div className="rounded-lg bg-pinhal p-4">
+        <div className="rounded-lg bg-surface p-4">
           <p className="display font-bold">Resposta entregue ✓</p>
           {round.my_answer && (
-            <p className="mt-1 text-cal-fraca">«{round.my_answer}»</p>
+            <p className="mt-1 text-muted">«{round.my_answer}»</p>
           )}
-          <p className="mt-2 text-sm text-cal-fraca">
+          <p className="mt-2 text-sm text-muted">
             Podes reescrever abaixo enquanto os outros acabam.
           </p>
         </div>
@@ -110,19 +110,19 @@ function Responder({
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={3}
-          className="w-full rounded-md border border-pinhal-claro bg-pinhal p-4 text-lg text-cal"
+          className="w-full rounded-md border border-line bg-surface p-4 text-lg text-ink"
           placeholder="A tua resposta…"
         />
         <button
           onClick={enviar}
           disabled={!text.trim()}
-          className="display mt-2 min-h-14 w-full rounded-md bg-rosa text-lg font-bold text-granito disabled:opacity-40"
+          className="display mt-2 min-h-14 w-full rounded-md bg-coral text-lg font-bold text-white disabled:opacity-40"
         >
           {already || sent ? "Substituir resposta" : "Enviar resposta"}
         </button>
       </div>
 
-      <p className="num text-center text-cal-fraca">
+      <p className="num text-center text-muted">
         {round.answered_count}/{round.total_players} já responderam
       </p>
     </div>
@@ -183,19 +183,19 @@ function Adivinhar({
 
   return (
     <div className="space-y-4 pb-20">
-      <div className="rounded-lg bg-pinhal p-4">
-        <p className="display text-sm font-bold tracking-widest text-rosa">
+      <div className="rounded-lg bg-surface p-4">
+        <p className="display text-sm font-bold tracking-widest text-indigo">
           QUEM DISSE O QUÊ?
         </p>
-        <p className="mt-1 text-sm text-cal-fraca">
+        <p className="mt-1 text-sm text-muted">
           Um nome para cada resposta. Não podes repetir nomes nem escolher-te a ti.
         </p>
       </div>
 
       {toGuess.map((a) => (
-        <div key={a.id} className="rounded-lg bg-pinhal p-4">
+        <div key={a.id} className="rounded-lg bg-surface p-4">
           <p className="leading-snug">
-            <span className="num font-bold text-rosa">{a.n}.</span> «{a.text}»
+            <span className="num font-bold text-indigo">{a.n}.</span> «{a.text}»
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {players
@@ -210,10 +210,10 @@ function Adivinhar({
                     disabled={taken}
                     className={`display min-h-11 rounded-md px-3 text-sm font-bold ${
                       chosen
-                        ? "bg-rosa text-granito"
+                        ? "bg-coral text-white"
                         : taken
-                          ? "bg-granito text-cal-fraca/40"
-                          : "bg-granito text-cal active:bg-pinhal-claro"
+                          ? "bg-page text-muted/50"
+                          : "bg-page text-ink active:bg-surface-2"
                     }`}
                   >
                     {p.emoji} {p.name}
@@ -228,7 +228,7 @@ function Adivinhar({
         <button
           onClick={enviar}
           disabled={!complete || busy}
-          className="display min-h-14 w-full rounded-md bg-rosa text-lg font-bold text-granito shadow-lg disabled:opacity-40"
+          className="display min-h-14 w-full rounded-md bg-coral text-lg font-bold text-white shadow-lg disabled:opacity-40"
         >
           {sent
             ? "Palpites entregues ✓"
@@ -240,7 +240,7 @@ function Adivinhar({
         </button>
       </div>
 
-      <p className="num text-center text-sm text-cal-fraca">
+      <p className="num text-center text-sm text-muted">
         {round.done_count}/{round.total_players} já entregaram
       </p>
     </div>
@@ -255,16 +255,16 @@ function Revelado({
   const shown = round.answers.slice(0, round.reveal_index);
   return (
     <div className="space-y-3">
-      <p className="rounded-lg bg-pinhal p-4 text-center text-cal-fraca">
+      <p className="rounded-lg bg-surface p-4 text-center text-muted">
         👀 Olha para a TV — revelação em curso.
       </p>
       {shown.map((a) => (
-        <div key={a.id} className="rounded-lg bg-pinhal p-4">
+        <div key={a.id} className="rounded-lg bg-surface p-4">
           <p className="leading-snug">«{a.text}»</p>
-          <p className="display mt-1 font-bold text-rosa">
+          <p className="display mt-1 font-bold text-indigo">
             — {a.author.emoji} {a.author.name}
             {a.fooled > 0 && (
-              <span className="num ml-2 text-sm text-cal-fraca">
+              <span className="num ml-2 text-sm text-muted">
                 enganou {a.fooled}
               </span>
             )}
@@ -272,14 +272,14 @@ function Revelado({
         </div>
       ))}
       {round.reveal_index >= round.answers.length && round.mais_enganador && (
-        <div className="rounded-lg border-2 border-ouro bg-pinhal p-4 text-center">
-          <p className="display text-sm font-bold tracking-widest text-ouro">
+        <div className="rounded-lg border-2 border-gold bg-surface p-4 text-center">
+          <p className="display text-sm font-bold tracking-widest text-gold">
             MAIS ENGANADOR DA RONDA
           </p>
-          <p className="display mt-1 text-3xl font-bold text-ouro">
+          <p className="display mt-1 text-3xl font-bold text-gold">
             {round.mais_enganador.name}
           </p>
-          <p className="num text-cal-fraca">{round.mais_enganador.fooled} enganados</p>
+          <p className="num text-muted">{round.mais_enganador.fooled} enganados</p>
         </div>
       )}
     </div>

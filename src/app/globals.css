@@ -1,26 +1,53 @@
 @import "tailwindcss";
 
-@theme {
-  --color-granito: #14181a;
-  --color-pinhal: #1e2b26;
-  --color-pinhal-claro: #2a3b34;
-  --color-rosa: #ff3d7f;
-  --color-ouro: #e8b33a;
-  --color-cal: #f2efe6;
-  --color-cal-fraca: #a8a89c;
+/* tema claro (default) */
+:root {
+  --bg: #ffffff;
+  --surface: #f5f5fa;
+  --surface-2: #eaeaf4;
+  --ink: #1e1b4b;
+  --muted: #64748b;
+  --line: #e3e3f0;
+  --indigo: #4f46e5;
+  --coral: #ff6b57;
+  --gold: #b45309;
+}
 
-  --font-display: var(--font-oswald), "Arial Narrow", sans-serif;
+/* tema escuro (classe .dark no <html>) */
+.dark {
+  --bg: #0f0e1a;
+  --surface: #1c1a2e;
+  --surface-2: #292644;
+  --ink: #eef0ff;
+  --muted: #9aa0b5;
+  --line: #2c2947;
+  --indigo: #8f97ff;
+  --coral: #ff7a66;
+  --gold: #f0b12f;
+}
+
+@theme inline {
+  --color-page: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-indigo: var(--indigo);
+  --color-coral: var(--coral);
+  --color-gold: var(--gold);
+
   --font-num: var(--font-space-mono), ui-monospace, monospace;
   --font-body: var(--font-inter), system-ui, sans-serif;
 }
 
 html {
-  background: var(--color-granito);
+  background: var(--bg);
 }
 
 body {
-  background: var(--color-granito);
-  color: var(--color-cal);
+  background: var(--bg);
+  color: var(--ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   min-height: 100dvh;
@@ -32,9 +59,10 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* títulos: simples, sem gritos */
 .display {
-  font-family: var(--font-display);
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-weight: 700;
   letter-spacing: -0.01em;
 }
 
@@ -50,11 +78,11 @@ a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 3px solid var(--color-rosa);
+  outline: 3px solid var(--coral);
   outline-offset: 2px;
 }
 
-/* flip-digit do scoreboard — a única animação da app */
+/* flip-digit do marcador — a única animação da app */
 @keyframes flipdigit {
   0% {
     transform: rotateX(0deg);

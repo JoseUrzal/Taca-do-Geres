@@ -15,7 +15,7 @@ export default function Scoreboard({
   big?: boolean;
 }) {
   return (
-    <ol className="divide-y divide-cal/10 rounded-lg bg-pinhal">
+    <ol className="divide-y divide-line rounded-lg bg-surface">
       {rows.map((r) => {
         const gold = r.rank === 1 && r.points > 0;
         return (
@@ -26,7 +26,7 @@ export default function Scoreboard({
             <span
               className={`num w-9 shrink-0 text-right ${
                 big ? "text-3xl" : "text-lg"
-              } ${gold ? "font-bold text-ouro" : "text-cal-fraca"}`}
+              } ${gold ? "font-bold text-gold" : "text-muted"}`}
             >
               {r.rank}
             </span>
@@ -41,14 +41,14 @@ export default function Scoreboard({
             <span
               className={`display min-w-0 flex-1 truncate font-bold ${
                 big ? "text-4xl" : "text-xl"
-              } ${gold ? "text-ouro" : ""}`}
+              } ${gold ? "text-gold" : ""}`}
             >
               {r.player.name}
             </span>
             <FlipNumber
               value={r.points}
               className={`shrink-0 font-bold ${big ? "text-5xl" : "text-2xl"} ${
-                gold ? "text-ouro" : ""
+                gold ? "text-gold" : ""
               }`}
             />
           </li>

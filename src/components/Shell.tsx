@@ -4,14 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import useSWR from "swr";
 import { fetcher, POLL } from "@/lib/client";
-import { Home, ScrollText, Gavel, Crosshair, Trophy, Tv2, HelpCircle } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
+import { Home, Gavel, Trophy, Menu, Tv2 } from "lucide-react";
 
+// 4 separadores, mais nada. O resto são sub-páginas acessíveis a partir
+// destes (Acusar e Quem Disse a partir da Casa; catálogo/regras em Mais).
 const TABS = [
   { href: "/casa", label: "Casa", icon: Home },
-  { href: "/missoes", label: "Missões", icon: ScrollText },
   { href: "/tribunal", label: "Tribunal", icon: Gavel },
-  { href: "/acusar", label: "Acusar", icon: Crosshair },
   { href: "/taca", label: "Taça", icon: Trophy },
+  { href: "/mais", label: "Mais", icon: Menu },
 ];
 
 export default function Shell({
@@ -29,33 +31,25 @@ export default function Shell({
 
   return (
     <div className="mx-auto min-h-dvh max-w-lg pb-24">
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-pinhal-claro bg-granito/95 px-4 py-3 backdrop-blur">
-        <h1 className="display text-2xl font-bold">{title}</h1>
-        <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-page/95 px-4 py-2 backdrop-blur">
+        <h1 className="display text-xl text-indigo">{title}</h1>
+        <div className="flex items-center gap-1">
           {liveRound && (
             <Link
               href="/quem-disse"
-              className="display flex min-h-11 items-center gap-1.5 rounded-md bg-rosa px-3 text-sm font-bold text-granito"
+              className="display mr-1 flex min-h-10 items-center gap-1.5 rounded-md bg-coral px-3 text-sm text-white"
             >
-              <Tv2 size={16} strokeWidth={2.5} /> Ao vivo
+              <Tv2 size={15} strokeWidth={2.5} /> Ao vivo
             </Link>
           )}
-          {data && (
-            <span className="num text-sm text-cal-fraca">Dia {data.day}</span>
-          )}
-          <Link
-            href="/regras"
-            aria-label="Regras"
-            className="flex min-h-11 min-w-11 items-center justify-center text-cal-fraca"
-          >
-            <HelpCircle size={22} />
-          </Link>
+          {data && <span className="num px-1 text-sm text-muted">Dia {data.day}</span>}
+          <ThemeToggle />
         </div>
       </header>
 
       <main className="px-4 py-4">{children}</main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-10 border-t border-pinhal-claro bg-granito/95 backdrop-blur">
+      <nav className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-page/95 backdrop-blur">
         <div className="mx-auto flex max-w-lg">
           {TABS.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
@@ -64,13 +58,13 @@ export default function Shell({
                 key={href}
                 href={href}
                 className={`relative flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 pb-[env(safe-area-inset-bottom)] ${
-                  active ? "text-rosa" : "text-cal-fraca"
+                  active ? "text-indigo" : "text-muted"
                 }`}
               >
                 <Icon size={22} strokeWidth={active ? 2.5 : 2} />
-                <span className="display text-[11px] font-bold">{label}</span>
+                <span className="display text-[11px]">{label}</span>
                 {href === "/tribunal" && badge > 0 && (
-                  <span className="num absolute right-1/2 top-1 min-w-5 translate-x-5 rounded-full bg-rosa px-1 text-center text-xs font-bold text-granito">
+                  <span className="num absolute right-1/2 top-1 min-w-5 translate-x-5 rounded-full bg-coral px-1 text-center text-xs font-bold text-white">
                     {badge}
                   </span>
                 )}
