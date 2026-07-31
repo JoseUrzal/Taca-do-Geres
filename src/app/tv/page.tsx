@@ -13,7 +13,7 @@ type TvData = {
   top5: LeaderboardRow[];
   teams: { team: Team; points: number; rank: number }[];
   feed: FeedItem[];
-  camera: { name: string; emoji: string } | null;
+  moments: { id: string; text: string; player: { name: string; emoji: string } }[];
   round: TvRound;
   draw: TvDraw;
 };
@@ -50,7 +50,7 @@ type TvRound =
     ))
   | null;
 
-const PANELS = ["top5", "equipas", "feed", "camara"] as const;
+const PANELS = ["top5", "equipas", "feed", "momentos"] as const;
 
 export default function TvPage() {
   const { data } = useSWR<TvData>("/api/tv", fetcher, POLL);
@@ -70,14 +70,7 @@ export default function TvPage() {
         <h1 className="display text-3xl md:text-6xl font-bold">
           Taça do <span className="text-indigo">Gerês</span>
         </h1>
-        <div className="flex items-baseline gap-8">
-          {data?.camera && (
-            <p className="display text-lg md:text-2xl text-muted">
-              🎥 Câmara: <span className="font-bold text-ink">{data.camera.name}</span>
-            </p>
-          )}
-          <p className="num text-xl md:text-3xl text-muted">Dia {data?.day ?? "—"}</p>
-        </div>
+        <p className="num text-xl md:text-3xl text-muted">Dia {data?.day ?? "—"}</p>
       </header>
 
       <main className="flex flex-1 flex-col justify-center py-8">
@@ -133,18 +126,27 @@ export default function TvPage() {
             </ul>
           </section>
         ) : (
-          <section className="text-center">
-            <p className="display text-2xl md:text-4xl font-bold text-indigo">Câmara do dia</p>
-            <div className="mt-8 flex justify-center">
-              <Avatar
-                name={data.camera?.name ?? ""}
-                emoji={data.camera?.emoji ?? "🎥"}
-                size={240}
-                className="border-8 border-indigo"
-              />
-            </div>
-            <p className="display mt-6 text-4xl md:text-8xl font-bold">{data.camera?.name ?? "—"}</p>
-            <p className="mt-4 text-2xl md:text-4xl text-muted">— filma tudo.</p>
+          <section>
+            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-indigo">
+              🎥 Momentos — quem vê, filma
+            </h2>
+            {data.moments.length === 0 ? (
+              <p className="text-lg md:text-3xl text-muted">
+                Ainda nada guardado. Viste algo digno do vídeo? Filma 10 segundos e
+                toca em «Guardar momento» na app.
+              </p>
+            ) : (
+              <ul className="space-y-4">
+                {data.moments.map((m) => (
+                  <li key={m.id} className="rounded-xl bg-surface p-4 md:p-6">
+                    <p className="text-lg md:text-3xl leading-snug">«{m.text}»</p>
+                    <p className="display mt-1 text-base md:text-xl text-muted">
+                      — {m.player?.emoji} {m.player?.name}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         )}
       </main>

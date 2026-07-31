@@ -46,10 +46,14 @@ export default function RegrasPage() {
           <b>10/6/3</b> pontos, registado na hora.
         </Regra>
 
-        <Regra emoji="🎥" titulo="Câmara do dia & Momentos">
-          Todos os dias há um responsável por filmar — está na tua Casa e na TV.
-          E quando acontecer algo digno de memória, qualquer um toca em{" "}
-          <b>Guardar momento</b>: é o guião do vídeo de domingo.
+        <Regra emoji="🎥" titulo="Quem vê, filma">
+          Não há câmara oficial: se está a acontecer algo bom, <b>filma 10
+          segundos</b> — quem estiver mais perto. Truques que valem pontos de
+          estilo: combina em segredo com um colega de equipa para ele te filmar
+          a cumprir uma missão (a prova convence o Tribunal); e deixa um
+          telemóvel pousado a filmar a piscina, a cozinha ou o jantar. Depois
+          toca em <b>Guardar momento</b> na Casa — essa lista é o guião do
+          vídeo de domingo.
         </Regra>
 
         <p className="rounded-lg border border-line bg-surface p-4 text-center text-sm text-muted">

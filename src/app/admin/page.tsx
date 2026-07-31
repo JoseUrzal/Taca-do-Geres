@@ -441,7 +441,6 @@ function Dia({
 }) {
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
-  const camera = data.players.find((p) => p.id === data.camera_player_id);
 
   async function novoDia() {
     if (busy) return;
@@ -451,43 +450,24 @@ function Dia({
     setConfirming(false);
     if (res.ok) {
       const body = await res.json();
-      flash(`Dia ${body.day}: ${body.dealt} missões dadas. Câmara: ${body.camera}.`);
+      flash(`Dia ${body.day}: ${body.dealt} missões novas distribuídas.`);
       mutate();
     }
   }
 
-  async function reroll() {
-    if (busy) return;
-    setBusy(true);
-    await post("/api/admin/camara");
-    setBusy(false);
-    mutate();
-  }
-
   return (
-    <Sec title="Dia & câmara">
-      <p className="text-sm text-muted">
-        Câmara do dia: <span className="font-semibold text-ink">{camera?.name ?? "—"}</span>
-      </p>
-      <button
-        onClick={reroll}
-        disabled={busy}
-        className="display mt-2 min-h-12 w-full rounded-md border border-line font-bold disabled:opacity-50"
-      >
-        🎲 Re-sortear câmara
-      </button>
-
+    <Sec title="Novo dia">
       {!confirming ? (
         <button
           onClick={() => setConfirming(true)}
-          className="display mt-3 min-h-14 w-full rounded-md border-2 border-indigo font-bold text-indigo"
+          className="display min-h-14 w-full rounded-md border-2 border-indigo font-bold text-indigo"
         >
           Novo dia →
         </button>
       ) : (
         <div className="mt-3 rounded-md border-2 border-indigo p-3">
           <p className="text-sm">
-            Expira as missões ativas, dá 3 novas a cada um e re-sorteia a câmara. De certeza?
+            Expira as missões ativas de hoje e dá 3 novas a cada jogador. De certeza?
           </p>
           <div className="mt-2 flex gap-2">
             <button

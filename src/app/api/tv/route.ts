@@ -7,13 +7,15 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const state = await getGameState();
-  const [{ individual, teams }, feed, round, camera] = await Promise.all([
+  const [{ individual, teams }, feed, round, { data: moments }] = await Promise.all([
     getLeaderboard(),
     getFeed(8),
     serializeRound(null),
-    state.camera_player_id
-      ? db().from("players").select("name, emoji").eq("id", state.camera_player_id).single()
-      : Promise.resolve({ data: null }),
+    db()
+      .from("moments")
+      .select("id, text, created_at, player:player_id(name, emoji)")
+      .order("created_at", { ascending: false })
+      .limit(5),
   ]);
 
   // sorteio de equipas em curso: todos têm equipa mas a revelação na TV
@@ -41,7 +43,7 @@ export async function GET() {
     top5: individual.slice(0, 5),
     teams,
     feed,
-    camera: camera && "data" in camera ? camera.data : null,
+    moments: moments ?? [],
     round,
     draw,
   });

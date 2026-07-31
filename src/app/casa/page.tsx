@@ -6,7 +6,7 @@ import useSWR from "swr";
 import Shell from "@/components/Shell";
 import FlipNumber from "@/components/FlipNumber";
 import { fetcher, post, POLL } from "@/lib/client";
-import { Camera, Video, Crosshair } from "lucide-react";
+import { Video, Crosshair } from "lucide-react";
 
 type Casa = {
   me: { name: string; emoji: string };
@@ -20,7 +20,6 @@ type Casa = {
     mission: { text: string; points: number; difficulty: number };
   }[];
   accusations_left: number;
-  camera: { name: string; emoji: string } | null;
 };
 
 export default function CasaPage() {
@@ -83,17 +82,6 @@ export default function CasaPage() {
               </p>
             </div>
           </section>
-
-          {/* câmara do dia */}
-          {data.camera && (
-            <section className="flex items-center gap-3 rounded-lg border border-line bg-surface px-4 py-3">
-              <Camera className="shrink-0 text-indigo" size={22} />
-              <p>
-                <span className="display font-bold">Câmara do dia: {data.camera.name}</span>
-                <span className="text-muted"> — filma tudo.</span>
-              </p>
-            </section>
-          )}
 
           {/* missões de hoje */}
           <section>

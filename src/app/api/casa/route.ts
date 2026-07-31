@@ -15,7 +15,6 @@ export async function GET() {
     { individual },
     { data: missions },
     { count: accusationsUsed },
-    camera,
     { count: tribunalPending },
   ] = await Promise.all([
     getLeaderboard(),
@@ -31,9 +30,6 @@ export async function GET() {
       .select("id", { count: "exact", head: true })
       .eq("accuser_id", playerId)
       .eq("day", state.current_day),
-    state.camera_player_id
-      ? db().from("players").select("name, emoji").eq("id", state.camera_player_id).single()
-      : Promise.resolve({ data: null }),
     db()
       .from("assignments")
       .select("id", { count: "exact", head: true })
@@ -51,7 +47,6 @@ export async function GET() {
     day: state.current_day,
     missions: missions ?? [],
     accusations_left: Math.max(0, 2 - (accusationsUsed ?? 0)),
-    camera: camera && "data" in camera ? camera.data : null,
     tribunal_pending: tribunalPending ?? 0,
     active_round: !!state.active_round_id,
   });
