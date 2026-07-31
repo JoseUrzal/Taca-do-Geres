@@ -11,12 +11,11 @@ import type { FeedItem, LeaderboardRow, Team } from "@/lib/types";
 type Taca = {
   individual: (LeaderboardRow & { team_colour: string | null })[];
   teams: { team: Team; points: number; rank: number }[];
+  feed: FeedItem[];
 };
 
 export default function TacaPage() {
   const { data } = useSWR<Taca>("/api/taca", fetcher, POLL);
-  // mesma key que a Casa/Shell → sem pedidos extra
-  const { data: casa } = useSWR<{ feed: FeedItem[] }>("/api/casa", fetcher, POLL);
   const [tab, setTab] = useState<"individual" | "equipas">("individual");
 
   return (
@@ -63,10 +62,10 @@ export default function TacaPage() {
       <section className="mt-6">
         <h2 className="display mb-2 text-lg">Últimas jogadas</h2>
         <ul className="divide-y divide-line rounded-xl bg-surface">
-          {(!casa || casa.feed.length === 0) && (
+          {(!data || data.feed.length === 0) && (
             <li className="p-4 text-muted">Ainda ninguém marcou. Toca a mexer.</li>
           )}
-          {casa?.feed.map((f) => (
+          {data?.feed.map((f) => (
             <li key={f.id} className="flex items-start gap-3 p-3">
               <span
                 className={`num shrink-0 font-bold ${

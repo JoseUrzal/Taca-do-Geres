@@ -30,8 +30,8 @@ export default function Shell({
   const liveRound = !!data?.active_round;
 
   return (
-    <div className="mx-auto min-h-dvh max-w-lg pb-24">
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-page/95 px-4 py-2 backdrop-blur">
+    <div className="mx-auto min-h-dvh max-w-lg pb-28">
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-page px-4 py-2">
         <h1 className="display text-xl text-indigo">{title}</h1>
         <div className="flex items-center gap-1">
           {liveRound && (
@@ -49,7 +49,7 @@ export default function Shell({
 
       <main className="px-4 py-4">{children}</main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-page/95 backdrop-blur">
+      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-page pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto flex max-w-lg">
           {TABS.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
@@ -57,14 +57,14 @@ export default function Shell({
               <Link
                 key={href}
                 href={href}
-                className={`relative flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 pb-[env(safe-area-inset-bottom)] ${
+                className={`relative flex h-16 flex-1 select-none flex-col items-center justify-center gap-1 ${
                   active ? "text-indigo" : "text-muted"
                 }`}
               >
-                <Icon size={22} strokeWidth={active ? 2.5 : 2} />
-                <span className="display text-[11px]">{label}</span>
+                <Icon size={24} strokeWidth={active ? 2.5 : 2} />
+                <span className="display text-xs">{label}</span>
                 {href === "/tribunal" && badge > 0 && (
-                  <span className="num absolute right-1/2 top-1 min-w-5 translate-x-5 rounded-full bg-coral px-1 text-center text-xs font-bold text-white">
+                  <span className="num absolute right-1/2 top-1.5 min-w-5 translate-x-6 rounded-full bg-coral px-1 text-center text-xs font-bold text-white">
                     {badge}
                   </span>
                 )}
