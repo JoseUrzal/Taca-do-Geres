@@ -3,7 +3,8 @@ import { db } from "@/lib/supabase";
 import { requirePlayer } from "@/lib/identity";
 import { addScore } from "@/lib/queries";
 
-// Votar num claim do Tribunal. 2 ✅ → confirmada + pontos. 2 ❌ → chumbada.
+// Votar num claim do Tribunal. 2 ✅ → confirmada + pontos. 3 ❌ → chumbada
+// (chumbar destrói a missão, por isso custa mais um voto que confirmar).
 // unique(assignment_id, player_id) impede voto duplo; o UPDATE ... WHERE
 // status='reclamada' garante que só um voto resolve e pontua.
 export async function POST(req: NextRequest) {
@@ -58,7 +59,7 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json({ ok: true, resolved: "confirmada" });
   }
-  if (no >= 2) {
+  if (no >= 3) {
     await db()
       .from("assignments")
       .update({ status: "chumbada" })

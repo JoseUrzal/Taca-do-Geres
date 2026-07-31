@@ -47,8 +47,8 @@ const SLIDES: Slide[] = [
     title: "Cumpriste? Reclama.",
     lines: [
       "Cumpres a missão à frente de todos sem ninguém topar → «Reclamar».",
-      "Vai a Tribunal: 2 ✅ de outros jogadores confirmam e dão os pontos.",
-      "2 ❌ chumbam — sem pontos e a missão arde.",
+      "Vai a Tribunal: 2 ✅ confirmam e dão os pontos; 3 ❌ chumbam e a missão arde.",
+      "Os votos são públicos. Chumbar um amigo tem consequências sociais.",
     ],
     big: "⚖️",
   },

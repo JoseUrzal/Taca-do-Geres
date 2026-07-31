@@ -23,8 +23,8 @@ export default function RegrasPage() {
         <Regra emoji="⚖️" titulo="Reclamar & Tribunal">
           Cumpriste? Toca em <b>Reclamar</b>. O teu caso vai para o Tribunal,
           onde os outros votam: <b>2 ✅ confirmam</b> e recebes os pontos;{" "}
-          <b>2 ❌ chumbam</b> e a missão arde sem pontos. Não podes votar no teu
-          próprio caso.
+          <b>3 ❌ chumbam</b> e a missão arde sem pontos. Os votos são públicos
+          e não podes votar no teu próprio caso.
         </Regra>
 
         <Regra emoji="🎯" titulo="Acusações">

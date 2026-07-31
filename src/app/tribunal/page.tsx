@@ -14,6 +14,8 @@ type Tribunal = {
     mission: { text: string; points: number };
     yes: number;
     no: number;
+    yes_names: string[];
+    no_names: string[];
     my_vote: boolean | null;
     is_mine: boolean;
   }[];
@@ -43,7 +45,8 @@ export default function TribunalPage() {
   return (
     <Shell title="Tribunal">
       <p className="mb-4 text-sm text-muted">
-        2 ✅ confirmam e dão os pontos. 2 ❌ chumbam e queimam a missão.
+        2 ✅ confirmam e dão os pontos. 3 ❌ chumbam e queimam a missão. Os
+        votos são públicos — vota com honra.
       </p>
       {data && data.claims.length === 0 && (
         <p className="rounded-lg bg-surface p-6 text-center text-muted">
@@ -62,7 +65,8 @@ export default function TribunalPage() {
               <span className="num text-indigo">+{c.mission.points}</span>
             </p>
             <div className="num mt-2 text-sm text-muted">
-              ✅ {c.yes}/2 · ❌ {c.no}/2
+              ✅ {c.yes}/2{c.yes_names.length > 0 && ` (${c.yes_names.join(", ")})`} · ❌{" "}
+              {c.no}/3{c.no_names.length > 0 && ` (${c.no_names.join(", ")})`}
             </div>
             {c.is_mine ? (
               <p className="display mt-3 flex min-h-14 items-center justify-center rounded-md border border-line font-bold text-muted">
