@@ -7,7 +7,8 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const state = await getGameState();
-  const [{ individual, teams }, feed, round, { data: moments }] = await Promise.all([
+  const [{ individual, teams }, feed, round, { data: moments }, { data: tribunal }] =
+    await Promise.all([
     getLeaderboard(),
     getFeed(8),
     serializeRound(null),
@@ -16,6 +17,12 @@ export async function GET() {
       .select("id, text, created_at, player:player_id(name, emoji)")
       .order("created_at", { ascending: false })
       .limit(5),
+    db()
+      .from("assignments")
+      .select("id, player:player_id(name, emoji), mission:mission_id(text, points)")
+      .eq("status", "reclamada")
+      .order("created_at")
+      .limit(4),
   ]);
 
   // sorteio de equipas em curso: todos têm equipa mas a revelação na TV
@@ -44,6 +51,7 @@ export async function GET() {
     teams,
     feed,
     moments: moments ?? [],
+    tribunal: tribunal ?? [],
     round,
     draw,
   });

@@ -1,0 +1,39 @@
+-- Rollback das missões v2: apaga só as que ainda NÃO foram distribuídas a ninguém.
+-- (As já distribuídas ficam — apagá-las partia o histórico.)
+
+delete from missions where text = 'Conta um «segredo» inofensivo a uma pessoa e consegue que ele te volte aos ouvidos por uma terceira.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que outra pessoa anuncie ao grupo uma ideia que tu lhe plantaste a sós.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que alguém te convide para uma atividade que tu próprio sugeriste primeiro a uma terceira pessoa.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Convence alguém a trocar de lugar «porque ali se está melhor» — e fica tu com o lugar.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que alguém defenda com convicção uma opinião que tu lhe «emprestaste» horas antes.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Faz com que duas pessoas se cumprimentem com um aperto de mão formal, sem lho pedires diretamente.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que alguém vá verificar se deixou alguma coisa ligada ou aberta, sem motivo nenhum.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Faz com que o grupo tire uma fotografia de grupo hoje — e fica tu no centro.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que alguém ponha a tocar uma música que tu escolheste antes, sem lha pedires.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Convence duas pessoas de que já se tinham cruzado numa ocasião que nunca aconteceu.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que alguém te guarde comida «para não ficares sem», sem tu pedires.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Muda um objeto de sítio e consegue que o dono pergunte em voz alta quem lho tirou. Devolve depois.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que alguém te ofereça o lugar do pendura na próxima ida de carro.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Faz com que duas pessoas apostem alguma coisa entre elas — tu és só a «testemunha».' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que alguém proponha ao grupo um plano para amanhã que tu desenhaste por interposta pessoa.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Atende uma chamada fingida e mantém a conversa 2 minutos à frente de pelo menos 3 pessoas.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Janta do princípio ao fim com os talheres nas mãos trocadas, sem ninguém comentar.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Inventa uma «tradição do Gerês» e executa-a com ar sério até duas pessoas participarem.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Finge que perdeste algo importante, mobiliza duas pessoas para procurar — e «encontra-o» no teu bolso.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Passa 15 minutos a responder a tudo só com perguntas, sem ninguém topar.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Adota um tique novo (ex.: estalar os dedos antes de falar) até alguém o imitar sem reparar.' and id not in (select mission_id from assignments);
+delete from missions where text = 'A meio de uma refeição, faz um discurso de agradecimento solene como se fosse um casamento.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Reage com emoção desmedida a uma coisa banal (um legume, uma pedra) e aguenta a personagem até alguém se rir.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Comporta-te de forma subtilmente estranha até alguém te perguntar «estás bem?» três vezes no mesmo dia.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que alguém diga «isso dava um momento para a app».' and id not in (select mission_id from assignments);
+delete from missions where text = 'Faz com que alguém te conte um sonho que teve (de dormir, não de vida).' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que alguém diga «no meu tempo é que era» ou «os miúdos de hoje…».' and id not in (select mission_id from assignments);
+delete from missions where text = 'Faz com que alguém admita em voz alta que está viciado na app.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que alguém pergunte quanto custou a casa do fim de semana.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Faz com que alguém descreva ao grupo um cheiro («cheira a quê?») que tu criaste ou inventaste.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que duas pessoas discutam com convicção sobre o nome de uma estrela ou constelação — à noite, no jardim.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Faz com que alguém proponha ir todos ver o nascer do sol (não precisa de acontecer).' and id not in (select mission_id from assignments);
+delete from missions where text = 'Acusa alguém de uma missão que TU tens na mão.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Consegue que alguém te mostre as missões dele de livre vontade.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Provoca uma acusação errada contra ti hoje.' and id not in (select mission_id from assignments);
+delete from missions where text = 'Convence um colega de equipa a reclamar uma missão dele ao mesmo tempo que tu, para dividir o Tribunal.' and id not in (select mission_id from assignments);

@@ -348,5 +348,185 @@
     "text": "Consegue que alguém te chame «chef» sem seres tu a pedir.",
     "points": 15,
     "difficulty": 2
+  },
+  {
+    "text": "Conta um «segredo» inofensivo a uma pessoa e consegue que ele te volte aos ouvidos por uma terceira.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Consegue que outra pessoa anuncie ao grupo uma ideia que tu lhe plantaste a sós.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Consegue que alguém te convide para uma atividade que tu próprio sugeriste primeiro a uma terceira pessoa.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Convence alguém a trocar de lugar «porque ali se está melhor» — e fica tu com o lugar.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém defenda com convicção uma opinião que tu lhe «emprestaste» horas antes.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Faz com que duas pessoas se cumprimentem com um aperto de mão formal, sem lho pedires diretamente.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Consegue que alguém vá verificar se deixou alguma coisa ligada ou aberta, sem motivo nenhum.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que o grupo tire uma fotografia de grupo hoje — e fica tu no centro.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém ponha a tocar uma música que tu escolheste antes, sem lha pedires.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Convence duas pessoas de que já se tinham cruzado numa ocasião que nunca aconteceu.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Consegue que alguém te guarde comida «para não ficares sem», sem tu pedires.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Muda um objeto de sítio e consegue que o dono pergunte em voz alta quem lho tirou. Devolve depois.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém te ofereça o lugar do pendura na próxima ida de carro.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Faz com que duas pessoas apostem alguma coisa entre elas — tu és só a «testemunha».",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém proponha ao grupo um plano para amanhã que tu desenhaste por interposta pessoa.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Atende uma chamada fingida e mantém a conversa 2 minutos à frente de pelo menos 3 pessoas.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Janta do princípio ao fim com os talheres nas mãos trocadas, sem ninguém comentar.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Inventa uma «tradição do Gerês» e executa-a com ar sério até duas pessoas participarem.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Finge que perdeste algo importante, mobiliza duas pessoas para procurar — e «encontra-o» no teu bolso.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Passa 15 minutos a responder a tudo só com perguntas, sem ninguém topar.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Adota um tique novo (ex.: estalar os dedos antes de falar) até alguém o imitar sem reparar.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "A meio de uma refeição, faz um discurso de agradecimento solene como se fosse um casamento.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Reage com emoção desmedida a uma coisa banal (um legume, uma pedra) e aguenta a personagem até alguém se rir.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Comporta-te de forma subtilmente estranha até alguém te perguntar «estás bem?» três vezes no mesmo dia.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém diga «isso dava um momento para a app».",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém te conte um sonho que teve (de dormir, não de vida).",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém diga «no meu tempo é que era» ou «os miúdos de hoje…».",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Faz com que alguém admita em voz alta que está viciado na app.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém pergunte quanto custou a casa do fim de semana.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Faz com que alguém descreva ao grupo um cheiro («cheira a quê?») que tu criaste ou inventaste.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que duas pessoas discutam com convicção sobre o nome de uma estrela ou constelação — à noite, no jardim.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Faz com que alguém proponha ir todos ver o nascer do sol (não precisa de acontecer).",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Acusa alguém de uma missão que TU tens na mão.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém te mostre as missões dele de livre vontade.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Provoca uma acusação errada contra ti hoje.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Convence um colega de equipa a reclamar uma missão dele ao mesmo tempo que tu, para dividir o Tribunal.",
+    "points": 15,
+    "difficulty": 2
   }
 ]

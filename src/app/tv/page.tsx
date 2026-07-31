@@ -14,6 +14,11 @@ type TvData = {
   teams: { team: Team; points: number; rank: number }[];
   feed: FeedItem[];
   moments: { id: string; text: string; player: { name: string; emoji: string } }[];
+  tribunal: {
+    id: string;
+    player: { name: string; emoji: string };
+    mission: { text: string; points: number };
+  }[];
   round: TvRound;
   draw: TvDraw;
 };
@@ -50,19 +55,26 @@ type TvRound =
     ))
   | null;
 
-const PANELS = ["top5", "equipas", "feed", "momentos"] as const;
+const BASE_PANELS = ["top5", "equipas", "feed", "momentos"];
 
 export default function TvPage() {
   const { data } = useSWR<TvData>("/api/tv", fetcher, POLL);
   const [panel, setPanel] = useState(0);
 
+  const panels =
+    data?.tribunal && data.tribunal.length > 0
+      ? [...BASE_PANELS, "tribunal"]
+      : BASE_PANELS;
+  const current = panels[panel % panels.length];
+
   // rotação de 12 em 12 segundos quando não há ronda nem sorteio ativos
   const takeover = !!data?.round || !!data?.draw;
   useEffect(() => {
     if (takeover) return;
-    const t = setInterval(() => setPanel((p) => (p + 1) % PANELS.length), 12000);
+    const n = panels.length;
+    const t = setInterval(() => setPanel((p) => (p + 1) % n), 12000);
     return () => clearInterval(t);
-  }, [takeover]);
+  }, [takeover, panels.length]);
 
   return (
     <div className="dark flex min-h-dvh flex-col bg-page p-4 md:p-10 text-ink">
@@ -78,12 +90,12 @@ export default function TvPage() {
           <TvRoundView round={data.round} />
         ) : data.draw ? (
           <TvDrawView draw={data.draw} />
-        ) : PANELS[panel] === "top5" ? (
+        ) : current === "top5" ? (
           <section>
             <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">Classificação</h2>
             <Scoreboard rows={data.top5} big />
           </section>
-        ) : PANELS[panel] === "equipas" ? (
+        ) : current === "equipas" ? (
           <section>
             <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">Equipas</h2>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-8">
@@ -104,7 +116,7 @@ export default function TvPage() {
               ))}
             </div>
           </section>
-        ) : PANELS[panel] === "feed" ? (
+        ) : current === "feed" ? (
           <section>
             <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">Últimas jogadas</h2>
             <ul className="space-y-4">
@@ -124,6 +136,27 @@ export default function TvPage() {
                 </li>
               ))}
             </ul>
+          </section>
+        ) : current === "tribunal" ? (
+          <section>
+            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">
+              ⚖️ Tribunal — vota no telemóvel!
+            </h2>
+            <ul className="space-y-4">
+              {data.tribunal.map((c) => (
+                <li key={c.id} className="flex items-center gap-4 rounded-xl bg-surface p-4 md:p-6">
+                  <Avatar name={c.player.name} emoji={c.player.emoji} size={56} />
+                  <p className="text-lg md:text-3xl leading-snug">
+                    <span className="display font-bold">{c.player.name}</span>{" "}
+                    <span className="text-muted">diz que cumpriu:</span> «{c.mission.text}»{" "}
+                    <span className="num text-coral">+{c.mission.points}</span>
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 text-center text-lg md:text-2xl text-muted">
+              2 ✅ confirmam · 3 ❌ chumbam · os votos são públicos
+            </p>
           </section>
         ) : (
           <section>
@@ -154,18 +187,23 @@ export default function TvPage() {
 
       {!takeover && (
         <footer className="flex items-center justify-between pb-2">
-          <span className="w-28" aria-hidden />
+          <span className="w-40" aria-hidden />
           <div className="flex gap-3">
-            {PANELS.map((p, i) => (
+            {panels.map((p, i) => (
               <span
                 key={p}
-                className={`h-2 w-10 rounded-full ${i === panel ? "bg-coral" : "bg-surface-2"}`}
+                className={`h-2 w-10 rounded-full ${i === panel % panels.length ? "bg-coral" : "bg-surface-2"}`}
               />
             ))}
           </div>
-          <a href="/tv/abertura" className="display w-28 text-right text-xl text-muted/70">
-            ▶ Abertura
-          </a>
+          <span className="flex w-40 justify-end gap-4">
+            <a href="/tv/abertura" className="display text-xl text-muted/70">
+              ▶ Abertura
+            </a>
+            <a href="/tv/final" className="display text-xl text-muted/70">
+              🏆 Final
+            </a>
+          </span>
         </footer>
       )}
     </div>
