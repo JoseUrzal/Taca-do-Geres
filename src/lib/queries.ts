@@ -108,10 +108,13 @@ export async function dealMissions(day: number) {
     const j = Math.floor(Math.random() * (i + 1));
     [available[i], available[j]] = [available[j], available[i]];
   }
+  // distribui à vez (como cartas): se o baralho não chega para 3 a todos,
+  // cada jogador recebe o mesmo número — nunca uns com 3 e outros com 0
   const deals: { player_id: string; mission_id: string; day: number }[] = [];
   let i = 0;
-  for (const p of players) {
-    for (let k = 0; k < 3 && i < available.length; k++) {
+  for (let ronda = 0; ronda < 3; ronda++) {
+    for (const p of players) {
+      if (i >= available.length) break;
       deals.push({ player_id: p.id, mission_id: available[i++].id, day });
     }
   }

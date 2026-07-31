@@ -1,42 +1,352 @@
 [
-  { "text": "Faz com que alguém diga «Que inferno!» sem seres tu a dizê-lo primeiro.", "points": 15, "difficulty": 2 },
-  { "text": "Faz com que alguém diga «um gajo…» numa frase.", "points": 10, "difficulty": 1 },
-  { "text": "Bebe um copo inteiro com o dedo indicador dentro do copo, à Melo, sem ninguém comentar.", "points": 15, "difficulty": 2 },
-  { "text": "Roça o dedo no tecido da roupa de três pessoas diferentes, à José.", "points": 15, "difficulty": 2 },
-  { "text": "Consegue que alguém te explique como se ganha o Masterchef.", "points": 10, "difficulty": 1 },
-  { "text": "Convence alguém de que o Real Madrid está de olho num jogador que acabaste de inventar.", "points": 15, "difficulty": 2 },
-  { "text": "Faz com que alguém diga «palhaços aqui a bater».", "points": 15, "difficulty": 2 },
-  { "text": "Mete a palavra «sustentabilidade» em três conversas diferentes.", "points": 15, "difficulty": 2 },
-  { "text": "Consegue que alguém te recomende uma compra na Zara.", "points": 10, "difficulty": 1 },
-  { "text": "Faz com que alguém conte uma história das férias de La Manga.", "points": 10, "difficulty": 1 },
-  { "text": "Convence alguém de que a Liga vai aprovar uma regra nova absurda no futebol.", "points": 15, "difficulty": 2 },
-  { "text": "Consegue que alguém corrija a maneira como puseste a louça na máquina.", "points": 15, "difficulty": 2 },
-  { "text": "Consegue que alguém te desenhe a planta de uma divisão da casa.", "points": 15, "difficulty": 2 },
-  { "text": "Faz com que alguém diga os nomes dos três bebés do grupo de seguida.", "points": 10, "difficulty": 1 },
-  { "text": "Convence alguém de que em criança ganhaste um concurso de karaoke.", "points": 15, "difficulty": 2 },
-  { "text": "Corrige a geografia de alguém com confiança total, mesmo sem teres a certeza.", "points": 10, "difficulty": 1 },
-  { "text": "Consegue que alguém avalie o teu empratamento como um jurado do Masterchef.", "points": 15, "difficulty": 2 },
-  { "text": "Faz com que outra pessoa te encha o copo sem tu pedires.", "points": 10, "difficulty": 1 },
-  { "text": "Consegue que alguém diga a palavra «condomínio».", "points": 10, "difficulty": 1 },
-  { "text": "Faz com que o grupo inteiro olhe para o céu ao mesmo tempo.", "points": 20, "difficulty": 3 },
-  { "text": "Consegue que alguém te empreste os óculos de sol.", "points": 10, "difficulty": 1 },
-  { "text": "Faz um brinde com uma palavra inventada sem ninguém reparar.", "points": 15, "difficulty": 2 },
-  { "text": "Convence duas pessoas de que já conheceste um jogador famoso.", "points": 15, "difficulty": 2 },
-  { "text": "Fala durante 5 minutos só em inglês até alguém te mandar parar.", "points": 15, "difficulty": 2 },
-  { "text": "Consegue que alguém diga uma frase inteira em alemão (vale pedir ajuda à Maike).", "points": 15, "difficulty": 2 },
-  { "text": "Consegue que alguém proponha um mergulho na piscina.", "points": 10, "difficulty": 1 },
-  { "text": "Mete uma pedra no bolso de alguém sem que dê conta.", "points": 20, "difficulty": 3 },
-  { "text": "Consegue que três pessoas te chamem por uma alcunha nova.", "points": 20, "difficulty": 3 },
-  { "text": "Faz com que alguém te conte um segredo de infância.", "points": 15, "difficulty": 2 },
-  { "text": "Consegue que alguém te peça desculpa por uma coisa que não fez.", "points": 20, "difficulty": 3 },
-  { "text": "Troca o lugar de três coisas na cozinha sem quem está a cozinhar dar por isso.", "points": 20, "difficulty": 3 },
-  { "text": "Consegue que alguém diga «isso é o que tu pensas».", "points": 15, "difficulty": 2 },
-  { "text": "Consegue que alguém te vá buscar uma bebida ao frigorífico duas vezes.", "points": 15, "difficulty": 2 },
-  { "text": "Elogia o mesmo detalhe da roupa de três pessoas diferentes.", "points": 10, "difficulty": 1 },
-  { "text": "Consegue que alguém te explique as regras de um jogo que tu próprio inventaste.", "points": 20, "difficulty": 3 },
-  { "text": "Faz com que duas pessoas discutam qual é o melhor caminho para a cascata.", "points": 20, "difficulty": 3 },
-  { "text": "Consegue que alguém adivinhe em que ano aconteceu um evento histórico que inventaste.", "points": 15, "difficulty": 2 },
-  { "text": "Mete a frase «como dizia o meu avô» em duas conversas.", "points": 10, "difficulty": 1 },
-  { "text": "Consegue que alguém cante uma música dos anos 2000.", "points": 10, "difficulty": 1 },
-  { "text": "Convence alguém de que a água do Gerês tem propriedades mágicas.", "points": 10, "difficulty": 1 }
+  {
+    "text": "Faz com que alguém diga «Que inferno!» sem seres tu a dizê-lo primeiro.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém diga «um gajo…» numa frase.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Bebe um copo inteiro com o dedo indicador dentro do copo, à Melo, sem ninguém comentar.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Roça o dedo no tecido da roupa de três pessoas diferentes, à José.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém te explique como se ganha o Masterchef.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Convence alguém de que o Real Madrid está de olho num jogador que acabaste de inventar.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém diga «palhaços aqui a bater».",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Mete a palavra «sustentabilidade» em três conversas diferentes.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém te recomende uma compra na Zara.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Faz com que alguém conte uma história das férias de La Manga.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Convence alguém de que a Liga vai aprovar uma regra nova absurda no futebol.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém corrija a maneira como puseste a louça na máquina.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém te desenhe a planta de uma divisão da casa.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém diga os nomes dos três bebés do grupo de seguida.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Convence alguém de que em criança ganhaste um concurso de karaoke.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Corrige a geografia de alguém com confiança total, mesmo sem teres a certeza.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém avalie o teu empratamento como um jurado do Masterchef.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que outra pessoa te encha o copo sem tu pedires.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém diga a palavra «condomínio».",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Faz com que o grupo inteiro olhe para o céu ao mesmo tempo.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Consegue que alguém te empreste os óculos de sol.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Faz um brinde com uma palavra inventada sem ninguém reparar.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Convence duas pessoas de que já conheceste um jogador famoso.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Fala durante 5 minutos só em inglês até alguém te mandar parar.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém diga uma frase inteira em alemão (vale pedir ajuda à Maike).",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém proponha um mergulho na piscina.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Mete uma pedra no bolso de alguém sem que dê conta.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Consegue que três pessoas te chamem por uma alcunha nova.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Faz com que alguém te conte um segredo de infância.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém te peça desculpa por uma coisa que não fez.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Troca o lugar de três coisas na cozinha sem quem está a cozinhar dar por isso.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Consegue que alguém diga «isso é o que tu pensas».",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém te vá buscar uma bebida ao frigorífico duas vezes.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Elogia o mesmo detalhe da roupa de três pessoas diferentes.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém te explique as regras de um jogo que tu próprio inventaste.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Faz com que duas pessoas discutam qual é o melhor caminho para a cascata.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Consegue que alguém adivinhe em que ano aconteceu um evento histórico que inventaste.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Mete a frase «como dizia o meu avô» em duas conversas.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém cante uma música dos anos 2000.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Convence alguém de que a água do Gerês tem propriedades mágicas.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém te explique o que é a medicina nuclear.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Faz com que alguém diga «isto na Alemanha não era assim».",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém elogie uma peça de roupa tua sem tu pedires.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém proponha jogar às cartas.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém conte uma história das férias em Esposende ou na Azurara.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Convence alguém de que houve um episódio nas férias de Islantilha que nunca aconteceu.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Consegue que alguém diga «o mercado imobiliário está impossível».",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém te explique uma regra do ciclismo.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém admita que nunca viu um jogo do Real Madrid até ao fim.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém diga «isso é da idade».",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que duas pessoas façam um high-five por algo que tu inventaste celebrar.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém cheire um copo de vinho e comente o aroma com ar sério.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém diga «já não se fazem férias como antigamente».",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém confesse qual foi a última coisa que comprou online.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém te conte um podre de outra pessoa presente.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Faz com que alguém diga o nome de três praias do Norte de seguida.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém se levante para imitar uma jogada de futebol.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém te empreste um carregador sem lhe dizeres porquê.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Convence alguém de que o Gerês tem lobos à solta perto da casa.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém mostre uma foto antiga do grupo no telemóvel.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém te sirva a sobremesa primeiro que aos outros.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém reclame do wifi da casa antes de ti.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Consegue que alguém aceite trocar de lugar à mesa contigo com um pretexto inventado.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém diga «recursos humanos» numa conversa que não é de trabalho.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém desenhe o logótipo de uma marca de memória.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Faz com que alguém conte quanto custou uma coisa cara que comprou.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que três pessoas diferentes te digam as horas em 10 minutos.",
+    "points": 20,
+    "difficulty": 3
+  },
+  {
+    "text": "Consegue que alguém segure no teu copo enquanto inventas que tens de fazer outra coisa.",
+    "points": 10,
+    "difficulty": 1
+  },
+  {
+    "text": "Faz com que alguém proponha ir ver o pôr do sol.",
+    "points": 15,
+    "difficulty": 2
+  },
+  {
+    "text": "Consegue que alguém te chame «chef» sem seres tu a pedir.",
+    "points": 15,
+    "difficulty": 2
+  }
 ]
