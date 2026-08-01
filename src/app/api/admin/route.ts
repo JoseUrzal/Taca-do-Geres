@@ -9,9 +9,10 @@ export async function GET() {
   if (!(await isAdmin())) return NextResponse.json({ admin: false }, { status: 200 });
 
   const state = await getGameState();
-  const [players, { data: prompts }, { data: events }, { data: ideas }, round] =
+  const [players, { data: votes }, { data: prompts }, { data: events }, { data: ideas }, round] =
     await Promise.all([
     getPlayers(),
+    db().from("event_votes").select("event_id"),
     db().from("prompts").select("id, text").eq("used", false).order("text"),
     db()
       .from("events")
@@ -33,12 +34,19 @@ export async function GET() {
       : Promise.resolve(null),
   ]);
 
+  // votos por evento (a tabela pode ainda não existir — nesse caso fica vazio)
+  const eventVotes: Record<string, number> = {};
+  for (const v of votes ?? []) {
+    eventVotes[v.event_id] = (eventVotes[v.event_id] ?? 0) + 1;
+  }
+
   return NextResponse.json({
     admin: true,
     day: state.current_day,
     players,
     prompts: prompts ?? [],
     events: events ?? [],
+    event_votes: eventVotes,
     ideas: ideas ?? [],
     round,
   });

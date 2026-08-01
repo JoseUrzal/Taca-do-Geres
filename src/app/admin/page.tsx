@@ -12,6 +12,7 @@ type Admin = {
   players: Player[];
   prompts: { id: string; text: string }[];
   events: { id: string; name: string; when_hint: string | null }[];
+  event_votes: Record<string, number>;
   ideas: { id: string; kind: string; text: string; player: { name: string } }[];
   round: { id: string; prompt: string; status: string; reveal_index: number } | null;
 };
@@ -317,6 +318,27 @@ function Eventos({
   const [podium, setPodium] = useState<{ first?: string; second?: string; third?: string }>({});
   const [editing, setEditing] = useState<{ id: string; name: string; when: string } | null>(null);
   const [deleteArmed, setDeleteArmed] = useState<string | null>(null);
+  const [closeArmed, setCloseArmed] = useState<string | null>(null);
+
+  async function fecharVotacao(eventId: string) {
+    if (busy) return;
+    if (closeArmed !== eventId) {
+      setCloseArmed(eventId);
+      setTimeout(() => setCloseArmed(null), 3000);
+      return;
+    }
+    setBusy(true);
+    const res = await post("/api/admin/eventos/fechar-votacao", { event_id: eventId });
+    setBusy(false);
+    setCloseArmed(null);
+    if (res.ok) {
+      const body = (await res.json()) as { podium: { name: string; votes: number }[] };
+      flash(
+        `Pódio: ${body.podium.map((p, i) => `${["🥇", "🥈", "🥉"][i]} ${p.name} (${p.votes})`).join(" · ")}`
+      );
+      mutate();
+    } else flash("Ainda não há votos.");
+  }
 
   async function subir(eventId: string) {
     if (busy) return;
@@ -488,6 +510,19 @@ function Eventos({
                       {playing === e.id ? "Fechar" : "Registar pódio"}
                     </button>
                   </div>
+                  {(data.event_votes[e.id] ?? 0) > 0 && (
+                    <button
+                      onClick={() => fecharVotacao(e.id)}
+                      disabled={busy}
+                      className="display mt-2 min-h-12 w-full rounded-md bg-indigo font-bold text-white disabled:opacity-50"
+                    >
+                      {closeArmed === e.id
+                        ? "De certeza? Fecha e dá os pontos"
+                        : `🗳 Fechar votação (${data.event_votes[e.id]} ${
+                            data.event_votes[e.id] === 1 ? "voto" : "votos"
+                          }) → pódio`}
+                    </button>
+                  )}
                   <div className="mt-2 flex gap-1.5">
                     {idx > 0 && (
                       <button
