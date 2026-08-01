@@ -13,6 +13,7 @@ type Casa = {
   me: { name: string; emoji: string };
   points: number;
   rank: number;
+  rank_tied: boolean;
   total_players: number;
   day: number;
   missions: {
@@ -81,7 +82,7 @@ export default function CasaPage() {
               <p
                 className={`num text-5xl font-bold ${data.rank === 1 ? "text-gold" : ""}`}
               >
-                {data.rank}
+                {data.rank_tied ? `=${data.rank}` : data.rank}
                 <span className="text-lg text-muted">/{data.total_players}</span>
               </p>
             </div>

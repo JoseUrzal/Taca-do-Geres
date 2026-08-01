@@ -42,6 +42,8 @@ export default function TacaPage() {
             {data.individual.map((r) => {
               const gold = r.rank === 1 && r.points > 0;
               const isOpen = open === r.player.id;
+              // «=9» quando o lugar é partilhado por empate
+              const tied = data.individual.filter((x) => x.rank === r.rank).length > 1;
               return (
                 <li key={r.player.id}>
                   <button
@@ -53,7 +55,7 @@ export default function TacaPage() {
                         gold ? "font-bold text-gold" : "text-muted"
                       }`}
                     >
-                      {r.rank}
+                      {tied ? `=${r.rank}` : r.rank}
                     </span>
                     <Avatar name={r.player.name} emoji={r.player.emoji} size={32} />
                     <span

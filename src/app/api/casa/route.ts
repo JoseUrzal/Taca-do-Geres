@@ -51,6 +51,7 @@ export async function GET() {
     me: meRow.player,
     points: meRow.points,
     rank: meRow.rank,
+    rank_tied: individual.filter((r) => r.rank === meRow.rank).length > 1,
     total_players: individual.length,
     day: state.current_day,
     missions: missions ?? [],

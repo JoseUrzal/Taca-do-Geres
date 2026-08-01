@@ -174,6 +174,7 @@ export default function TvPage() {
             <ol className="grid grid-flow-col grid-rows-5 gap-x-12 short:gap-x-8 tv:gap-x-24 gap-y-2 short:gap-y-1 tv:gap-y-6">
               {data.board.map((r) => {
                 const gold = r.rank === 1 && r.points > 0;
+                const tied = data.board.filter((x) => x.rank === r.rank).length > 1;
                 return (
                   <li
                     key={r.player.id}
@@ -184,7 +185,7 @@ export default function TvPage() {
                         gold ? "font-bold text-gold" : "text-muted"
                       }`}
                     >
-                      {r.rank}
+                      {tied ? `=${r.rank}` : r.rank}
                     </span>
                     <Avatar
                       name={r.player.name}
