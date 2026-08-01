@@ -21,32 +21,47 @@ export async function getPlayers(): Promise<Player[]> {
 
 // Leaderboard = sempre SUM(score_events). Nunca totais guardados.
 // Campeonato 100% individual — as equipas foram retiradas do jogo.
+// Desempate oficial: pontos → missões confirmadas → (se persistir,
+// partilham o lugar; no domingo resolve-se com quizz de morte súbita).
 export async function getLeaderboard(): Promise<{ individual: LeaderboardRow[] }> {
-  const [players, events] = await Promise.all([
+  const [players, events, { data: confirmadas }] = await Promise.all([
     getPlayers(),
     db().from("score_events").select("player_id, points").then(({ data, error }) => {
       if (error) throw new Error(error.message);
       return data as { player_id: string; points: number }[];
     }),
+    db().from("assignments").select("player_id").eq("status", "confirmada"),
   ]);
 
   const byPlayer = new Map<string, number>();
   for (const e of events) {
     byPlayer.set(e.player_id, (byPlayer.get(e.player_id) ?? 0) + e.points);
   }
+  const nConf = new Map<string, number>();
+  for (const a of confirmadas ?? []) {
+    nConf.set(a.player_id, (nConf.get(a.player_id) ?? 0) + 1);
+  }
+  const conf = (id: string) => nConf.get(id) ?? 0;
 
   const individual = players
     .map((p) => ({ player: p, points: byPlayer.get(p.id) ?? 0, rank: 0 }))
-    .sort((a, b) => b.points - a.points || a.player.name.localeCompare(b.player.name));
-  // ranking denso: empatados partilham o lugar e o seguinte continua a
-  // contagem (5, 5, 6 — nunca «saltam» números no marcador)
+    .sort(
+      (a, b) =>
+        b.points - a.points ||
+        conf(b.player.id) - conf(a.player.id) ||
+        a.player.name.localeCompare(b.player.name)
+    );
+  // ranking denso: só partilham o lugar quando o empate resiste ao
+  // desempate (mesmos pontos E mesmas missões confirmadas)
   individual.forEach((row, i) => {
-    row.rank =
-      i === 0
-        ? 1
-        : row.points === individual[i - 1].points
-          ? individual[i - 1].rank
-          : individual[i - 1].rank + 1;
+    if (i === 0) {
+      row.rank = 1;
+      return;
+    }
+    const prev = individual[i - 1];
+    const empatados =
+      row.points === prev.points && conf(row.player.id) === conf(prev.player.id);
+    row.rank = empatados ? prev.rank : prev.rank + 1;
   });
 
   return { individual };

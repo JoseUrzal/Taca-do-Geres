@@ -37,7 +37,10 @@ export default function TacaPage() {
         <div className="h-96 rounded-lg bg-surface" />
       ) : (
         <>
-          <p className="mb-2 text-sm text-muted">Toca num nome para ver o extrato.</p>
+          <p className="mb-2 text-sm text-muted">
+            Toca num nome para ver o extrato. Empates: fica à frente quem tem
+            mais missões confirmadas («=» quando nem isso desempata).
+          </p>
           <ol className="divide-y divide-line rounded-lg bg-surface">
             {data.individual.map((r) => {
               const gold = r.rank === 1 && r.points > 0;
