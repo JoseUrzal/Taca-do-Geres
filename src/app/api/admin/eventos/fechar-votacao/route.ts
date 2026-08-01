@@ -4,8 +4,8 @@ import { requireAdmin } from "@/lib/identity";
 import { addScore, getPlayers } from "@/lib/queries";
 
 // Fechar a votação: cada boletim dá 3/2/1 pontos de voto ao 1.º/2.º/3.º
-// escolhido; o voto do Cristian (chef convidado) vale o dobro. Os 3 com
-// mais pontos de voto levam o pódio 10/6/3. Empates: ordem alfabética.
+// escolhido. Os 3 com mais pontos de voto levam o pódio 10/6/3.
+// Empates: ordem alfabética.
 // O UPDATE guardado por status='previsto' garante que só pontua uma vez.
 const SLOT_PTS: Record<number, number> = { 1: 3, 2: 2, 3: 1 };
 
@@ -25,13 +25,10 @@ export async function POST(req: NextRequest) {
   }
 
   const nameOf = (id: string) => players.find((p) => p.id === id)?.name ?? "?";
-  const chef = players.find((p) => p.name === "Cristian")?.id ?? null;
 
   const counts = new Map<string, number>();
   for (const v of votes) {
-    const base = SLOT_PTS[v.slot] ?? 1;
-    const peso = v.voter_id === chef ? base * 2 : base;
-    counts.set(v.target_id, (counts.get(v.target_id) ?? 0) + peso);
+    counts.set(v.target_id, (counts.get(v.target_id) ?? 0) + (SLOT_PTS[v.slot] ?? 1));
   }
   const ranked = [...counts.entries()].sort(
     (a, b) => b[1] - a[1] || nameOf(a[0]).localeCompare(nameOf(b[0]))

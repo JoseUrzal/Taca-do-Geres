@@ -96,8 +96,7 @@ export default function EventosPage() {
                 </p>
                 <p className="mt-0.5 text-xs text-muted">
                   Por ordem: 🥇 vale 3, 🥈 vale 2, 🥉 vale 1. Não podes votar em
-                  ti. O voto do Cristian (chef) vale o dobro. Podes mudar até o
-                  José fechar a votação.
+                  ti. Podes mudar até o José fechar a votação.
                 </p>
                 {([1, 2, 3] as const).map((slot) => (
                   <div key={slot} className="mt-2.5">
