@@ -79,16 +79,17 @@ export default function TribunalPage() {
               </p>
             ) : (
               <>
-                {c.my_yes_to_owner >= 4 && (
+                {c.my_yes_to_owner >= 2 && (
                   <p className="mt-3 rounded-md border border-coral p-2 text-xs text-coral">
-                    ⚠️ Já deste {c.my_yes_to_owner} ✅ a {c.player.name} — o
-                    próximo custa <b>−3</b> (limite de cumplicidade: 4 grátis).
+                    🤔 Já confirmaste 2 missões de {c.player.name} <b>hoje</b> —
+                    a 3.ª só amanhã (são só 3 missões por dia…).
                   </p>
                 )}
               <div className="mt-3 flex gap-2">
                 <button
                   onClick={() => votar(c.id, true)}
-                  className="display flex min-h-14 flex-1 items-center justify-center gap-2 rounded-md bg-coral text-lg font-bold text-white active:opacity-80"
+                  disabled={c.my_yes_to_owner >= 2}
+                  className="display flex min-h-14 flex-1 items-center justify-center gap-2 rounded-md bg-coral text-lg font-bold text-white active:opacity-80 disabled:opacity-40"
                 >
                   <Check size={22} strokeWidth={3} /> Confirmo
                 </button>

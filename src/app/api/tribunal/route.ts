@@ -16,19 +16,24 @@ export async function GET() {
       )
       .eq("status", "reclamada")
       .order("created_at"),
-    // quantos ✅ já dei a cada pessoa — para avisar do limite de cumplicidade
+    // quantos ✅ já dei HOJE a cada pessoa — limite diário de cumplicidade
     db()
       .from("approvals")
-      .select("assignment:assignment_id(player_id)")
+      .select("created_at, assignment:assignment_id(player_id)")
       .eq("player_id", playerId)
       .eq("vote", true),
   ]);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  const hoje = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
   const myYesTo = new Map<string, number>();
-  for (const r of (myYesRows ?? []) as unknown as { assignment: { player_id: string } | null }[]) {
+  for (const r of (myYesRows ?? []) as unknown as {
+    created_at: string;
+    assignment: { player_id: string } | null;
+  }[]) {
     const owner = r.assignment?.player_id;
-    if (owner) myYesTo.set(owner, (myYesTo.get(owner) ?? 0) + 1);
+    const dia = new Date(r.created_at).toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
+    if (owner && dia === hoje) myYesTo.set(owner, (myYesTo.get(owner) ?? 0) + 1);
   }
 
   return NextResponse.json({

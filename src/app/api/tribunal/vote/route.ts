@@ -25,39 +25,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "nao_podes_votar_no_teu" }, { status: 403 });
   }
 
+  // limite de cumplicidade: máximo 2 ✅ à mesma pessoa POR DIA. A 3.ª é
+  // bloqueada — cada um só tem 3 missões/dia, validar as 3 é demais.
+  if (vote) {
+    const hoje = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
+    const { data: myYes } = await db()
+      .from("approvals")
+      .select("created_at, assignment:assignment_id(player_id)")
+      .eq("player_id", playerId)
+      .eq("vote", true);
+    const owner = assignment.player_id;
+    const hojeCount = (
+      (myYes ?? []) as unknown as { created_at: string; assignment: { player_id: string } | null }[]
+    ).filter(
+      (r) =>
+        r.assignment?.player_id === owner &&
+        new Date(r.created_at).toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" }) === hoje
+    ).length;
+    if (hojeCount >= 2) {
+      return NextResponse.json({ error: "limite_diario" }, { status: 409 });
+    }
+  }
+
   const { error: insErr } = await db()
     .from("approvals")
     .insert({ assignment_id, player_id: playerId, vote: !!vote });
   if (insErr) {
     // 23505 = unique violation → já votou
     return NextResponse.json({ error: "ja_votaste" }, { status: 409 });
-  }
-
-  // limite de cumplicidade: 4 ✅ à mesma pessoa são grátis no fim de
-  // semana; do 5.º em diante, quem vota perde 3 pontos (público no feed)
-  if (vote) {
-    const { data: myYes } = await db()
-      .from("approvals")
-      .select("id, assignment:assignment_id(player_id)")
-      .eq("player_id", playerId)
-      .eq("vote", true);
-    const owner = assignment.player_id;
-    const n = ((myYes ?? []) as unknown as { assignment: { player_id: string } | null }[]).filter(
-      (r) => r.assignment?.player_id === owner
-    ).length;
-    if (n > 4) {
-      const { data: ownerRow } = await db()
-        .from("players")
-        .select("name")
-        .eq("id", owner)
-        .single();
-      await addScore(
-        playerId,
-        -3,
-        `Cumplicidade: ${n}.º ✅ a ${ownerRow?.name ?? "?"} (limite: 4 grátis)`,
-        "manual"
-      );
-    }
   }
 
   const { data: votes } = await db()

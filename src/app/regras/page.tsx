@@ -27,10 +27,11 @@ export default function RegrasPage() {
           onde os outros votam: <b>2 ✅ confirmam</b> e recebes os pontos;{" "}
           <b>3 ❌ chumbam</b> e a missão arde sem pontos. Os votos são públicos
           e não podes votar no teu próprio caso.{" "}
-          <b>Limite de cumplicidade:</b> os primeiros 4 ✅ que dás à mesma
-          pessoa são grátis; do 5.º em diante, cada ✅ custa-te <b>−3</b>{" "}
-          (aparece no feed). Os cruzamentos estão públicos em Mais →
-          Cumplicidades.
+          <b>Limite de cumplicidade:</b> no máximo <b>2 ✅ à mesma pessoa por
+          dia</b> — a 3.ª confirmação não entra (cada um só tem 3 missões por
+          dia; validar as 3 é demais). Os níveis de parceria estão públicos em
+          Mais → Cumplicidades: 2 num dia «parceria? 🤔», 1 «suspeito 🧐», 0
+          «tranqui 😌».
         </Regra>
 
         <Regra emoji="🎯" titulo="Acusações">
