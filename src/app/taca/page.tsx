@@ -3,85 +3,147 @@
 import { useState } from "react";
 import useSWR from "swr";
 import Shell from "@/components/Shell";
-import Scoreboard from "@/components/Scoreboard";
 import FlipNumber from "@/components/FlipNumber";
+import Avatar from "@/components/Avatar";
 import { fetcher, POLL } from "@/lib/client";
-import type { FeedItem, LeaderboardRow, Team } from "@/lib/types";
+import type { FeedItem, LeaderboardRow } from "@/lib/types";
 
 type Taca = {
-  individual: (LeaderboardRow & { team_colour: string | null })[];
-  teams: { team: Team; points: number; rank: number }[];
+  individual: LeaderboardRow[];
   feed: FeedItem[];
+};
+
+const SOURCE_ICON: Record<string, string> = {
+  missao: "🕵️",
+  acusacao: "🎯",
+  quem_disse: "🎤",
+  manual: "🏊",
 };
 
 export default function TacaPage() {
   const { data } = useSWR<Taca>("/api/taca", fetcher, POLL);
-  const [tab, setTab] = useState<"individual" | "equipas">("individual");
+  const [open, setOpen] = useState<string | null>(null);
 
   return (
     <Shell title="Taça">
-      <div className="mb-4 grid grid-cols-2 gap-2">
-        {(["individual", "equipas"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`display min-h-14 rounded-md text-lg font-bold ${
-              tab === t ? "bg-coral text-white" : "bg-surface text-muted"
-            }`}
-          >
-            {t === "individual" ? "Individual" : "Equipas"}
-          </button>
-        ))}
-      </div>
-
       {!data ? (
         <div className="h-96 rounded-lg bg-surface" />
-      ) : tab === "individual" ? (
-        <Scoreboard rows={data.individual} />
       ) : (
-        <div className="space-y-3">
-          {data.teams.map((t) => (
-            <div
-              key={t.team.id}
-              className="flex items-center justify-between rounded-lg border-l-8 bg-surface p-5"
-              style={{ borderLeftColor: t.team.colour_hex }}
-            >
-              <div>
-                <p className="num text-sm text-muted">{t.rank}.º</p>
-                <p className={`display text-2xl font-bold ${t.rank === 1 ? "text-gold" : ""}`}>
-                  {t.team.name}
-                </p>
-              </div>
-              <FlipNumber value={t.points} className="text-5xl font-bold" />
-            </div>
-          ))}
-        </div>
-      )}
+        <>
+          <p className="mb-2 text-sm text-muted">Toca num nome para ver o extrato.</p>
+          <ol className="divide-y divide-line rounded-lg bg-surface">
+            {data.individual.map((r) => {
+              const gold = r.rank === 1 && r.points > 0;
+              const isOpen = open === r.player.id;
+              return (
+                <li key={r.player.id}>
+                  <button
+                    onClick={() => setOpen(isOpen ? null : r.player.id)}
+                    className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left active:bg-surface-2"
+                  >
+                    <span
+                      className={`num w-9 shrink-0 text-right text-lg ${
+                        gold ? "font-bold text-gold" : "text-muted"
+                      }`}
+                    >
+                      {r.rank}
+                    </span>
+                    <Avatar name={r.player.name} emoji={r.player.emoji} size={32} />
+                    <span
+                      className={`display min-w-0 flex-1 truncate text-xl font-bold ${
+                        gold ? "text-gold" : ""
+                      }`}
+                    >
+                      {r.player.name}
+                    </span>
+                    <FlipNumber
+                      value={r.points}
+                      className={`shrink-0 text-2xl font-bold ${gold ? "text-gold" : ""}`}
+                    />
+                    <span className={`text-muted transition-transform ${isOpen ? "rotate-90" : ""}`}>
+                      ›
+                    </span>
+                  </button>
+                  {isOpen && <Extrato playerId={r.player.id} />}
+                </li>
+              );
+            })}
+          </ol>
 
-      {/* últimas jogadas */}
-      <section className="mt-6">
-        <h2 className="display mb-2 text-lg">Últimas jogadas</h2>
-        <ul className="divide-y divide-line rounded-xl bg-surface">
-          {(!data || data.feed.length === 0) && (
-            <li className="p-4 text-muted">Ainda ninguém marcou. Toca a mexer.</li>
-          )}
-          {data?.feed.map((f) => (
-            <li key={f.id} className="flex items-start gap-3 p-3">
-              <span
-                className={`num shrink-0 font-bold ${
-                  f.points >= 0 ? "text-coral" : "text-muted"
-                }`}
-              >
-                {f.points >= 0 ? `+${f.points}` : f.points}
-              </span>
-              <p className="text-sm leading-snug">
-                <span className="font-semibold">{f.player?.name}</span>{" "}
-                <span className="text-muted">{f.reason}</span>
-              </p>
-            </li>
-          ))}
-        </ul>
-      </section>
+          {/* últimas jogadas */}
+          <section className="mt-6">
+            <h2 className="display mb-2 text-lg">Últimas jogadas</h2>
+            <ul className="divide-y divide-line rounded-xl bg-surface">
+              {data.feed.length === 0 && (
+                <li className="p-4 text-muted">Ainda ninguém marcou. Toca a mexer.</li>
+              )}
+              {data.feed.map((f) => (
+                <li key={f.id} className="flex items-start gap-3 p-3">
+                  <span
+                    className={`num shrink-0 font-bold ${
+                      f.points >= 0 ? "text-coral" : "text-muted"
+                    }`}
+                  >
+                    {f.points >= 0 ? `+${f.points}` : f.points}
+                  </span>
+                  <p className="text-sm leading-snug">
+                    <span className="font-semibold">{f.player?.name}</span>{" "}
+                    <span className="text-muted">{f.reason}</span>
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </>
+      )}
     </Shell>
+  );
+}
+
+// Extrato de um jogador: cada linha de pontos, da mais recente para a mais
+// antiga. Carrega quando a linha abre.
+function Extrato({ playerId }: { playerId: string }) {
+  const { data } = useSWR<{
+    total: number;
+    events: { id: string; points: number; reason: string; source: string; created_at: string }[];
+  }>(`/api/jogador/${playerId}`, fetcher);
+
+  if (!data) {
+    return <div className="mx-4 mb-3 h-16 rounded-md bg-page" />;
+  }
+  if (data.events.length === 0) {
+    return (
+      <p className="mx-4 mb-3 rounded-md bg-page p-3 text-sm text-muted">
+        Ainda sem pontos. Tudo por fazer.
+      </p>
+    );
+  }
+  return (
+    <ul className="mx-4 mb-3 divide-y divide-line rounded-md bg-page">
+      {data.events.map((e) => (
+        <li key={e.id} className="flex items-start gap-2.5 p-2.5">
+          <span aria-hidden className="text-sm">
+            {SOURCE_ICON[e.source] ?? "🏆"}
+          </span>
+          <p className="min-w-0 flex-1 text-sm leading-snug text-ink/90">
+            {e.reason}
+            <span className="num ml-1.5 text-xs text-muted">
+              {new Date(e.created_at).toLocaleString("pt-PT", {
+                weekday: "short",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+          </p>
+          <span
+            className={`num shrink-0 font-bold ${
+              e.points >= 0 ? "text-coral" : "text-muted"
+            }`}
+          >
+            {e.points >= 0 ? `+${e.points}` : e.points}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }

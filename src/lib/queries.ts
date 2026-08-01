@@ -1,5 +1,5 @@
 import { db } from "./supabase";
-import type { LeaderboardRow, Player, Team } from "./types";
+import type { LeaderboardRow, Player } from "./types";
 
 export async function getGameState() {
   const { data, error } = await db().from("game_state").select("*").eq("id", 1).single();
@@ -19,23 +19,14 @@ export async function getPlayers(): Promise<Player[]> {
   return data as Player[];
 }
 
-export async function getTeams(): Promise<Team[]> {
-  const { data, error } = await db().from("teams").select("*").order("name");
-  if (error) throw new Error(error.message);
-  return data as Team[];
-}
-
 // Leaderboard = sempre SUM(score_events). Nunca totais guardados.
-export async function getLeaderboard(): Promise<{
-  individual: LeaderboardRow[];
-  teams: { team: Team; points: number; rank: number }[];
-}> {
-  const [players, teams, events] = await Promise.all([
+// Campeonato 100% individual — as equipas foram retiradas do jogo.
+export async function getLeaderboard(): Promise<{ individual: LeaderboardRow[] }> {
+  const [players, events] = await Promise.all([
     getPlayers(),
-    getTeams(),
-    db().from("score_events").select("player_id, team_id, points").then(({ data, error }) => {
+    db().from("score_events").select("player_id, points").then(({ data, error }) => {
       if (error) throw new Error(error.message);
-      return data as { player_id: string; team_id: string | null; points: number }[];
+      return data as { player_id: string; points: number }[];
     }),
   ]);
 
@@ -51,18 +42,7 @@ export async function getLeaderboard(): Promise<{
     row.rank = i > 0 && row.points === individual[i - 1].points ? individual[i - 1].rank : i + 1;
   });
 
-  const byTeam = new Map<string, number>();
-  for (const p of players) {
-    if (p.team_id) byTeam.set(p.team_id, (byTeam.get(p.team_id) ?? 0) + (byPlayer.get(p.id) ?? 0));
-  }
-  const teamRows = teams
-    .map((t) => ({ team: t, points: byTeam.get(t.id) ?? 0, rank: 0 }))
-    .sort((a, b) => b.points - a.points);
-  teamRows.forEach((row, i) => {
-    row.rank = i > 0 && row.points === teamRows[i - 1].points ? teamRows[i - 1].rank : i + 1;
-  });
-
-  return { individual, teams: teamRows };
+  return { individual };
 }
 
 export async function getFeed(limit = 20) {
@@ -75,17 +55,15 @@ export async function getFeed(limit = 20) {
   return data;
 }
 
-// Insere um score_event; team_id vai preenchido para contar para a equipa.
+// Insere um score_event (pontos são sempre individuais).
 export async function addScore(
   playerId: string,
   points: number,
   reason: string,
   source: "missao" | "acusacao" | "quem_disse" | "manual"
 ) {
-  const { data: player } = await db().from("players").select("team_id").eq("id", playerId).single();
   const { error } = await db().from("score_events").insert({
     player_id: playerId,
-    team_id: player?.team_id ?? null,
     points,
     reason,
     source,

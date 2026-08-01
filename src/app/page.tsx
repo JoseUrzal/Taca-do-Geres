@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { fetcher, post } from "@/lib/client";
 import Avatar from "@/components/Avatar";
-import type { Player, Team } from "@/lib/types";
+import type { Player } from "@/lib/types";
 
 // Primeira visita: escolher quem és. Fica num cookie e pronto — sem login.
 export default function NamePicker() {
   const router = useRouter();
-  const { data } = useSWR<{ players: Player[]; teams: Team[]; me: string | null }>(
+  const { data } = useSWR<{ players: Player[]; me: string | null }>(
     "/api/players",
     fetcher
   );
@@ -21,9 +21,6 @@ export default function NamePicker() {
   }, [data?.me, router]);
 
   if (data?.me) return null;
-
-  const teamColour = (p: Player) =>
-    data?.teams.find((t) => t.id === p.team_id)?.colour_hex ?? "#94A3B8";
 
   async function pick(p: Player) {
     if (busy) return;
@@ -53,8 +50,7 @@ export default function NamePicker() {
             key={p.id}
             onClick={() => pick(p)}
             disabled={!!busy}
-            className="flex min-h-20 items-center gap-3 rounded-lg border-l-4 bg-surface px-4 text-left active:bg-surface-2 disabled:opacity-50"
-            style={{ borderLeftColor: teamColour(p) }}
+            className="flex min-h-20 items-center gap-3 rounded-lg border-l-4 border-indigo bg-surface px-4 text-left active:bg-surface-2 disabled:opacity-50"
           >
             <Avatar name={p.name} emoji={p.emoji} size={48} />
             <span className="display text-xl font-bold">

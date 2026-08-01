@@ -1,17 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import Scoreboard from "@/components/Scoreboard";
-import FlipNumber from "@/components/FlipNumber";
 import Avatar from "@/components/Avatar";
 import { fetcher, post, POLL } from "@/lib/client";
-import type { FeedItem, LeaderboardRow, Team } from "@/lib/types";
+import type { FeedItem, LeaderboardRow } from "@/lib/types";
 
 type TvData = {
   day: number;
   top5: LeaderboardRow[];
-  teams: { team: Team; points: number; rank: number }[];
   feed: FeedItem[];
   moments: { id: string; text: string; player: { name: string; emoji: string } }[];
   tribunal: {
@@ -20,17 +18,8 @@ type TvData = {
     mission: { text: string; points: number };
   }[];
   round: TvRound;
-  draw: TvDraw;
-  draw_pending: boolean;
   can_control: boolean;
 };
-
-type TvDraw = {
-  reveal: number;
-  total: number;
-  players: { name: string; emoji: string; team_id: string }[];
-  teams: { id: string; name: string; colour: string }[];
-} | null;
 
 type TvRound =
   | ({ id: string; prompt: string; total_players: number } & (
@@ -57,7 +46,7 @@ type TvRound =
     ))
   | null;
 
-const BASE_PANELS = ["top5", "equipas", "feed", "momentos"];
+const BASE_PANELS = ["top5", "feed", "momentos"];
 
 export default function TvPage() {
   const { data } = useSWR<TvData>("/api/tv", fetcher, POLL);
@@ -69,8 +58,8 @@ export default function TvPage() {
       : BASE_PANELS;
   const current = panels[panel % panels.length];
 
-  // rotação de 12 em 12 segundos quando não há ronda nem sorteio ativos
-  const takeover = !!data?.round || !!data?.draw || !!data?.draw_pending;
+  // rotação de 12 em 12 segundos quando não há ronda ativa
+  const takeover = !!data?.round;
   useEffect(() => {
     if (takeover) return;
     const n = panels.length;
@@ -90,49 +79,10 @@ export default function TvPage() {
       <main className="flex flex-1 flex-col justify-center py-8">
         {!data ? null : data.round ? (
           <TvRoundView round={data.round} canControl={data.can_control} />
-        ) : data.draw ? (
-          <TvDrawView draw={data.draw} canControl={data.can_control} />
-        ) : data.draw_pending ? (
-          <section className="text-center">
-            <p className="text-8xl md:text-9xl">🎩</p>
-            <p className="display mt-6 text-xl md:text-3xl font-bold tracking-widest text-coral">
-              SORTEIO DAS EQUIPAS
-            </p>
-            <h2 className="display mt-3 text-4xl md:text-7xl font-bold leading-tight">
-              Está tudo dentro do chapéu.
-            </h2>
-            <p className="mt-8 text-2xl md:text-4xl text-muted">
-              José: no teu telemóvel, <b className="text-ink">Mais → Admin → 🎲 Sortear equipas</b>
-            </p>
-            <p className="mt-3 text-xl md:text-3xl text-muted">
-              …e os nomes começam a sair aqui, um a um.
-            </p>
-          </section>
         ) : current === "top5" ? (
           <section>
             <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">Classificação</h2>
             <Scoreboard rows={data.top5} big />
-          </section>
-        ) : current === "equipas" ? (
-          <section>
-            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">Equipas</h2>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-8">
-              {data.teams.map((t) => (
-                <div
-                  key={t.team.id}
-                  className="rounded-xl border-t-8 bg-surface p-5 md:p-10 text-center"
-                  style={{ borderTopColor: t.team.colour_hex }}
-                >
-                  <p className={`display text-2xl md:text-5xl font-bold ${t.rank === 1 ? "text-gold" : ""}`}>
-                    {t.team.name}
-                  </p>
-                  <FlipNumber
-                    value={t.points}
-                    className={`mt-4 text-5xl md:text-9xl font-bold ${t.rank === 1 ? "text-gold" : ""}`}
-                  />
-                </div>
-              ))}
-            </div>
           </section>
         ) : current === "feed" ? (
           <section>
@@ -225,142 +175,6 @@ export default function TvPage() {
         </footer>
       )}
     </div>
-  );
-}
-
-function TvDrawView({
-  draw,
-  canControl,
-}: {
-  draw: NonNullable<TvDraw>;
-  canControl: boolean;
-}) {
-  const [busy, setBusy] = useState(false);
-  // suspense: quando sai um nome novo, o saco abana (1.8s) e só depois o
-  // cartão salta cá para fora (2.2s) e desliza para a equipa
-  const [anim, setAnim] = useState<"idle" | "shake" | "pop">("idle");
-  const prevReveal = useRef(draw.reveal);
-
-  useEffect(() => {
-    if (draw.reveal > prevReveal.current && draw.reveal <= draw.total) {
-      setAnim("shake");
-      const t1 = setTimeout(() => setAnim("pop"), 1800);
-      const t2 = setTimeout(() => setAnim("idle"), 4200);
-      prevReveal.current = draw.reveal;
-      return () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
-    }
-    prevReveal.current = draw.reveal;
-  }, [draw.reveal, draw.total]);
-
-  const revealed = draw.players.slice(0, draw.reveal);
-  const latest = revealed[revealed.length - 1] ?? null;
-  // durante a animação, o último ainda não aparece na coluna
-  const placed = anim === "idle" ? revealed : revealed.slice(0, -1);
-  const finished = draw.reveal >= draw.total;
-  const [teamA, teamB] = draw.teams;
-  const latestTeam = latest ? draw.teams.find((t) => t.id === latest.team_id) : null;
-
-  async function proxima() {
-    if (busy || anim !== "idle") return;
-    setBusy(true);
-    await post("/api/sorteio/proxima");
-    setBusy(false);
-  }
-
-  const column = (team: { id: string; name: string; colour: string }) => (
-    <div
-      className="flex-1 rounded-xl border-t-8 bg-surface p-6"
-      style={{ borderTopColor: team.colour }}
-    >
-      <p className="display text-center text-2xl md:text-4xl font-bold">{team.name}</p>
-      <ul className="mt-5 space-y-3">
-        {placed
-          .filter((p) => p.team_id === team.id)
-          .map((p, i) => (
-            <li
-              key={i}
-              className="display flex items-center justify-center gap-3 rounded-md bg-page px-4 py-3 text-center text-xl md:text-3xl font-bold"
-            >
-              <Avatar name={p.name} emoji={p.emoji} size={48} /> {p.name}
-            </li>
-          ))}
-      </ul>
-    </div>
-  );
-
-  return (
-    <section>
-      <p className="display text-center text-xl md:text-3xl font-bold tracking-widest text-coral">
-        🎩 SORTEIO DAS EQUIPAS
-      </p>
-
-      {/* palco do suspense */}
-      <div className="flex min-h-40 items-center justify-center md:min-h-56">
-        {anim === "shake" ? (
-          <div className="text-center">
-            <p className="hat-shake text-8xl md:text-9xl">🎩</p>
-            <p className="display mt-2 text-xl md:text-3xl text-muted">a tirar um nome…</p>
-          </div>
-        ) : anim === "pop" && latest ? (
-          <div
-            className="card-pop flex items-center gap-4 rounded-2xl border-4 bg-surface px-8 py-4"
-            style={{ borderColor: latestTeam?.colour }}
-          >
-            <Avatar name={latest.name} emoji={latest.emoji} size={96} />
-            <div className="text-left">
-              <p className="display text-4xl md:text-6xl font-bold">{latest.name}</p>
-              <p
-                className="display text-xl md:text-3xl font-bold"
-                style={{ color: latestTeam?.colour }}
-              >
-                → {latestTeam?.name}
-              </p>
-            </div>
-          </div>
-        ) : finished ? (
-          <p className="display text-center text-2xl md:text-5xl font-bold text-gold">
-            Equipas fechadas. Que ganhe a melhor.
-          </p>
-        ) : (
-          <p className="text-8xl md:text-9xl">🎩</p>
-        )}
-      </div>
-
-      <div className="mx-auto mt-2 flex max-w-6xl flex-col gap-3 md:flex-row md:gap-8">
-        {teamA && column(teamA)}
-        {teamB && column(teamB)}
-      </div>
-
-      <div className="mt-8 text-center">
-        {canControl ? (
-          <button
-            onClick={proxima}
-            disabled={busy || anim !== "idle"}
-            className="display min-h-14 md:min-h-20 rounded-xl bg-coral px-8 md:px-16 text-2xl md:text-4xl font-bold text-white disabled:opacity-50"
-          >
-            {finished
-              ? "Fechar sorteio"
-              : draw.reveal === 0
-                ? "Tirar o primeiro nome →"
-                : "Próximo nome →"}
-          </button>
-        ) : (
-          !finished && (
-            <p className="display text-lg md:text-2xl text-muted">
-              o José tira os nomes do chapéu…
-            </p>
-          )
-        )}
-        {!finished && (
-          <p className="num mt-3 text-lg md:text-2xl text-muted">
-            {draw.reveal}/{draw.total}
-          </p>
-        )}
-      </div>
-    </section>
   );
 }
 

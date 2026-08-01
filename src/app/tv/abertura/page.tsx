@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 // Cerimónia de abertura — slideshow para a TV, ~10 min com o anfitrião a
 // apresentar. Clique/toque ou setas do teclado para avançar. Termina a
-// apontar para o sorteio das equipas.
+// apontar para o marcador na TV.
 
 type Slide = {
   kicker?: string;
@@ -29,7 +29,7 @@ const SLIDES: Slide[] = [
     lines: [
       "Cada um abre o link e escolhe o seu nome — uma vez.",
       "Tudo o que acontece dá pontos: jogos, missões, palpites.",
-      "Vencedor individual e equipa campeã. As crianças dormem; os adultos competem.",
+      "Cada um por si. As crianças dormem; os adultos competem.",
     ],
   },
   {
@@ -97,7 +97,7 @@ const SLIDES: Slide[] = [
     title: "Como se ganha",
     lines: [
       "O marcador está sempre nesta TV e no /taca de cada um.",
-      "Domingo à tarde: campeão individual e equipa vencedora.",
+      "Domingo à tarde coroa-se o campeão da Taça.",
       "O ouro não se pede. Conquista-se.",
     ],
     big: "🥇",
@@ -105,13 +105,14 @@ const SLIDES: Slide[] = [
   },
   {
     kicker: "AGORA",
-    title: "O sorteio",
+    title: "Que comece o jogo",
     lines: [
       "Telemóveis na mão. Nome escolhido. Já ninguém confia em ninguém.",
-      "Falta uma coisa: as equipas.",
-      "Sorteadas ao calhas, aqui, agora — um a um.",
+      "As missões já estão nas vossas mãos.",
+      "Cada um por si — e que ganhe o melhor.",
     ],
-    big: "🎲",
+    big: "🏆",
+    gold: true,
   },
 ];
 
@@ -172,7 +173,7 @@ export default function AberturaPage() {
             }}
             className="display mt-14 min-h-14 md:min-h-20 rounded-xl bg-coral px-8 md:px-16 text-2xl md:text-4xl font-bold text-white"
           >
-            Para o sorteio →
+            Para o marcador →
           </button>
         )}
       </main>

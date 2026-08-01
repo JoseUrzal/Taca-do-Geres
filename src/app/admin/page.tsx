@@ -4,15 +4,12 @@ import { useState } from "react";
 import useSWR from "swr";
 import { fetcher, post, POLL } from "@/lib/client";
 import Avatar from "@/components/Avatar";
-import type { Player, Team } from "@/lib/types";
+import type { Player } from "@/lib/types";
 
 type Admin = {
   admin: boolean;
   day: number;
-  camera_player_id: string | null;
-  draw_reveal: number;
   players: Player[];
-  teams: Team[];
   prompts: { id: string; text: string }[];
   events: { id: string; name: string; when_hint: string | null }[];
   ideas: { id: string; kind: string; text: string; player: { name: string } }[];
@@ -85,7 +82,6 @@ export default function AdminPage() {
         </p>
       )}
 
-      <Sorteio data={data} mutate={mutate} flash={flash} />
       <QuemDisseControlo data={data} mutate={mutate} flash={flash} />
       <Eventos data={data} mutate={mutate} flash={flash} />
       <Ideias data={data} mutate={mutate} flash={flash} />
@@ -101,138 +97,6 @@ function Sec({ title, children }: { title: string; children: React.ReactNode }) 
       <h2 className="display mb-3 text-xl font-bold text-indigo">{title}</h2>
       {children}
     </section>
-  );
-}
-
-function Sorteio({
-  data,
-  mutate,
-  flash,
-}: {
-  data: Admin;
-  mutate: () => void;
-  flash: (m: string) => void;
-}) {
-  const [confirming, setConfirming] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [names, setNames] = useState<Record<string, string>>({});
-  const drawn = data.players.length > 0 && data.players.every((p) => p.team_id);
-
-  async function guardarNomes() {
-    if (busy) return;
-    const changed = data.teams
-      .filter((t) => names[t.id] !== undefined && names[t.id].trim() && names[t.id] !== t.name)
-      .map((t) => ({ id: t.id, name: names[t.id] }));
-    if (changed.length === 0) return;
-    setBusy(true);
-    const res = await post("/api/admin/equipas", { teams: changed });
-    setBusy(false);
-    if (res.ok) {
-      flash("Nomes das equipas guardados.");
-      setNames({});
-      mutate();
-    }
-  }
-
-  async function sortear() {
-    if (busy) return;
-    setBusy(true);
-    const res = await post("/api/admin/sorteio");
-    setBusy(false);
-    setConfirming(false);
-    if (res.ok) {
-      flash("Sorteado! A TV está em modo revelação — toca em «Começar» lá.");
-      mutate();
-    }
-  }
-
-  return (
-    <Sec title="Sorteio de equipas">
-      {/* nomes decididos ao vivo na abertura */}
-      <div className="mb-3 space-y-2">
-        {data.teams.map((t) => (
-          <div key={t.id} className="flex items-center gap-2">
-            <span
-              className="h-6 w-1.5 shrink-0 rounded"
-              style={{ background: t.colour_hex }}
-              aria-hidden
-            />
-            <input
-              value={names[t.id] ?? t.name}
-              onChange={(e) => setNames((n) => ({ ...n, [t.id]: e.target.value }))}
-              className="min-h-12 flex-1 rounded-md border border-line bg-page px-3 text-ink"
-            />
-          </div>
-        ))}
-        <button
-          onClick={guardarNomes}
-          disabled={busy}
-          className="display min-h-11 w-full rounded-md border border-line text-sm font-bold text-muted disabled:opacity-50"
-        >
-          Guardar nomes das equipas
-        </button>
-      </div>
-      {!drawn ? (
-        <>
-          <p className="text-sm text-muted">
-            Divide os 10 em duas equipas ao calhas e põe a TV a revelar um a um.
-            Faz isto com toda a gente em frente à televisão.
-          </p>
-          <button
-            onClick={sortear}
-            disabled={busy}
-            className="display mt-3 min-h-14 w-full rounded-md bg-coral font-bold text-white disabled:opacity-50"
-          >
-            🎲 Sortear equipas (aparece na TV)
-          </button>
-        </>
-      ) : (
-        <>
-          <div className="space-y-2">
-            {data.teams.map((t) => (
-              <p key={t.id} className="text-sm">
-                <span className="font-semibold" style={{ color: t.colour_hex }}>
-                  {t.name}:
-                </span>{" "}
-                {data.players
-                  .filter((p) => p.team_id === t.id)
-                  .map((p) => p.name)
-                  .join(", ")}
-              </p>
-            ))}
-          </div>
-          {!confirming ? (
-            <button
-              onClick={() => setConfirming(true)}
-              className="display mt-3 min-h-12 w-full rounded-md border border-line font-bold text-muted"
-            >
-              Re-sortear…
-            </button>
-          ) : (
-            <div className="mt-3 rounded-md border-2 border-indigo p-3">
-              <p className="text-sm">
-                Baralha as equipas outra vez e repete a revelação na TV. De certeza?
-              </p>
-              <div className="mt-2 flex gap-2">
-                <button
-                  onClick={sortear}
-                  disabled={busy}
-                  className="display min-h-12 flex-1 rounded-md bg-coral font-bold text-white disabled:opacity-50"
-                >
-                  Sim, re-sortear
-                </button>
-                <button
-                  onClick={() => setConfirming(false)}
-                  className="display min-h-12 rounded-md border border-line px-4 font-bold text-muted"
-                >
-                  Não
-                </button>
-              </div>
-            </div>
-          )}
-        </>
-      )}
-    </Sec>
   );
 }
 

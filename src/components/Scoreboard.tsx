@@ -11,7 +11,7 @@ export default function Scoreboard({
   rows,
   big = false,
 }: {
-  rows: (LeaderboardRow & { team_colour?: string | null })[];
+  rows: LeaderboardRow[];
   big?: boolean;
 }) {
   return (
@@ -30,13 +30,6 @@ export default function Scoreboard({
             >
               {r.rank}
             </span>
-            {r.team_colour && (
-              <span
-                className="h-6 w-1 shrink-0 rounded"
-                style={{ background: r.team_colour }}
-                aria-hidden
-              />
-            )}
             <Avatar name={r.player.name} emoji={r.player.emoji} size={big ? 56 : 32} />
             <span
               className={`display min-w-0 flex-1 truncate font-bold ${

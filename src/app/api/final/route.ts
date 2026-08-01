@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 // Dados da cerimónia de encerramento: pódio + medalhas honoríficas
 // calculadas a partir do histórico completo do fim de semana.
 export async function GET() {
-  const [players, { individual, teams }] = await Promise.all([
+  const [players, { individual }] = await Promise.all([
     getPlayers(),
     getLeaderboard(),
   ]);
@@ -99,9 +99,6 @@ export async function GET() {
       points: r.points,
       rank: r.rank,
     })),
-    team: teams[0]
-      ? { name: teams[0].team.name, colour: teams[0].team.colour_hex, points: teams[0].points }
-      : null,
     medals,
   });
 }

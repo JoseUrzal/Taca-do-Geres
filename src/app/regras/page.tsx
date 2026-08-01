@@ -8,9 +8,10 @@ export default function RegrasPage() {
     <Shell title="Regras">
       <div className="space-y-4">
         <Regra emoji="🏆" titulo="A Taça">
-          Tudo dá pontos: missões, acusações, palpites e jogos físicos. Há um
-          campeão individual e uma equipa vencedora, decididos domingo à tarde.
-          O marcador vive em <b>Taça</b> e na TV.
+          Tudo dá pontos: missões, acusações, palpites e jogos físicos. É cada
+          um por si: o campeão da Taça é coroado domingo à tarde. O marcador
+          vive em <b>Taça</b> e na TV — toca num nome para veres o extrato de
+          pontos de cada um.
         </Regra>
 
         <Regra emoji="🕵️" titulo="Missões Secretas">
@@ -50,7 +51,7 @@ export default function RegrasPage() {
           Não há câmara oficial: se está a acontecer algo bom, <b>filma</b> —
           quem estiver mais perto. Um vídeo é a melhor prova no Tribunal: se
           duvidarem de uma missão tua, mostra-o antes da votação (vale combinar
-          em segredo com um colega de equipa para ele te filmar). O botão{" "}
+          em segredo com alguém para te filmar). O botão{" "}
           <b>Guardar momento</b> na Casa não grava vídeo — aponta por escrito o
           que aconteceu, com autor e hora. Essa lista (Mais → Momentos) é o
           guião do vídeo de domingo: diz-nos o que aconteceu e a quem pedir as

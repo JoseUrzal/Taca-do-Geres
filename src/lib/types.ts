@@ -1,10 +1,8 @@
-export type Team = { id: string; name: string; colour_hex: string };
 export type Player = {
   id: string;
   name: string;
   short_name: string;
   emoji: string;
-  team_id: string | null;
 };
 export type Mission = {
   id: string;
@@ -24,7 +22,7 @@ export type AssignmentStatus =
 export type RoundStatus = "a_responder" | "a_adivinhar" | "revelado";
 
 export type LeaderboardRow = {
-  player: Player & { team_id: string | null };
+  player: Player;
   points: number;
   rank: number;
 };

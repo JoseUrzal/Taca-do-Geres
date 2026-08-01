@@ -47,13 +47,6 @@ export async function GET() {
   const meRow = individual.find((r) => r.player.id === playerId);
   if (!meRow) return NextResponse.json({ error: "sem_identidade" }, { status: 401 });
 
-  // sorteio das equipas por acontecer ou a decorrer → a Casa mostra o
-  // banner «acompanha no /tv» (segundo ecrã para quem não vê a televisão)
-  const players = individual.map((r) => r.player);
-  const allAssigned = players.length > 0 && players.every((p) => p.team_id);
-  const drawLive =
-    players.length > 0 && (!allAssigned || state.draw_reveal <= players.length);
-
   return NextResponse.json({
     me: meRow.player,
     points: meRow.points,
@@ -65,6 +58,5 @@ export async function GET() {
     tribunal_pending: tribunalPending ?? 0,
     active_round: !!state.active_round_id,
     next_event: nextEvent,
-    draw_live: drawLive,
   });
 }

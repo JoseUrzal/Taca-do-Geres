@@ -23,7 +23,6 @@ type Casa = {
   accusations_left: number;
   active_round: boolean;
   next_event: { name: string; when_hint: string | null } | null;
-  draw_live: boolean;
 };
 
 export default function CasaPage() {
@@ -66,19 +65,6 @@ export default function CasaPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {/* sorteio a decorrer: link para o segundo ecrã */}
-          {data.draw_live && (
-            <Link
-              href="/tv"
-              className="block rounded-lg bg-coral p-4 text-white active:opacity-80"
-            >
-              <p className="display text-lg font-bold">🎩 Sorteio das equipas</p>
-              <p className="text-sm opacity-90">
-                Não vês bem a TV? Acompanha aqui no telemóvel →
-              </p>
-            </Link>
-          )}
-
           {/* pontos + rank */}
           <section className="flex items-stretch gap-3">
             <div className="flex-1 rounded-lg bg-surface p-4">

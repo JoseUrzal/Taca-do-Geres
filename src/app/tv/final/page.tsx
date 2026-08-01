@@ -7,11 +7,10 @@ import Avatar from "@/components/Avatar";
 import { fetcher } from "@/lib/client";
 
 // Cerimónia de encerramento — domingo à tarde, na TV. Clique/toque avança.
-// Ordem: intro → medalhas (uma a uma) → 3.º → 2.º → CAMPEÃO → equipa → fim.
+// Ordem: intro → medalhas (uma a uma) → 3.º → 2.º → CAMPEÃO → fim.
 
 type Final = {
   podium: { name: string; emoji: string; points: number; rank: number }[];
-  team: { name: string; colour: string; points: number } | null;
   medals: { titulo: string; icone: string; nome: string; emoji: string; detalhe: string }[];
 };
 
@@ -19,7 +18,6 @@ type Slide =
   | { kind: "intro" }
   | { kind: "medal"; m: Final["medals"][number] }
   | { kind: "podium"; p: Final["podium"][number]; label: string; gold?: boolean }
-  | { kind: "team"; t: NonNullable<Final["team"]> }
   | { kind: "fim" };
 
 export default function FinalPage() {
@@ -35,7 +33,6 @@ export default function FinalPage() {
     if (third) slides.push({ kind: "podium", p: third, label: "3.º lugar" });
     if (second) slides.push({ kind: "podium", p: second, label: "2.º lugar" });
     if (first) slides.push({ kind: "podium", p: first, label: "CAMPEÃO DA TAÇA DO GERÊS", gold: true });
-    if (data.team) slides.push({ kind: "team", t: data.team });
     slides.push({ kind: "fim" });
   }
   const slide = slides[Math.min(i, slides.length - 1)];
@@ -114,19 +111,6 @@ export default function FinalPage() {
             {slide.gold && (
               <p className="mt-10 text-5xl md:text-8xl">🏆🥇🎉</p>
             )}
-          </div>
-        ) : slide.kind === "team" ? (
-          <div className="card-pop">
-            <p className="display text-2xl font-bold tracking-widest text-coral md:text-4xl">
-              EQUIPA CAMPEÃ
-            </p>
-            <p
-              className="display mt-8 text-5xl font-bold md:text-9xl"
-              style={{ color: slide.t.colour }}
-            >
-              {slide.t.name}
-            </p>
-            <p className="num mt-4 text-3xl text-muted md:text-5xl">{slide.t.points} pontos</p>
           </div>
         ) : (
           <>

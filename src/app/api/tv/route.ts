@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const state = await getGameState();
-  const [{ individual, teams }, feed, round, { data: moments }, { data: tribunal }] =
+  const [{ individual }, feed, round, { data: moments }, { data: tribunal }] =
     await Promise.all([
     getLeaderboard(),
     getFeed(8),
@@ -26,40 +26,15 @@ export async function GET() {
       .limit(4),
   ]);
 
-  // sorteio de equipas em curso: todos têm equipa mas a revelação na TV
-  // ainda não acabou (reveal ≤ nº de jogadores)
-  const players = individual.map((r) => r.player);
-  const allAssigned = players.length > 0 && players.every((p) => p.team_id);
-  const draw =
-    allAssigned && state.draw_reveal <= players.length
-      ? {
-          reveal: state.draw_reveal,
-          total: players.length,
-          players: [...players]
-            .sort((a, b) => a.id.localeCompare(b.id))
-            .map((p) => ({ name: p.name, emoji: p.emoji, team_id: p.team_id })),
-          teams: teams.map((t) => ({
-            id: t.team.id,
-            name: t.team.name,
-            colour: t.team.colour_hex,
-          })),
-        }
-      : null;
-
   return NextResponse.json({
     day: state.current_day,
     top5: individual.slice(0, 5),
-    teams,
     feed,
     moments: moments ?? [],
     tribunal: tribunal ?? [],
     round,
-    draw,
-    // ainda ninguém tem equipa → o fim de semana abre com o sorteio;
-    // a TV espera nesse ecrã em vez de rodar painéis
-    draw_pending: players.length > 0 && !allAssigned,
     // o /tv também serve de segundo ecrã nos telemóveis: os botões de
-    // avançar (sorteio, revelação) só aparecem a quem tem sessão de admin
+    // avançar a revelação do quizz só aparecem a quem tem sessão de admin
     can_control: await isAdmin(),
   });
 }
