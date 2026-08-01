@@ -153,8 +153,8 @@ export default function TvPage() {
   }, [takeover, panels.length]);
 
   return (
-    {/* padding proporcional = zona segura de TV: o overscan do mirroring
-        corta ~5% das margens, por isso nada encosta aos limites do ecrã */}
+    // padding proporcional = zona segura de TV: o overscan do mirroring
+    // corta ~5% das margens, por isso nada encosta aos limites do ecrã
     <div className="dark flex h-dvh flex-col overflow-hidden bg-page px-[4vw] py-[3vh] text-ink">
       <header className="flex shrink-0 items-baseline justify-between border-b-2 border-line pb-4 short:pb-2">
         <h1 className="display text-3xl short:text-2xl tv:text-6xl font-bold">
