@@ -50,9 +50,68 @@ type TvRound =
 
 const BASE_PANELS = ["top5", "atividade", "stats", "momentos"];
 
+// ecrã baixo = telemóvel deitado a fazer de TV
+function useShortScreen() {
+  const [short, setShort] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-height: 500px)");
+    const update = () => setShort(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return short;
+}
+
 export default function TvPage() {
   const { data } = useSWR<TvData>("/api/tv", fetcher, POLL);
   const [panel, setPanel] = useState(0);
+  const shortScreen = useShortScreen();
+
+  // telemóvel-TV: nunca deixar o ecrã adormecer (Wake Lock, quando existir)
+  useEffect(() => {
+    type Sentinel = { release: () => Promise<void> };
+    type WL = { request: (t: "screen") => Promise<Sentinel> };
+    let lock: Sentinel | null = null;
+    let gone = false;
+    const acquire = async () => {
+      try {
+        const wl = (navigator as Navigator & { wakeLock?: WL }).wakeLock;
+        if (wl && !gone) lock = await wl.request("screen");
+      } catch {
+        // sem suporte ou sem permissão — segue sem wake lock
+      }
+    };
+    acquire();
+    const onVis = () => {
+      if (document.visibilityState === "visible") acquire();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      gone = true;
+      document.removeEventListener("visibilitychange", onVis);
+      lock?.release().catch(() => {});
+    };
+  }, []);
+
+  // ecrã inteiro + orientação horizontal (onde o browser deixar)
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  useEffect(() => {
+    const update = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", update);
+    return () => document.removeEventListener("fullscreenchange", update);
+  }, []);
+  async function ecraInteiro() {
+    try {
+      await document.documentElement.requestFullscreen();
+      const o = screen.orientation as ScreenOrientation & {
+        lock?: (mode: string) => Promise<void>;
+      };
+      await o.lock?.("landscape");
+    } catch {
+      // iPhone/Safari não suporta — a página funciona na mesma
+    }
+  }
 
   const panels = [
     ...BASE_PANELS,
@@ -71,30 +130,30 @@ export default function TvPage() {
   }, [takeover, panels.length]);
 
   return (
-    <div className="dark flex min-h-dvh flex-col bg-page p-4 md:p-10 text-ink">
-      <header className="flex items-baseline justify-between border-b-2 border-line pb-4">
-        <h1 className="display text-3xl md:text-6xl font-bold">
+    <div className="dark flex min-h-dvh flex-col bg-page p-4 tv:p-10 text-ink">
+      <header className="flex items-baseline justify-between border-b-2 border-line pb-4 short:pb-2">
+        <h1 className="display text-3xl short:text-2xl tv:text-6xl font-bold">
           Taça do <span className="text-indigo">Gerês</span>
         </h1>
-        <p className="num text-xl md:text-3xl text-muted">Dia {data?.day ?? "—"}</p>
+        <p className="num text-xl short:text-base tv:text-3xl text-muted">Dia {data?.day ?? "—"}</p>
       </header>
 
-      <main className="flex flex-1 flex-col justify-center py-8">
+      <main className="flex flex-1 flex-col justify-center py-8 short:py-3">
         {!data ? null : data.round ? (
           <TvRoundView round={data.round} canControl={data.can_control} />
         ) : current === "top5" ? (
           <section>
-            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">Classificação</h2>
-            <Scoreboard rows={data.top5} big />
+            <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">Classificação</h2>
+            <Scoreboard rows={data.top5} big={!shortScreen} />
           </section>
         ) : current === "atividade" ? (
           <section>
-            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">Últimas atividades</h2>
-            <ul className="space-y-4">
+            <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">Últimas atividades</h2>
+            <ul className="space-y-4 short:space-y-2">
               {data.activity.slice(0, 6).map((f) => (
-                <li key={f.id} className="flex items-baseline gap-6 border-b border-line pb-4">
+                <li key={f.id} className="flex items-baseline gap-6 short:gap-4 border-b border-line pb-4 short:pb-2">
                   <span
-                    className={`num w-24 shrink-0 text-right text-2xl md:text-4xl font-bold ${
+                    className={`num w-24 short:w-14 shrink-0 text-right text-2xl short:text-lg tv:text-4xl font-bold ${
                       f.kind === "pontos"
                         ? (f.points ?? 0) >= 0
                           ? "text-coral"
@@ -110,7 +169,7 @@ export default function TvPage() {
                         ? "🔥"
                         : "📣"}
                   </span>
-                  <p className="text-xl md:text-3xl leading-snug">
+                  <p className="text-xl short:text-base tv:text-3xl leading-snug">
                     {f.player && <span className="display font-bold">{f.player.name} </span>}
                     <span className="text-muted">{f.text}</span>
                   </p>
@@ -120,26 +179,26 @@ export default function TvPage() {
           </section>
         ) : current === "stats" ? (
           <section>
-            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">
+            <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">
               📊 Números do fim de semana
             </h2>
             {data.stats.length === 0 ? (
-              <p className="text-lg md:text-3xl text-muted">
+              <p className="text-lg tv:text-3xl text-muted">
                 Ainda não há números. Vão jogar, vá.
               </p>
             ) : (
-              <ul className="space-y-4">
+              <ul className="space-y-4 short:space-y-2">
                 {data.stats.map((s) => (
                   <li
                     key={s.label}
-                    className="flex items-center gap-5 rounded-xl bg-surface p-4 md:p-6"
+                    className="flex items-center gap-5 rounded-xl bg-surface p-4 short:p-2.5 tv:p-6"
                   >
-                    <span className="text-3xl md:text-5xl">{s.icon}</span>
+                    <span className="text-3xl short:text-2xl tv:text-5xl">{s.icon}</span>
                     <div className="min-w-0">
-                      <p className="display text-sm md:text-xl font-bold tracking-widest text-muted">
+                      <p className="display text-sm short:text-xs tv:text-xl font-bold tracking-widest text-muted">
                         {s.label.toUpperCase()}
                       </p>
-                      <p className="display truncate text-2xl md:text-4xl font-bold">{s.value}</p>
+                      <p className="display truncate text-2xl short:text-lg tv:text-4xl font-bold">{s.value}</p>
                     </div>
                   </li>
                 ))}
@@ -148,30 +207,30 @@ export default function TvPage() {
           </section>
         ) : current === "evento" && data.next_event ? (
           <section className="text-center">
-            <p className="text-7xl md:text-9xl">📣</p>
-            <p className="display mt-6 text-xl md:text-3xl font-bold tracking-widest text-coral">
+            <p className="text-7xl short:text-5xl tv:text-9xl">📣</p>
+            <p className="display mt-6 short:mt-2 text-xl short:text-base tv:text-3xl font-bold tracking-widest text-coral">
               PRÓXIMO EVENTO
             </p>
-            <h2 className="display mt-3 text-4xl md:text-8xl font-bold leading-tight">
+            <h2 className="display mt-3 text-4xl short:text-3xl tv:text-8xl font-bold leading-tight">
               {data.next_event.name}
             </h2>
             {data.next_event.when_hint && (
-              <p className="num mt-6 text-2xl md:text-5xl text-muted">{data.next_event.when_hint}</p>
+              <p className="num mt-6 short:mt-2 text-2xl short:text-xl tv:text-5xl text-muted">{data.next_event.when_hint}</p>
             )}
-            <p className="mt-8 text-lg md:text-3xl text-muted">
+            <p className="mt-8 short:mt-3 text-lg short:text-sm tv:text-3xl text-muted">
               Pódio 10 / 6 / 3 — tudo conta para a Taça.
             </p>
           </section>
         ) : current === "tribunal" ? (
           <section>
-            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">
+            <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">
               ⚖️ Tribunal — vota no telemóvel!
             </h2>
-            <ul className="space-y-4">
+            <ul className="space-y-4 short:space-y-2">
               {data.tribunal.map((c) => (
-                <li key={c.id} className="flex items-center gap-4 rounded-xl bg-surface p-4 md:p-6">
+                <li key={c.id} className="flex items-center gap-4 rounded-xl bg-surface p-4 short:p-2.5 tv:p-6">
                   <Avatar name={c.player.name} emoji={c.player.emoji} size={56} />
-                  <p className="text-lg md:text-3xl leading-snug">
+                  <p className="text-lg short:text-base tv:text-3xl leading-snug">
                     <span className="display font-bold">{c.player.name}</span>{" "}
                     <span className="text-muted">diz que cumpriu:</span> «{c.mission.text}»{" "}
                     <span className="num text-coral">+{c.mission.points}</span>
@@ -179,26 +238,26 @@ export default function TvPage() {
                 </li>
               ))}
             </ul>
-            <p className="mt-6 text-center text-lg md:text-2xl text-muted">
+            <p className="mt-6 short:mt-2 text-center text-lg short:text-sm tv:text-2xl text-muted">
               2 ✅ confirmam · 3 ❌ chumbam · os votos são públicos
             </p>
           </section>
         ) : (
           <section>
-            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">
+            <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">
               🎥 Momentos — quem vê, filma
             </h2>
             {data.moments.length === 0 ? (
-              <p className="text-lg md:text-3xl text-muted">
+              <p className="text-lg tv:text-3xl text-muted">
                 Ainda nada guardado. Viste algo digno do vídeo? Filma 10 segundos e
                 toca em «Guardar momento» na app.
               </p>
             ) : (
-              <ul className="space-y-4">
+              <ul className="space-y-4 short:space-y-2">
                 {data.moments.map((m) => (
-                  <li key={m.id} className="rounded-xl bg-surface p-4 md:p-6">
-                    <p className="text-lg md:text-3xl leading-snug">«{m.text}»</p>
-                    <p className="display mt-1 flex items-center gap-2 text-base md:text-xl text-muted">
+                  <li key={m.id} className="rounded-xl bg-surface p-4 short:p-2.5 tv:p-6">
+                    <p className="text-lg short:text-base tv:text-3xl leading-snug">«{m.text}»</p>
+                    <p className="display mt-1 flex items-center gap-2 text-base tv:text-xl text-muted">
                       <Avatar name={m.player?.name ?? ""} emoji={m.player?.emoji ?? ""} size={24} />
                       {m.player?.name}
                     </p>
@@ -212,7 +271,16 @@ export default function TvPage() {
 
       {!takeover && (
         <footer className="flex items-center justify-between pb-2">
-          <span className="w-40" aria-hidden />
+          <span className="flex w-40 justify-start">
+            {!isFullscreen && (
+              <button
+                onClick={ecraInteiro}
+                className="display text-xl short:text-base text-muted/70"
+              >
+                ⛶ Ecrã inteiro
+              </button>
+            )}
+          </span>
           <div className="flex gap-3">
             {panels.map((p, i) => (
               <span
@@ -222,10 +290,10 @@ export default function TvPage() {
             ))}
           </div>
           <span className="flex w-40 justify-end gap-4">
-            <a href="/tv/abertura" className="display text-xl text-muted/70">
+            <a href="/tv/abertura" className="display text-xl short:text-base text-muted/70">
               ▶ Abertura
             </a>
-            <a href="/tv/final" className="display text-xl text-muted/70">
+            <a href="/tv/final" className="display text-xl short:text-base text-muted/70">
               🏆 Final
             </a>
           </span>
@@ -254,20 +322,20 @@ function TvRoundView({
   if (round.status === "a_responder") {
     return (
       <section className="text-center">
-        <p className="display text-xl md:text-3xl font-bold tracking-widest text-coral">
+        <p className="display text-xl tv:text-3xl font-bold tracking-widest text-coral">
           QUEM DISSE ISTO? · RESPONDAM NO TELEMÓVEL
         </p>
-        <p className="display mx-auto mt-8 max-w-5xl text-4xl md:text-7xl font-bold leading-tight">
+        <p className="display mx-auto mt-8 short:mt-3 max-w-5xl text-4xl short:text-3xl tv:text-7xl font-bold leading-tight">
           {round.prompt}
         </p>
-        <p className="num mt-12 text-2xl md:text-4xl text-muted">
+        <p className="num mt-12 short:mt-4 text-2xl short:text-lg tv:text-4xl text-muted">
           {round.answered_count}/{round.total_players} responderam
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-4">
+        <div className="mt-6 short:mt-3 flex flex-wrap justify-center gap-4">
           {round.answered.map((p, i) => (
             <span
               key={i}
-              className="display flex items-center gap-3 rounded-md bg-surface px-5 py-2 text-xl md:text-3xl font-bold"
+              className="display flex items-center gap-3 rounded-md bg-surface px-5 py-2 text-xl short:text-base tv:text-3xl font-bold"
             >
               <Avatar name={p.name} emoji={p.emoji} size={40} /> {p.name}
             </span>
@@ -280,21 +348,21 @@ function TvRoundView({
   if (round.status === "a_adivinhar") {
     return (
       <section>
-        <p className="display text-center text-xl md:text-3xl font-bold tracking-widest text-coral">
+        <p className="display text-center text-xl tv:text-3xl font-bold tracking-widest text-coral">
           QUEM ESCREVEU O QUÊ? · MARQUEM NO TELEMÓVEL
         </p>
-        <p className="display mx-auto mt-2 max-w-4xl text-center text-xl md:text-3xl text-muted">
+        <p className="display mx-auto mt-2 max-w-4xl text-center text-xl tv:text-3xl text-muted">
           {round.prompt}
         </p>
-        <ul className="mx-auto mt-8 grid max-w-6xl grid-cols-1 gap-3 md:grid-cols-2 md:gap-5">
+        <ul className="mx-auto mt-8 grid max-w-6xl grid-cols-1 gap-3 md:grid-cols-2 tv:gap-5">
           {round.answers.map((a) => (
-            <li key={a.id} className="flex items-start gap-4 rounded-lg bg-surface p-5">
-              <span className="num text-2xl md:text-4xl font-bold text-coral">{a.n}</span>
-              <p className="text-xl md:text-3xl leading-snug">«{a.text}»</p>
+            <li key={a.id} className="flex items-start gap-4 rounded-lg bg-surface p-5 short:p-3">
+              <span className="num text-2xl tv:text-4xl font-bold text-coral">{a.n}</span>
+              <p className="text-xl short:text-base tv:text-3xl leading-snug">«{a.text}»</p>
             </li>
           ))}
         </ul>
-        <p className="num mt-8 text-center text-xl md:text-3xl text-muted">
+        <p className="num mt-8 short:mt-3 text-center text-xl short:text-base tv:text-3xl text-muted">
           {round.done_count}/{round.total_players} já entregaram
         </p>
       </section>
@@ -307,16 +375,16 @@ function TvRoundView({
 
   return (
     <section className="text-center">
-      <p className="display text-xl md:text-3xl font-bold tracking-widest text-coral">A REVELAÇÃO</p>
+      <p className="display text-xl tv:text-3xl font-bold tracking-widest text-coral">A REVELAÇÃO</p>
 
       {!current ? (
-        <p className="display mt-10 text-2xl md:text-5xl text-muted">
+        <p className="display mt-10 text-2xl tv:text-5xl text-muted">
           {canControl ? "Toca em «Próxima» para começar…" : "A revelação vai começar…"}
         </p>
       ) : (
         <div className="mx-auto mt-8 max-w-5xl">
-          <p className="display text-3xl md:text-6xl font-bold leading-tight">«{current.text}»</p>
-          <p className="display mt-6 flex items-center justify-center gap-4 text-2xl md:text-5xl font-bold text-coral">
+          <p className="display text-3xl short:text-2xl tv:text-6xl font-bold leading-tight">«{current.text}»</p>
+          <p className="display mt-6 short:mt-3 flex items-center justify-center gap-4 text-2xl short:text-xl tv:text-5xl font-bold text-coral">
             <Avatar name={current.author.name} emoji={current.author.emoji} size={64} />
             {current.author.name}
           </p>
@@ -324,7 +392,7 @@ function TvRoundView({
             {current.guesses.map((g, i) => (
               <span
                 key={i}
-                className={`num rounded-md px-4 py-2 text-lg md:text-2xl ${
+                className={`num rounded-md px-4 py-2 text-lg tv:text-2xl ${
                   g.correct ? "bg-coral text-white" : "bg-surface text-muted"
                 }`}
               >
@@ -333,7 +401,7 @@ function TvRoundView({
             ))}
           </div>
           {current.fooled > 0 && (
-            <p className="num mt-6 text-xl md:text-3xl text-muted">
+            <p className="num mt-6 text-xl tv:text-3xl text-muted">
               enganou {current.fooled} {current.fooled === 1 ? "pessoa" : "pessoas"} (+
               {current.fooled * 3})
             </p>
@@ -343,10 +411,10 @@ function TvRoundView({
 
       {finished && round.mais_enganador && (
         <div className="mx-auto mt-10 max-w-3xl rounded-xl border-4 border-gold p-8">
-          <p className="display text-xl md:text-3xl font-bold tracking-widest text-gold">
+          <p className="display text-xl tv:text-3xl font-bold tracking-widest text-gold">
             🏆 MAIS ENGANADOR DA RONDA
           </p>
-          <p className="display mt-3 text-4xl md:text-7xl font-bold text-gold">
+          <p className="display mt-3 text-4xl tv:text-7xl font-bold text-gold">
             {round.mais_enganador.name}
           </p>
         </div>
@@ -357,12 +425,12 @@ function TvRoundView({
           <button
             onClick={proxima}
             disabled={busy}
-            className="display mt-12 min-h-14 md:min-h-20 rounded-xl bg-coral px-8 md:px-16 text-2xl md:text-4xl font-bold text-white disabled:opacity-50"
+            className="display mt-12 short:mt-4 min-h-14 tv:min-h-20 rounded-xl bg-coral px-8 tv:px-16 text-2xl tv:text-4xl font-bold text-white disabled:opacity-50"
           >
             Próxima →
           </button>
         ) : (
-          <p className="display mt-12 text-lg md:text-2xl text-muted">
+          <p className="display mt-12 text-lg tv:text-2xl text-muted">
             o José avança a revelação
           </p>
         ))}

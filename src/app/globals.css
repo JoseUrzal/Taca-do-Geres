@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* tv: ecrã grande a sério (largo E alto) — os tamanhos de televisão.
+   short: ecrã baixo (telemóvel deitado a fazer de TV) — compactar. */
+@custom-variant tv (@media (min-width: 768px) and (min-height: 500px));
+@custom-variant short (@media (max-height: 500px));
+
 /* tema claro (default) */
 :root {
   --bg: #ffffff;
