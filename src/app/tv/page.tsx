@@ -5,18 +5,20 @@ import useSWR from "swr";
 import Scoreboard from "@/components/Scoreboard";
 import Avatar from "@/components/Avatar";
 import { fetcher, post, POLL } from "@/lib/client";
-import type { FeedItem, LeaderboardRow } from "@/lib/types";
+import type { ActivityItem, LeaderboardRow } from "@/lib/types";
 
 type TvData = {
   day: number;
   top5: LeaderboardRow[];
-  feed: FeedItem[];
+  activity: ActivityItem[];
+  stats: { icon: string; label: string; value: string }[];
   moments: { id: string; text: string; player: { name: string; emoji: string } }[];
   tribunal: {
     id: string;
     player: { name: string; emoji: string };
     mission: { text: string; points: number };
   }[];
+  next_event: { name: string; when_hint: string | null } | null;
   round: TvRound;
   can_control: boolean;
 };
@@ -46,16 +48,17 @@ type TvRound =
     ))
   | null;
 
-const BASE_PANELS = ["top5", "feed", "momentos"];
+const BASE_PANELS = ["top5", "atividade", "stats", "momentos"];
 
 export default function TvPage() {
   const { data } = useSWR<TvData>("/api/tv", fetcher, POLL);
   const [panel, setPanel] = useState(0);
 
-  const panels =
-    data?.tribunal && data.tribunal.length > 0
-      ? [...BASE_PANELS, "tribunal"]
-      : BASE_PANELS;
+  const panels = [
+    ...BASE_PANELS,
+    ...(data?.next_event ? ["evento"] : []),
+    ...(data?.tribunal && data.tribunal.length > 0 ? ["tribunal"] : []),
+  ];
   const current = panels[panel % panels.length];
 
   // rotação de 12 em 12 segundos quando não há ronda ativa
@@ -84,26 +87,80 @@ export default function TvPage() {
             <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">Classificação</h2>
             <Scoreboard rows={data.top5} big />
           </section>
-        ) : current === "feed" ? (
+        ) : current === "atividade" ? (
           <section>
-            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">Últimas jogadas</h2>
+            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">Últimas atividades</h2>
             <ul className="space-y-4">
-              {data.feed.slice(0, 6).map((f) => (
+              {data.activity.slice(0, 6).map((f) => (
                 <li key={f.id} className="flex items-baseline gap-6 border-b border-line pb-4">
                   <span
                     className={`num w-24 shrink-0 text-right text-2xl md:text-4xl font-bold ${
-                      f.points >= 0 ? "text-coral" : "text-muted"
+                      f.kind === "pontos"
+                        ? (f.points ?? 0) >= 0
+                          ? "text-coral"
+                          : "text-muted"
+                        : ""
                     }`}
                   >
-                    {f.points >= 0 ? `+${f.points}` : f.points}
+                    {f.kind === "pontos"
+                      ? (f.points ?? 0) >= 0
+                        ? `+${f.points}`
+                        : f.points
+                      : f.kind === "tribunal"
+                        ? "🔥"
+                        : "📣"}
                   </span>
                   <p className="text-xl md:text-3xl leading-snug">
-                    <span className="display font-bold">{f.player?.name}</span>{" "}
-                    <span className="text-muted">{f.reason}</span>
+                    {f.player && <span className="display font-bold">{f.player.name} </span>}
+                    <span className="text-muted">{f.text}</span>
                   </p>
                 </li>
               ))}
             </ul>
+          </section>
+        ) : current === "stats" ? (
+          <section>
+            <h2 className="display mb-6 text-2xl md:text-4xl font-bold text-coral">
+              📊 Números do fim de semana
+            </h2>
+            {data.stats.length === 0 ? (
+              <p className="text-lg md:text-3xl text-muted">
+                Ainda não há números. Vão jogar, vá.
+              </p>
+            ) : (
+              <ul className="space-y-4">
+                {data.stats.map((s) => (
+                  <li
+                    key={s.label}
+                    className="flex items-center gap-5 rounded-xl bg-surface p-4 md:p-6"
+                  >
+                    <span className="text-3xl md:text-5xl">{s.icon}</span>
+                    <div className="min-w-0">
+                      <p className="display text-sm md:text-xl font-bold tracking-widest text-muted">
+                        {s.label.toUpperCase()}
+                      </p>
+                      <p className="display truncate text-2xl md:text-4xl font-bold">{s.value}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        ) : current === "evento" && data.next_event ? (
+          <section className="text-center">
+            <p className="text-7xl md:text-9xl">📣</p>
+            <p className="display mt-6 text-xl md:text-3xl font-bold tracking-widest text-coral">
+              PRÓXIMO EVENTO
+            </p>
+            <h2 className="display mt-3 text-4xl md:text-8xl font-bold leading-tight">
+              {data.next_event.name}
+            </h2>
+            {data.next_event.when_hint && (
+              <p className="num mt-6 text-2xl md:text-5xl text-muted">{data.next_event.when_hint}</p>
+            )}
+            <p className="mt-8 text-lg md:text-3xl text-muted">
+              Pódio 10 / 6 / 3 — tudo conta para a Taça.
+            </p>
           </section>
         ) : current === "tribunal" ? (
           <section>

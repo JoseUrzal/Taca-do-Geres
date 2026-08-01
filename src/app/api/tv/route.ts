@@ -1,17 +1,25 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/supabase";
 import { isAdmin } from "@/lib/identity";
-import { getFeed, getGameState, getLeaderboard } from "@/lib/queries";
+import { getActivity, getGameState, getLeaderboard, getStats } from "@/lib/queries";
 import { serializeRound } from "@/lib/round";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const state = await getGameState();
-  const [{ individual }, feed, round, { data: moments }, { data: tribunal }] =
-    await Promise.all([
+  const [
+    { individual },
+    activity,
+    stats,
+    round,
+    { data: moments },
+    { data: tribunal },
+    { data: nextEvent },
+  ] = await Promise.all([
     getLeaderboard(),
-    getFeed(8),
+    getActivity(8),
+    getStats(),
     serializeRound(null),
     db()
       .from("moments")
@@ -24,14 +32,23 @@ export async function GET() {
       .eq("status", "reclamada")
       .order("created_at")
       .limit(4),
+    db()
+      .from("events")
+      .select("name, when_hint")
+      .eq("status", "previsto")
+      .order("created_at")
+      .limit(1)
+      .maybeSingle(),
   ]);
 
   return NextResponse.json({
     day: state.current_day,
     top5: individual.slice(0, 5),
-    feed,
+    activity,
+    stats,
     moments: moments ?? [],
     tribunal: tribunal ?? [],
+    next_event: nextEvent,
     round,
     // o /tv também serve de segundo ecrã nos telemóveis: os botões de
     // avançar a revelação do quizz só aparecem a quem tem sessão de admin

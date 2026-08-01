@@ -45,14 +45,167 @@ export async function getLeaderboard(): Promise<{ individual: LeaderboardRow[] }
   return { individual };
 }
 
-export async function getFeed(limit = 20) {
-  const { data, error } = await db()
-    .from("score_events")
-    .select("id, points, reason, source, created_at, player:player_id(name, emoji)")
-    .order("created_at", { ascending: false })
-    .limit(limit);
-  if (error) throw new Error(error.message);
-  return data;
+export type ActivityItem = {
+  id: string;
+  kind: "pontos" | "tribunal" | "evento";
+  points: number | null;
+  text: string;
+  player: { name: string; emoji: string } | null;
+  created_at: string;
+};
+
+// Últimas atividades: pontos ganhos, chumbos do Tribunal e eventos
+// anunciados, tudo numa linha do tempo só.
+export async function getActivity(limit = 20): Promise<ActivityItem[]> {
+  const [{ data: scores }, { data: chumbadas }, { data: eventos }] = await Promise.all([
+    db()
+      .from("score_events")
+      .select("id, points, reason, created_at, player:player_id(name, emoji)")
+      .order("created_at", { ascending: false })
+      .limit(limit),
+    db()
+      .from("assignments")
+      .select("id, mission:mission_id(text), player:player_id(name, emoji), approvals(created_at)")
+      .eq("status", "chumbada"),
+    db()
+      .from("events")
+      .select("id, name, when_hint, created_at")
+      .order("created_at", { ascending: false })
+      .limit(8),
+  ]);
+
+  type ScoreRow = {
+    id: string;
+    points: number;
+    reason: string;
+    created_at: string;
+    player: { name: string; emoji: string } | null;
+  };
+  type ChumboRow = {
+    id: string;
+    mission: { text: string } | null;
+    player: { name: string; emoji: string } | null;
+    approvals: { created_at: string }[];
+  };
+
+  const items: ActivityItem[] = [];
+  for (const s of (scores ?? []) as unknown as ScoreRow[]) {
+    items.push({
+      id: s.id,
+      kind: "pontos",
+      points: s.points,
+      text: s.reason,
+      player: s.player,
+      created_at: s.created_at,
+    });
+  }
+  for (const c of (chumbadas ?? []) as unknown as ChumboRow[]) {
+    // o chumbo resolve-se no último voto — é essa a hora que conta
+    const at = c.approvals.map((v) => v.created_at).sort().pop();
+    if (!at) continue;
+    items.push({
+      id: `chumbo-${c.id}`,
+      kind: "tribunal",
+      points: null,
+      text: `Tribunal chumbou: «${c.mission?.text ?? "?"}»`,
+      player: c.player,
+      created_at: at,
+    });
+  }
+  for (const e of eventos ?? []) {
+    items.push({
+      id: `evento-${e.id}`,
+      kind: "evento",
+      points: null,
+      text: `Novo evento: ${e.name}${e.when_hint ? ` · ${e.when_hint}` : ""}`,
+      player: null,
+      created_at: e.created_at,
+    });
+  }
+  return items
+    .sort((a, b) => b.created_at.localeCompare(a.created_at))
+    .slice(0, limit);
+}
+
+// Números do fim de semana para a TV — vergonha e glória em partes iguais.
+export async function getStats(): Promise<{ icon: string; label: string; value: string }[]> {
+  const players = await getPlayers();
+  const nameOf = (id: string) => players.find((p) => p.id === id)?.name ?? "?";
+
+  const [{ data: scores }, { data: accusations }, { data: answers }, { data: guesses }, { data: noVotes }] =
+    await Promise.all([
+      db().from("score_events").select("player_id, points, created_at"),
+      db().from("accusations").select("accuser_id, correct"),
+      db().from("answers").select("id, player_id"),
+      db().from("guesses").select("answer_id, guessed_player_id"),
+      db().from("approvals").select("player_id").eq("vote", false),
+    ]);
+
+  const top = (m: Map<string, number>) => {
+    let best: string | null = null;
+    for (const [id, n] of m) if (n > 0 && (best === null || n > (m.get(best) ?? 0))) best = id;
+    return best ? { id: best, n: m.get(best)! } : null;
+  };
+  const stats: { icon: string; label: string; value: string }[] = [];
+
+  // em alta: quem somou mais na última hora
+  const hourAgo = new Date(Date.now() - 3600_000).toISOString();
+  const lastHour = new Map<string, number>();
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
+  const todayPts = new Map<string, number>(players.map((p) => [p.id, 0]));
+  for (const s of scores ?? []) {
+    if (s.created_at >= hourAgo && s.points > 0) {
+      lastHour.set(s.player_id, (lastHour.get(s.player_id) ?? 0) + s.points);
+    }
+    const d = new Date(s.created_at).toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
+    if (d === today) todayPts.set(s.player_id, (todayPts.get(s.player_id) ?? 0) + s.points);
+  }
+  const hot = top(lastHour);
+  if (hot) stats.push({ icon: "🔥", label: "Em alta (última hora)", value: `${nameOf(hot.id)} +${hot.n}` });
+
+  // caçador e trapalhão das acusações
+  const certas = new Map<string, number>();
+  const falhadas = new Map<string, number>();
+  for (const a of accusations ?? []) {
+    const m = a.correct ? certas : falhadas;
+    m.set(a.accuser_id, (m.get(a.accuser_id) ?? 0) + 1);
+  }
+  const cacador = top(certas);
+  if (cacador)
+    stats.push({ icon: "🎯", label: "Caçador de espiões", value: `${nameOf(cacador.id)} · ${cacador.n} ${cacador.n === 1 ? "acusação certa" : "acusações certas"}` });
+  const trapalhao = top(falhadas);
+  if (trapalhao)
+    stats.push({ icon: "🙈", label: "Acusações falhadas", value: `${nameOf(trapalhao.id)} · ${trapalhao.n}` });
+
+  // mais enganador acumulado do quizz
+  const autorDe = new Map((answers ?? []).map((a) => [a.id, a.player_id]));
+  const enganador = new Map<string, number>();
+  for (const g of guesses ?? []) {
+    const autor = autorDe.get(g.answer_id);
+    if (autor && g.guessed_player_id !== autor) enganador.set(autor, (enganador.get(autor) ?? 0) + 1);
+  }
+  const eng = top(enganador);
+  if (eng)
+    stats.push({ icon: "🎭", label: "Mais enganador do Quizz", value: `${nameOf(eng.id)} · ${eng.n} ${eng.n === 1 ? "palpite enganado" : "palpites enganados"}` });
+
+  // juiz mais duro: mais votos ❌ dados
+  const duro = new Map<string, number>();
+  for (const v of noVotes ?? []) duro.set(v.player_id, (duro.get(v.player_id) ?? 0) + 1);
+  const juiz = top(duro);
+  if (juiz)
+    stats.push({ icon: "⚖️", label: "Juiz mais duro", value: `${nameOf(juiz.id)} · ${juiz.n} ❌` });
+
+  // quem ainda não marcou hoje
+  const zeros = players.filter((p) => (todayPts.get(p.id) ?? 0) <= 0).map((p) => p.name);
+  if (zeros.length > 0 && zeros.length < players.length) {
+    stats.push({
+      icon: "😴",
+      label: "Ainda a zeros hoje",
+      value: zeros.length > 4 ? `${zeros.slice(0, 4).join(", ")} +${zeros.length - 4}` : zeros.join(", "),
+    });
+  }
+
+  return stats;
 }
 
 // Insere um score_event (pontos são sempre individuais).

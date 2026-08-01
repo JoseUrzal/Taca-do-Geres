@@ -27,11 +27,11 @@ export type LeaderboardRow = {
   rank: number;
 };
 
-export type FeedItem = {
+export type ActivityItem = {
   id: string;
-  points: number;
-  reason: string;
-  source: string;
+  kind: "pontos" | "tribunal" | "evento";
+  points: number | null;
+  text: string;
   created_at: string;
   player: { name: string; emoji: string } | null;
 };

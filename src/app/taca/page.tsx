@@ -6,11 +6,11 @@ import Shell from "@/components/Shell";
 import FlipNumber from "@/components/FlipNumber";
 import Avatar from "@/components/Avatar";
 import { fetcher, POLL } from "@/lib/client";
-import type { FeedItem, LeaderboardRow } from "@/lib/types";
+import type { ActivityItem, LeaderboardRow } from "@/lib/types";
 
 type Taca = {
   individual: LeaderboardRow[];
-  feed: FeedItem[];
+  activity: ActivityItem[];
 };
 
 const SOURCE_ICON: Record<string, string> = {
@@ -70,25 +70,35 @@ export default function TacaPage() {
             })}
           </ol>
 
-          {/* últimas jogadas */}
+          {/* últimas atividades */}
           <section className="mt-6">
-            <h2 className="display mb-2 text-lg">Últimas jogadas</h2>
+            <h2 className="display mb-2 text-lg">Últimas atividades</h2>
             <ul className="divide-y divide-line rounded-xl bg-surface">
-              {data.feed.length === 0 && (
+              {data.activity.length === 0 && (
                 <li className="p-4 text-muted">Ainda ninguém marcou. Toca a mexer.</li>
               )}
-              {data.feed.map((f) => (
+              {data.activity.map((f) => (
                 <li key={f.id} className="flex items-start gap-3 p-3">
                   <span
                     className={`num shrink-0 font-bold ${
-                      f.points >= 0 ? "text-coral" : "text-muted"
+                      f.kind === "pontos"
+                        ? (f.points ?? 0) >= 0
+                          ? "text-coral"
+                          : "text-muted"
+                        : ""
                     }`}
                   >
-                    {f.points >= 0 ? `+${f.points}` : f.points}
+                    {f.kind === "pontos"
+                      ? (f.points ?? 0) >= 0
+                        ? `+${f.points}`
+                        : f.points
+                      : f.kind === "tribunal"
+                        ? "🔥"
+                        : "📣"}
                   </span>
                   <p className="text-sm leading-snug">
-                    <span className="font-semibold">{f.player?.name}</span>{" "}
-                    <span className="text-muted">{f.reason}</span>
+                    {f.player && <span className="font-semibold">{f.player.name} </span>}
+                    <span className="text-muted">{f.text}</span>
                   </p>
                 </li>
               ))}
