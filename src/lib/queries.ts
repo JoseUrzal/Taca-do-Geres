@@ -38,8 +38,15 @@ export async function getLeaderboard(): Promise<{ individual: LeaderboardRow[] }
   const individual = players
     .map((p) => ({ player: p, points: byPlayer.get(p.id) ?? 0, rank: 0 }))
     .sort((a, b) => b.points - a.points || a.player.name.localeCompare(b.player.name));
+  // ranking denso: empatados partilham o lugar e o seguinte continua a
+  // contagem (5, 5, 6 — nunca «saltam» números no marcador)
   individual.forEach((row, i) => {
-    row.rank = i > 0 && row.points === individual[i - 1].points ? individual[i - 1].rank : i + 1;
+    row.rank =
+      i === 0
+        ? 1
+        : row.points === individual[i - 1].points
+          ? individual[i - 1].rank
+          : individual[i - 1].rank + 1;
   });
 
   return { individual };

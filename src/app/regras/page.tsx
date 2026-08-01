@@ -35,6 +35,18 @@ export default function RegrasPage() {
           com cabeça.
         </Regra>
 
+        <Regra emoji="🤫" titulo="Quem sabe, cala ou acusa">
+          Saber que alguém está em missão <b>não vale nada</b> por si só — e
+          ninguém é obrigado a denunciar. Só duas coisas matam uma missão: uma{" "}
+          <b>acusação formal certa</b> antes de cumprida, ou um <b>chumbo no
+          Tribunal</b> depois de reclamada. Rumores e «eu já sabia» não contam.
+          Quem desconfia tem duas opções: acusar já (arrisca −5, ganha +15) ou
+          guardar a informação e votar ❌ quando o caso for a Tribunal — de
+          borla, mas a precisar de mais 2 chumbos. A missão cumprida e
+          reclamada antes de alguém a travar formalmente <b>é válida</b> e vai a
+          julgamento como todas.
+        </Regra>
+
         <Regra emoji="🎤" titulo="Quem Disse Isto?">
           Quando houver ronda (aparece «Ao vivo» no topo), responde à pergunta
           no telemóvel. Depois as respostas aparecem anónimas na TV e cada um

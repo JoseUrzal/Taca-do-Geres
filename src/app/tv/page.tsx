@@ -165,9 +165,11 @@ export default function TvPage() {
         {!data ? null : data.round ? (
           <TvRoundView round={data.round} canControl={data.can_control} />
         ) : current === "marcador" ? (
-          <section className="flex min-h-0 flex-col justify-center">
-            <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">🏆 Classificação</h2>
-            <ol className="grid grid-flow-col grid-rows-5 gap-x-10 short:gap-x-6 tv:gap-x-20 gap-y-2 short:gap-y-1 tv:gap-y-6">
+          <section className="mx-auto flex min-h-0 w-full max-w-screen-2xl flex-col justify-center">
+            <h2 className="display mb-6 short:mb-2 text-center text-2xl short:text-lg tv:text-4xl font-bold text-coral">
+              🏆 Classificação
+            </h2>
+            <ol className="grid grid-flow-col grid-rows-5 gap-x-12 short:gap-x-8 tv:gap-x-24 gap-y-2 short:gap-y-1 tv:gap-y-6">
               {data.board.map((r) => {
                 const gold = r.rank === 1 && r.points > 0;
                 return (
@@ -176,7 +178,7 @@ export default function TvPage() {
                     className="flex items-center gap-3 short:gap-2 tv:gap-5 border-b border-line pb-2 short:pb-1 tv:pb-5"
                   >
                     <span
-                      className={`num w-8 tv:w-14 shrink-0 text-right text-lg short:text-sm tv:text-4xl ${
+                      className={`num w-10 short:w-7 tv:w-16 shrink-0 text-right text-lg short:text-sm tv:text-4xl ${
                         gold ? "font-bold text-gold" : "text-muted"
                       }`}
                     >
@@ -269,7 +271,7 @@ export default function TvPage() {
           </section>
         ) : current === "relatorio" ? (
           <section>
-            <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">
+            <h2 className="display mb-6 short:mb-2 text-center text-2xl short:text-lg tv:text-4xl font-bold text-coral">
               📊 Relatório do dia
             </h2>
             {data.stats.length === 0 ? (
