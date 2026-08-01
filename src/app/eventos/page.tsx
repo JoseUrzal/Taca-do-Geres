@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import useSWR from "swr";
 import Shell from "@/components/Shell";
@@ -28,18 +28,18 @@ type Voting = {
   me: string | null;
 };
 
-type StyleDraw = { player: { id: string; name: string; emoji: string }; style: string };
-
 export default function EventosPage() {
   const { data, mutate } = useSWR<{
     events: Evento[];
     voting: Voting | null;
-    styles: StyleDraw[] | null;
+    my_style: string | null;
   }>("/api/eventos", fetcher, POLL);
   const [busy, setBusy] = useState(false);
   // escolhas locais por slot; null = ainda por preencher nesta sessão
   const [picks, setPicks] = useState<{ 1: string | null; 2: string | null; 3: string | null } | null>(null);
   const [saved, setSaved] = useState(false);
+  // sorteio do estilo de dança: idle → shake (suspense) → done (revelado)
+  const [dança, setDança] = useState<"idle" | "shake" | "done">("idle");
   const previstos = data?.events.filter((e) => e.status === "previsto") ?? [];
   const jogados = data?.events.filter((e) => e.status === "jogado") ?? [];
   const voting = data?.voting ?? null;
@@ -47,6 +47,21 @@ export default function EventosPage() {
   // arranca com o boletim já submetido (se houver)
   const current = picks ?? voting?.my_votes ?? { 1: null, 2: null, 3: null };
   const complete = current[1] && current[2] && current[3];
+
+  // estilo já revelado neste telemóvel? fica lembrado por evento
+  const danceKey = voting ? `tg_danca_${voting.event_id}` : null;
+  useEffect(() => {
+    if (danceKey && localStorage.getItem(danceKey)) setDança("done");
+  }, [danceKey]);
+
+  function sortearDanca() {
+    if (dança !== "idle") return;
+    setDança("shake");
+    setTimeout(() => {
+      setDança("done");
+      if (danceKey) localStorage.setItem(danceKey, "1");
+    }, 2200);
+  }
 
   function pick(slot: 1 | 2 | 3, id: string) {
     setSaved(false);
@@ -90,39 +105,39 @@ export default function EventosPage() {
             <p className="display">{e.name}</p>
             {e.when_hint && <p className="text-sm text-muted">{e.when_hint}</p>}
 
-            {/* dança: estilos sorteados pela app, iguais em todos os ecrãs */}
-            {data?.styles && voting && voting.event_id === e.id && (
-              <div className="mt-3 rounded-lg border-2 border-indigo p-3">
+            {/* dança: cada um tira o SEU estilo do chapéu — segredo até dançar */}
+            {data?.my_style && voting && voting.event_id === e.id && (
+              <div className="mt-3 rounded-lg border-2 border-indigo p-3 text-center">
                 <p className="display text-sm font-bold text-indigo">
-                  🎭 Sorteio de estilos
+                  🎭 O teu estilo de dança
                 </p>
-                <p className="mt-0.5 text-xs text-muted">
-                  Cada um dança 30–45 segundos o estilo que a app lhe deu. Sem
-                  trocas, sem choraminguices — comprometer-se vale mais que
-                  dançar bem.
-                </p>
-                <ul className="mt-2 space-y-1">
-                  {data.styles.map((s) => {
-                    const mine = s.player.id === voting.me;
-                    return (
-                      <li
-                        key={s.player.id}
-                        className={`flex items-center gap-2 rounded-md px-2 py-1.5 ${
-                          mine ? "bg-indigo text-white" : ""
-                        }`}
-                      >
-                        <Avatar name={s.player.name} emoji={s.player.emoji} size={22} />
-                        <span className="display text-sm font-bold">
-                          {s.player.name}
-                          {mine ? " (tu!)" : ""}
-                        </span>
-                        <span className={`ml-auto text-sm ${mine ? "" : "text-muted"}`}>
-                          {s.style}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
+                {dança === "idle" ? (
+                  <>
+                    <p className="mt-1 text-xs text-muted">
+                      Tira o teu estilo do chapéu. É segredo — só o revelas
+                      quando fores dançar (30–45s). Sem trocas, sem
+                      choraminguices.
+                    </p>
+                    <button
+                      onClick={sortearDanca}
+                      className="display mt-3 min-h-14 w-full rounded-md bg-indigo text-lg font-bold text-white active:opacity-80"
+                    >
+                      🎩 Tirar o meu estilo
+                    </button>
+                  </>
+                ) : dança === "shake" ? (
+                  <div className="py-3">
+                    <p className="hat-shake inline-block text-6xl">🎩</p>
+                    <p className="display mt-2 text-sm text-muted">a sortear…</p>
+                  </div>
+                ) : (
+                  <div className="card-pop py-2">
+                    <p className="display text-3xl font-bold">{data.my_style}</p>
+                    <p className="mt-1.5 text-xs text-muted">
+                      Chiu 🤫 — não digas a ninguém até subires ao palco.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 

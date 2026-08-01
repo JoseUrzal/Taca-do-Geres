@@ -82,16 +82,20 @@ export async function GET() {
     };
   }
 
-  // evento de dança ativo → sorteio de estilos na app
-  let styles = null;
-  if (ativo && ativo.name.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "").includes("danc")) {
+  // evento de dança ativo → cada um sorteia o SEU estilo no telemóvel.
+  // A atribuição é determinística (semeada pelo id do evento), mas cada
+  // pessoa só recebe o próprio estilo — segredo até subir ao palco.
+  let myStyle: string | null = null;
+  if (
+    me &&
+    ativo &&
+    ativo.name.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "").includes("danc")
+  ) {
     const baralhados = seededShuffle(ESTILOS, ativo.id);
     const ordenados = [...players].sort((a, b) => a.id.localeCompare(b.id));
-    styles = ordenados.map((p, i) => ({
-      player: { id: p.id, name: p.name, emoji: p.emoji },
-      style: baralhados[i % baralhados.length],
-    }));
+    const i = ordenados.findIndex((p) => p.id === me);
+    if (i >= 0) myStyle = baralhados[i % baralhados.length];
   }
 
-  return NextResponse.json({ events: data, voting, styles });
+  return NextResponse.json({ events: data, voting, my_style: myStyle });
 }
