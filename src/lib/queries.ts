@@ -145,7 +145,7 @@ export async function getStats(): Promise<{ icon: string; label: string; value: 
       db().from("accusations").select("accuser_id, target_id, correct"),
       db().from("answers").select("id, player_id, text"),
       db().from("guesses").select("answer_id, guessed_player_id"),
-      db().from("approvals").select("player_id, vote"),
+      db().from("approvals").select("player_id, vote, assignment:assignment_id(player_id)"),
     ]);
 
   const top = (m: Map<string, number>) => {
@@ -242,12 +242,31 @@ export async function getStats(): Promise<{ icon: string; label: string; value: 
       value: `${nameOf(testamento.player_id)} · resposta de ${testamento.len} caracteres`,
     });
 
-  // tribunal: juiz mais duro e juiz mais bonzinho
+  // tribunal: juiz mais duro, juiz mais bonzinho e a dupla mais cúmplice
+  type ApprovalRow = { player_id: string; vote: boolean; assignment: { player_id: string } | null };
   const duro = new Map<string, number>();
   const bonzinho = new Map<string, number>();
-  for (const v of approvals ?? []) {
+  const cruzados = new Map<string, number>(); // par não ordenado → ✅ trocados
+  for (const v of (approvals ?? []) as unknown as ApprovalRow[]) {
     const m = v.vote ? bonzinho : duro;
     m.set(v.player_id, (m.get(v.player_id) ?? 0) + 1);
+    const owner = v.assignment?.player_id;
+    if (v.vote && owner && owner !== v.player_id) {
+      const pairKey = [v.player_id, owner].sort().join("|");
+      cruzados.set(pairKey, (cruzados.get(pairKey) ?? 0) + 1);
+    }
+  }
+  let dupla: { key: string; n: number } | null = null;
+  for (const [key, n] of cruzados) {
+    if (n >= 3 && (!dupla || n > dupla.n)) dupla = { key, n };
+  }
+  if (dupla) {
+    const [a, b] = dupla.key.split("|");
+    stats.push({
+      icon: "🤝",
+      label: "Dupla mais cúmplice",
+      value: `${nameOf(a)} & ${nameOf(b)} · ${dupla.n} ✅ trocados`,
+    });
   }
   const juiz = top(duro);
   if (juiz)

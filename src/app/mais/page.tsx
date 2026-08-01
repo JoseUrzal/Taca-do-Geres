@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import Shell from "@/components/Shell";
-import { ScrollText, Video, HelpCircle, Tv2, Settings, ChevronRight, CalendarClock, Lightbulb } from "lucide-react";
+import { ScrollText, Video, HelpCircle, Tv2, Settings, ChevronRight, CalendarClock, Lightbulb, Handshake } from "lucide-react";
 
 const LINKS = [
   { href: "/missoes", label: "Catálogo de missões", desc: "Tudo o que anda em jogo", icon: ScrollText },
   { href: "/eventos", label: "Eventos", desc: "Anunciados e pódios jogados", icon: CalendarClock },
+  { href: "/cumplicidades", label: "Cumplicidades", desc: "Quem aprova as missões de quem", icon: Handshake },
   { href: "/ideias", label: "Ideias", desc: "Propõe missões, eventos e perguntas", icon: Lightbulb },
   { href: "/momentos", label: "Momentos", desc: "O guião do vídeo de domingo", icon: Video },
   { href: "/regras", label: "Regras", desc: "Como se joga, em 2 minutos", icon: HelpCircle },
