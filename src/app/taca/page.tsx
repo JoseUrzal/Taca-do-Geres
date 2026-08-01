@@ -105,7 +105,14 @@ export default function TacaPage() {
 function Extrato({ playerId }: { playerId: string }) {
   const { data } = useSWR<{
     total: number;
-    events: { id: string; points: number; reason: string; source: string; created_at: string }[];
+    events: {
+      id: string;
+      points: number;
+      reason: string;
+      source: string;
+      created_at: string;
+      votes?: { name: string; vote: boolean }[];
+    }[];
   }>(`/api/jogador/${playerId}`, fetcher);
 
   if (!data) {
@@ -134,13 +141,25 @@ function Extrato({ playerId }: { playerId: string }) {
                 minute: "2-digit",
               })}
             </span>
+            {e.votes && e.votes.length > 0 && (
+              <span className="mt-0.5 block text-xs text-muted">
+                {[
+                  e.votes.some((v) => v.vote) &&
+                    `✅ ${e.votes.filter((v) => v.vote).map((v) => v.name).join(", ")}`,
+                  e.votes.some((v) => !v.vote) &&
+                    `❌ ${e.votes.filter((v) => !v.vote).map((v) => v.name).join(", ")}`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </span>
+            )}
           </p>
           <span
             className={`num shrink-0 font-bold ${
-              e.points >= 0 ? "text-coral" : "text-muted"
+              e.points > 0 ? "text-coral" : "text-muted"
             }`}
           >
-            {e.points >= 0 ? `+${e.points}` : e.points}
+            {e.points > 0 ? `+${e.points}` : e.points}
           </span>
         </li>
       ))}
