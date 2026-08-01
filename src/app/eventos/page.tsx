@@ -84,7 +84,7 @@ export default function EventosPage() {
   return (
     <Shell title="Eventos">
       <p className="mb-4 text-sm text-muted">
-        Os jogos físicos do fim de semana. Anunciados antes, pódio 10/6/3 depois.
+        Os jogos físicos do fim de semana. Anunciados antes, pódio 15/10/5 depois.
       </p>
 
       <h2 className="display mb-2 flex items-center gap-2 text-lg">
@@ -212,9 +212,9 @@ export default function EventosPage() {
           <li key={e.id} className="rounded-xl bg-surface p-4">
             <p className="display">{e.name}</p>
             <div className="num mt-2 space-y-1 text-sm">
-              {e.first && <p>🥇 {e.first.name} <span className="text-muted">+10</span></p>}
-              {e.second && <p>🥈 {e.second.name} <span className="text-muted">+6</span></p>}
-              {e.third && <p>🥉 {e.third.name} <span className="text-muted">+3</span></p>}
+              {e.first && <p>🥇 {e.first.name}</p>}
+              {e.second && <p>🥈 {e.second.name}</p>}
+              {e.third && <p>🥉 {e.third.name}</p>}
             </div>
           </li>
         ))}

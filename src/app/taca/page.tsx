@@ -17,8 +17,15 @@ const SOURCE_ICON: Record<string, string> = {
   missao: "🕵️",
   acusacao: "🎯",
   quem_disse: "🎤",
-  manual: "🏊",
 };
+
+// a fonte «manual» cobre eventos, cumplicidade e pontos do admin —
+// distingue-se pelo motivo
+function iconFor(e: { source: string; reason: string }): string {
+  if (e.reason.startsWith("Cumplicidade")) return "🤝";
+  if (/\d\.º lugar/.test(e.reason)) return "🏅";
+  return SOURCE_ICON[e.source] ?? "⭐";
+}
 
 export default function TacaPage() {
   const { data } = useSWR<Taca>("/api/taca", fetcher, POLL);
@@ -140,7 +147,7 @@ function Extrato({ playerId }: { playerId: string }) {
       {data.events.map((e) => (
         <li key={e.id} className="flex items-start gap-2.5 p-2.5">
           <span aria-hidden className="text-sm">
-            {SOURCE_ICON[e.source] ?? "🏆"}
+            {iconFor(e)}
           </span>
           <p className="min-w-0 flex-1 text-sm leading-snug text-ink/90">
             {e.reason}

@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/identity";
 import { addScore, getPlayers } from "@/lib/queries";
 
 // Fechar a votação: cada boletim dá 3/2/1 pontos de voto ao 1.º/2.º/3.º
-// escolhido. Os 3 com mais pontos de voto levam o pódio 10/6/3.
+// escolhido. Os 3 com mais pontos de voto levam o pódio 15/10/5.
 // Empates: ordem alfabética.
 // O UPDATE guardado por status='previsto' garante que só pontua uma vez.
 const SLOT_PTS: Record<number, number> = { 1: 3, 2: 2, 3: 1 };
@@ -53,9 +53,9 @@ export async function POST(req: NextRequest) {
   }
 
   const podium: [string | undefined, number, string][] = [
-    [first, 10, "1.º lugar"],
-    [second, 6, "2.º lugar"],
-    [third, 3, "3.º lugar"],
+    [first, 15, "1.º lugar"],
+    [second, 10, "2.º lugar"],
+    [third, 5, "3.º lugar"],
   ];
   for (const [playerId, points, place] of podium) {
     if (playerId) {

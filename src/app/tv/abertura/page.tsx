@@ -77,7 +77,7 @@ const SLIDES: Slide[] = [
     title: "Tudo conta para a Taça",
     lines: [
       "Saltos para a piscina, olimpíadas parvas, prova cega, os jogos que trouxerem…",
-      "Cada evento tem pódio: 10 / 6 / 3 pontos.",
+      "Cada evento tem pódio: 15 / 10 / 5 pontos.",
       "Fica tudo registado no marcador — sem discussões. (Quase.)",
     ],
     big: "🏊",

@@ -79,10 +79,10 @@ export default function TribunalPage() {
               </p>
             ) : (
               <>
-                {c.my_yes_to_owner >= 3 && (
+                {c.my_yes_to_owner >= 4 && (
                   <p className="mt-3 rounded-md border border-coral p-2 text-xs text-coral">
                     ⚠️ Já deste {c.my_yes_to_owner} ✅ a {c.player.name} — o
-                    próximo custa <b>−3</b> (limite de cumplicidade: 3 grátis).
+                    próximo custa <b>−3</b> (limite de cumplicidade: 4 grátis).
                   </p>
                 )}
               <div className="mt-3 flex gap-2">

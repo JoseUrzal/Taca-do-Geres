@@ -5,9 +5,23 @@ import { getGameState } from "@/lib/queries";
 
 // Criar uma ronda de Quem Disse Isto? a partir de um prompt (do catálogo ou
 // escrito à mão). Fica logo ativa e a TV muda para ela.
+// Máximo 4 rondas por dia: o quizz paga bem (+5/acerto) e sem travão
+// esmagava as missões e os eventos na economia de pontos.
+const MAX_RONDAS_DIA = 4;
+
 export async function POST(req: NextRequest) {
   const ok = await requireAdmin();
   if (ok !== true) return ok;
+
+  const hoje = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
+  const { data: rondas } = await db().from("rounds").select("created_at");
+  const hojeCount = (rondas ?? []).filter(
+    (r) =>
+      new Date(r.created_at).toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" }) === hoje
+  ).length;
+  if (hojeCount >= MAX_RONDAS_DIA) {
+    return NextResponse.json({ error: "limite_rondas" }, { status: 409 });
+  }
 
   const { prompt, prompt_id } = (await req.json()) as { prompt?: string; prompt_id?: string };
 

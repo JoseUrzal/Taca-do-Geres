@@ -3,7 +3,7 @@ import { db } from "@/lib/supabase";
 import { requireAdmin } from "@/lib/identity";
 import { addScore } from "@/lib/queries";
 
-// Registar o resultado de um evento anunciado: pódio 10/6/3.
+// Registar o resultado de um evento anunciado: pódio 15/10/5.
 // O UPDATE guardado por status='previsto' garante que só pontua uma vez.
 export async function POST(req: NextRequest) {
   const ok = await requireAdmin();
@@ -37,9 +37,9 @@ export async function POST(req: NextRequest) {
   }
 
   const podium: [string | undefined, number, string][] = [
-    [first, 10, "1.º lugar"],
-    [second, 6, "2.º lugar"],
-    [third, 3, "3.º lugar"],
+    [first, 15, "1.º lugar"],
+    [second, 10, "2.º lugar"],
+    [third, 5, "3.º lugar"],
   ];
   for (const [playerId, points, place] of podium) {
     if (playerId) await addScore(playerId, points, `${updated.name} — ${place}`, "manual");

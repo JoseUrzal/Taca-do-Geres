@@ -7,10 +7,23 @@ export const dynamic = "force-dynamic";
 // Dados da cerimónia de encerramento: pódio + medalhas honoríficas
 // calculadas a partir do histórico completo do fim de semana.
 export async function GET() {
-  const [players, { individual }] = await Promise.all([
+  const [players, { individual }, { data: confirmadas }] = await Promise.all([
     getPlayers(),
     getLeaderboard(),
+    db().from("assignments").select("player_id").eq("status", "confirmada"),
   ]);
+
+  // desempate oficial do campeonato: pontos → missões confirmadas → nome
+  const nConf = new Map<string, number>();
+  for (const a of confirmadas ?? []) {
+    nConf.set(a.player_id, (nConf.get(a.player_id) ?? 0) + 1);
+  }
+  const ordenados = [...individual].sort(
+    (a, b) =>
+      b.points - a.points ||
+      (nConf.get(b.player.id) ?? 0) - (nConf.get(a.player.id) ?? 0) ||
+      a.player.name.localeCompare(b.player.name)
+  );
   const byId = new Map(players.map((p) => [p.id, p]));
   const name = (id: string | null) => (id ? byId.get(id)?.name ?? "?" : "?");
   const emoji = (id: string | null) => (id ? byId.get(id)?.emoji ?? "" : "");
@@ -93,7 +106,7 @@ export async function GET() {
   ].filter(Boolean);
 
   return NextResponse.json({
-    podium: individual.slice(0, 3).map((r) => ({
+    podium: ordenados.slice(0, 3).map((r) => ({
       name: r.player.name,
       emoji: r.player.emoji,
       points: r.points,

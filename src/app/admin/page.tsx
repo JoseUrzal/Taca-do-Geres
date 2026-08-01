@@ -140,7 +140,14 @@ function QuemDisseControlo({
       setCustom("");
       mutate();
       flash("Ronda criada — está na TV.");
-    } else flash("Não deu. Já há ronda ativa?");
+    } else {
+      const body = (await res.json().catch(() => null)) as { error?: string } | null;
+      flash(
+        body?.error === "limite_rondas"
+          ? "Limite de 4 rondas por dia atingido — o quizz volta amanhã."
+          : "Não deu. Já há ronda ativa?"
+      );
+    }
   }
 
   async function avancar() {
@@ -408,13 +415,13 @@ function Eventos({
   }
 
   const places = [
-    { key: "first" as const, label: "1.º · 10 pts", colour: "text-gold" },
-    { key: "second" as const, label: "2.º · 6 pts", colour: "" },
-    { key: "third" as const, label: "3.º · 3 pts", colour: "" },
+    { key: "first" as const, label: "1.º · 15 pts", colour: "text-gold" },
+    { key: "second" as const, label: "2.º · 10 pts", colour: "" },
+    { key: "third" as const, label: "3.º · 5 pts", colour: "" },
   ];
 
   return (
-    <Sec title="Eventos (pódio 10/6/3)">
+    <Sec title="Eventos (pódio 15/10/5)">
       <p className="mb-2 text-sm text-muted">
         1. Anuncia antes de jogar (fica visível a todos). 2. No fim, regista o pódio.
       </p>

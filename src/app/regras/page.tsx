@@ -11,7 +11,8 @@ export default function RegrasPage() {
           Tudo dá pontos: missões, acusações, palpites e jogos físicos. É cada
           um por si: o campeão da Taça é coroado domingo à tarde. O marcador
           vive em <b>Taça</b> e na TV — toca num nome para veres o extrato de
-          pontos de cada um.
+          pontos de cada um. <b>Desempate no topo:</b> mais missões
+          confirmadas; se persistir, ronda de quizz de morte súbita.
         </Regra>
 
         <Regra emoji="🕵️" titulo="Missões Secretas">
@@ -26,8 +27,8 @@ export default function RegrasPage() {
           onde os outros votam: <b>2 ✅ confirmam</b> e recebes os pontos;{" "}
           <b>3 ❌ chumbam</b> e a missão arde sem pontos. Os votos são públicos
           e não podes votar no teu próprio caso.{" "}
-          <b>Limite de cumplicidade:</b> os primeiros 3 ✅ que dás à mesma
-          pessoa são grátis; do 4.º em diante, cada ✅ custa-te <b>−3</b>{" "}
+          <b>Limite de cumplicidade:</b> os primeiros 4 ✅ que dás à mesma
+          pessoa são grátis; do 5.º em diante, cada ✅ custa-te <b>−3</b>{" "}
           (aparece no feed). Os cruzamentos estão públicos em Mais →
           Cumplicidades.
         </Regra>
@@ -59,8 +60,10 @@ export default function RegrasPage() {
         </Regra>
 
         <Regra emoji="🏊" titulo="Jogos físicos">
-          Saltos, olimpíadas, prova cega, os jogos que a malta trouxer… cada evento tem pódio de{" "}
-          <b>10/6/3</b> pontos, registado na hora.
+          Saltos, olimpíadas, prova cega, os jogos que a malta trouxer… cada
+          evento tem pódio de <b>15/10/5</b> pontos, registado na hora (por
+          votação na app ou decisão direta). O Quizz tem limite de{" "}
+          <b>4 rondas por dia</b>.
         </Regra>
 
         <Regra emoji="🎥" titulo="Quem vê, filma">

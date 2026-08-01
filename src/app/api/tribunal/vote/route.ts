@@ -33,8 +33,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "ja_votaste" }, { status: 409 });
   }
 
-  // limite de cumplicidade: 3 ✅ à mesma pessoa são grátis no fim de
-  // semana; do 4.º em diante, quem vota perde 3 pontos (público no feed)
+  // limite de cumplicidade: 4 ✅ à mesma pessoa são grátis no fim de
+  // semana; do 5.º em diante, quem vota perde 3 pontos (público no feed)
   if (vote) {
     const { data: myYes } = await db()
       .from("approvals")
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     const n = ((myYes ?? []) as unknown as { assignment: { player_id: string } | null }[]).filter(
       (r) => r.assignment?.player_id === owner
     ).length;
-    if (n > 3) {
+    if (n > 4) {
       const { data: ownerRow } = await db()
         .from("players")
         .select("name")
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       await addScore(
         playerId,
         -3,
-        `Cumplicidade: ${n}.º ✅ a ${ownerRow?.name ?? "?"} (limite: 3 grátis)`,
+        `Cumplicidade: ${n}.º ✅ a ${ownerRow?.name ?? "?"} (limite: 4 grátis)`,
         "manual"
       );
     }
