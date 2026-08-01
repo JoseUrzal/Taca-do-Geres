@@ -28,14 +28,20 @@ export async function GET() {
   if (ativo) {
     const { data: votes } = await db()
       .from("event_votes")
-      .select("voter_id, target_id")
+      .select("voter_id, target_id, slot")
       .eq("event_id", ativo.id);
+    const all = votes ?? [];
+    const mine = me ? all.filter((v) => v.voter_id === me) : [];
     voting = {
       event_id: ativo.id,
       name: ativo.name,
-      voted: (votes ?? []).length,
+      voted: new Set(all.map((v) => v.voter_id)).size,
       total: players.length,
-      my_vote: me ? (votes ?? []).find((v) => v.voter_id === me)?.target_id ?? null : null,
+      my_votes: {
+        1: mine.find((v) => v.slot === 1)?.target_id ?? null,
+        2: mine.find((v) => v.slot === 2)?.target_id ?? null,
+        3: mine.find((v) => v.slot === 3)?.target_id ?? null,
+      },
       players: players.map((p) => ({ id: p.id, name: p.name, emoji: p.emoji })),
       me,
     };

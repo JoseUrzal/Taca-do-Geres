@@ -3,9 +3,12 @@ import { db } from "@/lib/supabase";
 import { requireAdmin } from "@/lib/identity";
 import { addScore, getPlayers } from "@/lib/queries";
 
-// Fechar a votação de um evento: conta os votos, apura os 3 mais votados
-// e dá o pódio 10/6/3. Empates decidem-se por ordem alfabética (determinístico).
+// Fechar a votação: cada boletim dá 3/2/1 pontos de voto ao 1.º/2.º/3.º
+// escolhido; o voto do Cristian (chef convidado) vale o dobro. Os 3 com
+// mais pontos de voto levam o pódio 10/6/3. Empates: ordem alfabética.
 // O UPDATE guardado por status='previsto' garante que só pontua uma vez.
+const SLOT_PTS: Record<number, number> = { 1: 3, 2: 2, 3: 1 };
+
 export async function POST(req: NextRequest) {
   const ok = await requireAdmin();
   if (ok !== true) return ok;
@@ -14,7 +17,7 @@ export async function POST(req: NextRequest) {
   if (!event_id) return NextResponse.json({ error: "dados_em_falta" }, { status: 400 });
 
   const [{ data: votes }, players] = await Promise.all([
-    db().from("event_votes").select("target_id").eq("event_id", event_id),
+    db().from("event_votes").select("voter_id, target_id, slot").eq("event_id", event_id),
     getPlayers(),
   ]);
   if (!votes || votes.length === 0) {
@@ -22,8 +25,14 @@ export async function POST(req: NextRequest) {
   }
 
   const nameOf = (id: string) => players.find((p) => p.id === id)?.name ?? "?";
+  const chef = players.find((p) => p.name === "Cristian")?.id ?? null;
+
   const counts = new Map<string, number>();
-  for (const v of votes) counts.set(v.target_id, (counts.get(v.target_id) ?? 0) + 1);
+  for (const v of votes) {
+    const base = SLOT_PTS[v.slot] ?? 1;
+    const peso = v.voter_id === chef ? base * 2 : base;
+    counts.set(v.target_id, (counts.get(v.target_id) ?? 0) + peso);
+  }
   const ranked = [...counts.entries()].sort(
     (a, b) => b[1] - a[1] || nameOf(a[0]).localeCompare(nameOf(b[0]))
   );
@@ -57,7 +66,7 @@ export async function POST(req: NextRequest) {
       await addScore(
         playerId,
         points,
-        `${updated.name} — ${place} (${n} ${n === 1 ? "voto" : "votos"})`,
+        `${updated.name} — ${place} (${n} pts de voto)`,
         "manual"
       );
     }

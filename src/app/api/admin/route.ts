@@ -12,7 +12,7 @@ export async function GET() {
   const [players, { data: votes }, { data: prompts }, { data: events }, { data: ideas }, round] =
     await Promise.all([
     getPlayers(),
-    db().from("event_votes").select("event_id"),
+    db().from("event_votes").select("event_id, voter_id"),
     db().from("prompts").select("id, text").eq("used", false).order("text"),
     db()
       .from("events")
@@ -34,9 +34,13 @@ export async function GET() {
       : Promise.resolve(null),
   ]);
 
-  // votos por evento (a tabela pode ainda não existir — nesse caso fica vazio)
+  // votantes por evento (a tabela pode ainda não existir — nesse caso vazio)
+  const seen = new Set<string>();
   const eventVotes: Record<string, number> = {};
   for (const v of votes ?? []) {
+    const key = `${v.event_id}|${v.voter_id}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
     eventVotes[v.event_id] = (eventVotes[v.event_id] ?? 0) + 1;
   }
 
