@@ -127,18 +127,18 @@ export async function getActivity(limit = 20): Promise<ActivityItem[]> {
     .slice(0, limit);
 }
 
-// Números do fim de semana para a TV — vergonha e glória em partes iguais.
+// Relatório do dia para a TV — vergonha e glória em partes iguais.
 export async function getStats(): Promise<{ icon: string; label: string; value: string }[]> {
   const players = await getPlayers();
   const nameOf = (id: string) => players.find((p) => p.id === id)?.name ?? "?";
 
-  const [{ data: scores }, { data: accusations }, { data: answers }, { data: guesses }, { data: noVotes }] =
+  const [{ data: scores }, { data: accusations }, { data: answers }, { data: guesses }, { data: approvals }] =
     await Promise.all([
       db().from("score_events").select("player_id, points, created_at"),
-      db().from("accusations").select("accuser_id, correct"),
-      db().from("answers").select("id, player_id"),
+      db().from("accusations").select("accuser_id, target_id, correct"),
+      db().from("answers").select("id, player_id, text"),
       db().from("guesses").select("answer_id, guessed_player_id"),
-      db().from("approvals").select("player_id").eq("vote", false),
+      db().from("approvals").select("player_id, vote"),
     ]);
 
   const top = (m: Map<string, number>) => {
@@ -148,12 +148,14 @@ export async function getStats(): Promise<{ icon: string; label: string; value: 
   };
   const stats: { icon: string; label: string; value: string }[] = [];
 
-  // em alta: quem somou mais na última hora
+  // em alta: quem somou mais na última hora + totais para a luta pelo ouro
   const hourAgo = new Date(Date.now() - 3600_000).toISOString();
   const lastHour = new Map<string, number>();
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
   const todayPts = new Map<string, number>(players.map((p) => [p.id, 0]));
+  const totals = new Map<string, number>(players.map((p) => [p.id, 0]));
   for (const s of scores ?? []) {
+    totals.set(s.player_id, (totals.get(s.player_id) ?? 0) + s.points);
     if (s.created_at >= hourAgo && s.points > 0) {
       lastHour.set(s.player_id, (lastHour.get(s.player_id) ?? 0) + s.points);
     }
@@ -163,21 +165,55 @@ export async function getStats(): Promise<{ icon: string; label: string; value: 
   const hot = top(lastHour);
   if (hot) stats.push({ icon: "🔥", label: "Em alta (última hora)", value: `${nameOf(hot.id)} +${hot.n}` });
 
-  // caçador e trapalhão das acusações
+  // luta pelo ouro: distância do 2.º ao 1.º
+  const ranked = [...totals.entries()].sort((a, b) => b[1] - a[1]);
+  if (ranked.length >= 2 && ranked[0][1] > 0) {
+    const gap = ranked[0][1] - ranked[1][1];
+    stats.push({
+      icon: "🥊",
+      label: "Luta pelo ouro",
+      value:
+        gap === 0
+          ? `${nameOf(ranked[0][0])} e ${nameOf(ranked[1][0])} empatados!`
+          : `${nameOf(ranked[1][0])} a ${gap} ${gap === 1 ? "ponto" : "pontos"} de ${nameOf(ranked[0][0])}`,
+    });
+  }
+
+  // acusações: caçador, vítima preferida, perseguição e falhanços
   const certas = new Map<string, number>();
   const falhadas = new Map<string, number>();
+  const sofridas = new Map<string, number>();
+  const pares = new Map<string, number>();
   for (const a of accusations ?? []) {
     const m = a.correct ? certas : falhadas;
     m.set(a.accuser_id, (m.get(a.accuser_id) ?? 0) + 1);
+    sofridas.set(a.target_id, (sofridas.get(a.target_id) ?? 0) + 1);
+    const key = `${a.accuser_id}|${a.target_id}`;
+    pares.set(key, (pares.get(key) ?? 0) + 1);
   }
   const cacador = top(certas);
   if (cacador)
     stats.push({ icon: "🎯", label: "Caçador de espiões", value: `${nameOf(cacador.id)} · ${cacador.n} ${cacador.n === 1 ? "acusação certa" : "acusações certas"}` });
+  const vitima = top(sofridas);
+  if (vitima)
+    stats.push({ icon: "🐑", label: "Vítima preferida", value: `${nameOf(vitima.id)} · acusado ${vitima.n}× ` });
+  let perseguicao: { key: string; n: number } | null = null;
+  for (const [key, n] of pares) {
+    if (n >= 2 && (!perseguicao || n > perseguicao.n)) perseguicao = { key, n };
+  }
+  if (perseguicao) {
+    const [acc, alvo] = perseguicao.key.split("|");
+    stats.push({
+      icon: "👀",
+      label: "Perseguição do fim de semana",
+      value: `${nameOf(acc)} não larga ${nameOf(alvo)} (${perseguicao.n} acusações)`,
+    });
+  }
   const trapalhao = top(falhadas);
   if (trapalhao)
     stats.push({ icon: "🙈", label: "Acusações falhadas", value: `${nameOf(trapalhao.id)} · ${trapalhao.n}` });
 
-  // mais enganador acumulado do quizz
+  // quizz: mais enganador acumulado + o testamento mais longo
   const autorDe = new Map((answers ?? []).map((a) => [a.id, a.player_id]));
   const enganador = new Map<string, number>();
   for (const g of guesses ?? []) {
@@ -187,13 +223,31 @@ export async function getStats(): Promise<{ icon: string; label: string; value: 
   const eng = top(enganador);
   if (eng)
     stats.push({ icon: "🎭", label: "Mais enganador do Quizz", value: `${nameOf(eng.id)} · ${eng.n} ${eng.n === 1 ? "palpite enganado" : "palpites enganados"}` });
+  let testamento: { player_id: string; len: number } | null = null;
+  for (const a of answers ?? []) {
+    const len = (a.text ?? "").length;
+    if (len > 120 && (!testamento || len > testamento.len)) testamento = { player_id: a.player_id, len };
+  }
+  if (testamento)
+    stats.push({
+      icon: "📜",
+      label: "Testamento do Quizz",
+      value: `${nameOf(testamento.player_id)} · resposta de ${testamento.len} caracteres`,
+    });
 
-  // juiz mais duro: mais votos ❌ dados
+  // tribunal: juiz mais duro e juiz mais bonzinho
   const duro = new Map<string, number>();
-  for (const v of noVotes ?? []) duro.set(v.player_id, (duro.get(v.player_id) ?? 0) + 1);
+  const bonzinho = new Map<string, number>();
+  for (const v of approvals ?? []) {
+    const m = v.vote ? bonzinho : duro;
+    m.set(v.player_id, (m.get(v.player_id) ?? 0) + 1);
+  }
   const juiz = top(duro);
   if (juiz)
     stats.push({ icon: "⚖️", label: "Juiz mais duro", value: `${nameOf(juiz.id)} · ${juiz.n} ❌` });
+  const anjo = top(bonzinho);
+  if (anjo)
+    stats.push({ icon: "😇", label: "Juiz mais bonzinho", value: `${nameOf(anjo.id)} · ${anjo.n} ✅` });
 
   // quem ainda não marcou hoje
   const zeros = players.filter((p) => (todayPts.get(p.id) ?? 0) <= 0).map((p) => p.name);

@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import useSWR from "swr";
-import Scoreboard from "@/components/Scoreboard";
+import FlipNumber from "@/components/FlipNumber";
 import Avatar from "@/components/Avatar";
 import { fetcher, post, POLL } from "@/lib/client";
 import type { ActivityItem, LeaderboardRow } from "@/lib/types";
 
 type TvData = {
   day: number;
-  top5: LeaderboardRow[];
+  board: LeaderboardRow[];
   activity: ActivityItem[];
   stats: { icon: string; label: string; value: string }[];
   moments: { id: string; text: string; player: { name: string; emoji: string } }[];
@@ -48,7 +48,7 @@ type TvRound =
     ))
   | null;
 
-const BASE_PANELS = ["top5", "atividade", "stats", "momentos"];
+const BASE_PANELS = ["marcador", "ultima-hora", "relatorio"];
 
 // ecrã baixo = telemóvel deitado a fazer de TV
 function useShortScreen() {
@@ -115,7 +115,6 @@ export default function TvPage() {
 
   const panels = [
     ...BASE_PANELS,
-    ...(data?.next_event ? ["evento"] : []),
     ...(data?.tribunal && data.tribunal.length > 0 ? ["tribunal"] : []),
   ];
   const current = panels[panel % panels.length];
@@ -141,87 +140,134 @@ export default function TvPage() {
       <main className="flex min-h-0 flex-1 flex-col justify-center overflow-hidden py-8 short:py-3">
         {!data ? null : data.round ? (
           <TvRoundView round={data.round} canControl={data.can_control} />
-        ) : current === "top5" ? (
-          <section>
-            <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">Classificação</h2>
-            <Scoreboard rows={data.top5} big={!shortScreen} />
-          </section>
-        ) : current === "atividade" ? (
-          <section>
-            <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">Últimas atividades</h2>
-            <ul className="space-y-4 short:space-y-2">
-              {data.activity.slice(0, shortScreen ? 4 : 6).map((f) => (
-                <li key={f.id} className="flex items-baseline gap-6 short:gap-4 border-b border-line pb-4 short:pb-2">
-                  <span
-                    className={`num w-24 short:w-14 shrink-0 text-right text-2xl short:text-lg tv:text-4xl font-bold ${
-                      f.kind === "pontos"
-                        ? (f.points ?? 0) >= 0
-                          ? "text-coral"
-                          : "text-muted"
-                        : ""
-                    }`}
+        ) : current === "marcador" ? (
+          <section className="flex min-h-0 flex-col justify-center">
+            <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">🏆 Classificação</h2>
+            <ol className="grid grid-flow-col grid-rows-5 gap-x-10 short:gap-x-6 tv:gap-x-16 gap-y-2 short:gap-y-1">
+              {data.board.map((r) => {
+                const gold = r.rank === 1 && r.points > 0;
+                return (
+                  <li
+                    key={r.player.id}
+                    className="flex items-center gap-3 short:gap-2 border-b border-line pb-2 short:pb-1"
                   >
-                    {f.kind === "pontos"
-                      ? (f.points ?? 0) >= 0
-                        ? `+${f.points}`
-                        : f.points
-                      : f.kind === "tribunal"
-                        ? "🔥"
-                        : "📣"}
-                  </span>
-                  <p className="text-xl short:text-base tv:text-3xl leading-snug">
-                    {f.player && <span className="display font-bold">{f.player.name} </span>}
-                    <span className="text-muted">{f.text}</span>
-                  </p>
-                </li>
-              ))}
-            </ul>
+                    <span
+                      className={`num w-8 shrink-0 text-right text-lg short:text-sm tv:text-3xl ${
+                        gold ? "font-bold text-gold" : "text-muted"
+                      }`}
+                    >
+                      {r.rank}
+                    </span>
+                    <Avatar name={r.player.name} emoji={r.player.emoji} size={shortScreen ? 26 : 40} />
+                    <span
+                      className={`display min-w-0 flex-1 truncate text-xl short:text-base tv:text-3xl font-bold ${
+                        gold ? "text-gold" : ""
+                      }`}
+                    >
+                      {r.player.name}
+                    </span>
+                    <FlipNumber
+                      value={r.points}
+                      className={`shrink-0 text-2xl short:text-lg tv:text-4xl font-bold ${
+                        gold ? "text-gold" : ""
+                      }`}
+                    />
+                  </li>
+                );
+              })}
+            </ol>
+            {data.next_event && (
+              <p className="display mt-4 short:mt-2 rounded-md bg-surface p-3 short:p-2 text-center text-lg short:text-sm tv:text-2xl">
+                📣 <span className="font-bold text-coral">Próximo evento:</span>{" "}
+                {data.next_event.name}
+                {data.next_event.when_hint && (
+                  <span className="text-muted"> · {data.next_event.when_hint}</span>
+                )}
+              </p>
+            )}
           </section>
-        ) : current === "stats" ? (
+        ) : current === "ultima-hora" ? (
+          <section className="grid min-h-0 grid-cols-3 gap-8 short:gap-4">
+            <div className="col-span-2 min-w-0">
+              <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">📰 Última hora</h2>
+              <ul className="space-y-4 short:space-y-2">
+                {data.activity.slice(0, shortScreen ? 4 : 6).map((f) => (
+                  <li key={f.id} className="flex items-baseline gap-6 short:gap-3 border-b border-line pb-4 short:pb-2">
+                    <span
+                      className={`num w-24 short:w-12 shrink-0 text-right text-2xl short:text-lg tv:text-4xl font-bold ${
+                        f.kind === "pontos"
+                          ? (f.points ?? 0) >= 0
+                            ? "text-coral"
+                            : "text-muted"
+                          : ""
+                      }`}
+                    >
+                      {f.kind === "pontos"
+                        ? (f.points ?? 0) >= 0
+                          ? `+${f.points}`
+                          : f.points
+                        : f.kind === "tribunal"
+                          ? "🔥"
+                          : "📣"}
+                    </span>
+                    <p className="text-xl short:text-base tv:text-3xl leading-snug">
+                      {f.player && <span className="display font-bold">{f.player.name} </span>}
+                      <span className="text-muted">{f.text}</span>
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="min-w-0">
+              <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">🎥 Momentos</h2>
+              {data.moments.length === 0 ? (
+                <p className="text-base short:text-sm tv:text-2xl text-muted">
+                  Viste algo épico? Filma e toca em «Guardar momento» na app.
+                </p>
+              ) : (
+                <ul className="space-y-3 short:space-y-2">
+                  {data.moments.slice(0, shortScreen ? 2 : 3).map((m) => (
+                    <li key={m.id} className="rounded-xl bg-surface p-3 short:p-2 tv:p-5">
+                      <p className="text-base short:text-sm tv:text-2xl leading-snug">«{m.text}»</p>
+                      <p className="display mt-1 flex items-center gap-2 text-sm short:text-xs tv:text-lg text-muted">
+                        <Avatar name={m.player?.name ?? ""} emoji={m.player?.emoji ?? ""} size={20} />
+                        {m.player?.name}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+        ) : current === "relatorio" ? (
           <section>
             <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">
-              📊 Números do fim de semana
+              📊 Relatório do dia
             </h2>
             {data.stats.length === 0 ? (
               <p className="text-lg tv:text-3xl text-muted">
                 Ainda não há números. Vão jogar, vá.
               </p>
             ) : (
-              <ul className="space-y-4 short:space-y-2">
-                {data.stats.slice(0, shortScreen ? 4 : 6).map((s) => (
+              <ul className="grid grid-cols-2 gap-4 short:gap-2">
+                {data.stats.slice(0, shortScreen ? 6 : 8).map((s) => (
                   <li
                     key={s.label}
-                    className="flex items-center gap-5 rounded-xl bg-surface p-4 short:p-2.5 tv:p-6"
+                    className="flex items-center gap-4 short:gap-2.5 rounded-xl bg-surface p-4 short:p-2 tv:p-5"
                   >
-                    <span className="text-3xl short:text-2xl tv:text-5xl">{s.icon}</span>
+                    <span className="text-3xl short:text-xl tv:text-5xl">{s.icon}</span>
                     <div className="min-w-0">
-                      <p className="display text-sm short:text-xs tv:text-xl font-bold tracking-widest text-muted">
+                      <p className="display text-xs short:text-[10px] tv:text-lg font-bold tracking-widest text-muted">
                         {s.label.toUpperCase()}
                       </p>
-                      <p className="display truncate text-2xl short:text-lg tv:text-4xl font-bold">{s.value}</p>
+                      <p className="display truncate text-xl short:text-sm tv:text-3xl font-bold">{s.value}</p>
                     </div>
                   </li>
                 ))}
               </ul>
             )}
           </section>
-        ) : current === "evento" && data.next_event ? (
-          <section className="text-center">
-            <p className="text-7xl short:text-5xl tv:text-9xl">📣</p>
-            <p className="display mt-6 short:mt-2 text-xl short:text-base tv:text-3xl font-bold tracking-widest text-coral">
-              PRÓXIMO EVENTO
-            </p>
-            <h2 className="display mt-3 text-4xl short:text-3xl tv:text-8xl font-bold leading-tight">
-              {data.next_event.name}
-            </h2>
-            {data.next_event.when_hint && (
-              <p className="num mt-6 short:mt-2 text-2xl short:text-xl tv:text-5xl text-muted">{data.next_event.when_hint}</p>
-            )}
-            <p className="mt-8 short:mt-3 text-lg short:text-sm tv:text-3xl text-muted">
-              Pódio 10 / 6 / 3 — tudo conta para a Taça.
-            </p>
-          </section>
-        ) : current === "tribunal" ? (
+        ) : (
           <section>
             <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">
               ⚖️ Tribunal — vota no telemóvel!
@@ -229,7 +275,7 @@ export default function TvPage() {
             <ul className="space-y-4 short:space-y-2">
               {data.tribunal.slice(0, shortScreen ? 3 : 4).map((c) => (
                 <li key={c.id} className="flex items-center gap-4 rounded-xl bg-surface p-4 short:p-2.5 tv:p-6">
-                  <Avatar name={c.player.name} emoji={c.player.emoji} size={56} />
+                  <Avatar name={c.player.name} emoji={c.player.emoji} size={shortScreen ? 36 : 56} />
                   <p className="text-lg short:text-base tv:text-3xl leading-snug">
                     <span className="display font-bold">{c.player.name}</span>{" "}
                     <span className="text-muted">diz que cumpriu:</span> «{c.mission.text}»{" "}
@@ -241,30 +287,6 @@ export default function TvPage() {
             <p className="mt-6 short:mt-2 text-center text-lg short:text-sm tv:text-2xl text-muted">
               2 ✅ confirmam · 3 ❌ chumbam · os votos são públicos
             </p>
-          </section>
-        ) : (
-          <section>
-            <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">
-              🎥 Momentos — quem vê, filma
-            </h2>
-            {data.moments.length === 0 ? (
-              <p className="text-lg tv:text-3xl text-muted">
-                Ainda nada guardado. Viste algo digno do vídeo? Filma 10 segundos e
-                toca em «Guardar momento» na app.
-              </p>
-            ) : (
-              <ul className="space-y-4 short:space-y-2">
-                {data.moments.slice(0, shortScreen ? 3 : 5).map((m) => (
-                  <li key={m.id} className="rounded-xl bg-surface p-4 short:p-2.5 tv:p-6">
-                    <p className="text-lg short:text-base tv:text-3xl leading-snug">«{m.text}»</p>
-                    <p className="display mt-1 flex items-center gap-2 text-base tv:text-xl text-muted">
-                      <Avatar name={m.player?.name ?? ""} emoji={m.player?.emoji ?? ""} size={24} />
-                      {m.player?.name}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            )}
           </section>
         )}
       </main>

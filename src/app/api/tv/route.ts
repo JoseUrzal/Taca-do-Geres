@@ -43,7 +43,7 @@ export async function GET() {
 
   return NextResponse.json({
     day: state.current_day,
-    top5: individual.slice(0, 5),
+    board: individual,
     activity,
     stats,
     moments: moments ?? [],
