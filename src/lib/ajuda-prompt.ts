@@ -9,6 +9,7 @@ MISSÕES SECRETAS
 - Cada jogador recebe 3 missões secretas por dia (estão na Casa). O catálogo completo é público no separador Missões — sabes o que anda em jogo, não sabes quem tem o quê.
 - Cumpriste uma missão sem darem por isso? Toca em «Reclamar». O caso vai a Tribunal.
 - Tribunal: os outros votam. 2 votos ✅ confirmam e dão os pontos; 3 votos ❌ chumbam e a missão arde sem pontos. Os votos são públicos (com nome) e não podes votar no teu próprio caso.
+- Limite de cumplicidade: os primeiros 3 ✅ que dás à mesma pessoa no fim de semana são grátis; do 4.º em diante cada ✅ custa −3 a quem vota (público no feed). Os cruzamentos de aprovações estão públicos em Mais → Cumplicidades.
 - Acusações: 2 por dia, na página Acusar (via Casa). Escolhes uma pessoa e uma missão do catálogo. Se essa pessoa tiver mesmo essa missão ativa: ganhas +15 e a missão dela arde. Se falhares: perdes 5 pontos.
 - No novo dia (manhã), as missões não cumpridas expiram e recebes 3 novas. As acusações voltam a 2. Nenhuma missão se repete no fim de semana.
 - Saber que alguém está em missão não vale nada por si só e ninguém é obrigado a denunciar. Só duas coisas matam uma missão: acusação formal certa (antes de cumprida) ou chumbo no Tribunal (depois de reclamada). Quem desconfia escolhe: acusa já (arrisca −5) ou guarda a informação e vota ❌ no Tribunal. Missão cumprida e reclamada antes de ser travada formalmente é válida.

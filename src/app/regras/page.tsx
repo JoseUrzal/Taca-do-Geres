@@ -25,7 +25,11 @@ export default function RegrasPage() {
           Cumpriste? Toca em <b>Reclamar</b>. O teu caso vai para o Tribunal,
           onde os outros votam: <b>2 ✅ confirmam</b> e recebes os pontos;{" "}
           <b>3 ❌ chumbam</b> e a missão arde sem pontos. Os votos são públicos
-          e não podes votar no teu próprio caso.
+          e não podes votar no teu próprio caso.{" "}
+          <b>Limite de cumplicidade:</b> os primeiros 3 ✅ que dás à mesma
+          pessoa são grátis; do 4.º em diante, cada ✅ custa-te <b>−3</b>{" "}
+          (aparece no feed). Os cruzamentos estão públicos em Mais →
+          Cumplicidades.
         </Regra>
 
         <Regra emoji="🎯" titulo="Acusações">

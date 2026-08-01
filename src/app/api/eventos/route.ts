@@ -5,6 +5,41 @@ import { getPlayers } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
+// Competição de dança: 10 estilos ridículos, sorteados pela app.
+// O sorteio é determinístico (semeado pelo id do evento): igual em todos
+// os telemóveis, sem tabela nova — ninguém pode re-sortear até lhe agradar.
+const ESTILOS = [
+  "Flamenco 💃",
+  "Robot 🤖",
+  "Anos 80 🕺",
+  "Ballet 🩰",
+  "Reggaeton 🔥",
+  "Slow motion 🐌",
+  "Kuduro ⚡",
+  "Valsa 🎩",
+  "Breakdance 🌀",
+  "Dança do ventre 🐍",
+];
+
+function seededShuffle<T>(arr: T[], seedText: string): T[] {
+  let seed = 0;
+  for (const ch of seedText) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
+  const rand = () => {
+    // mulberry32
+    seed = (seed + 0x6d2b79f5) >>> 0;
+    let t = seed;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const out = [...arr];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 // Lista pública de eventos + estado da votação do evento ativo (o primeiro
 // anunciado): quem já votou (contagem), o meu voto, e os candidatos.
 export async function GET() {
@@ -47,5 +82,16 @@ export async function GET() {
     };
   }
 
-  return NextResponse.json({ events: data, voting });
+  // evento de dança ativo → sorteio de estilos na app
+  let styles = null;
+  if (ativo && ativo.name.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "").includes("danc")) {
+    const baralhados = seededShuffle(ESTILOS, ativo.id);
+    const ordenados = [...players].sort((a, b) => a.id.localeCompare(b.id));
+    styles = ordenados.map((p, i) => ({
+      player: { id: p.id, name: p.name, emoji: p.emoji },
+      style: baralhados[i % baralhados.length],
+    }));
+  }
+
+  return NextResponse.json({ events: data, voting, styles });
 }

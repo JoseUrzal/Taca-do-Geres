@@ -24,8 +24,9 @@ export default function CumplicidadesPage() {
     <Shell title="Cumplicidades">
       <p className="mb-4 rounded-lg bg-surface p-4 text-sm text-muted">
         🤝 Quem vota ✅ nas missões de quem — tudo público. Aprovação mútua
-        repetida ganha o selo <b className="text-coral">parceria?</b>. Não é
-        proibido… mas agora toda a gente vê.
+        repetida ganha o selo <b className="text-coral">parceria?</b>. E há
+        limite: os primeiros <b>3 ✅</b> à mesma pessoa são grátis; do 4.º em
+        diante, cada ✅ custa <b>−3</b> a quem vota.
       </p>
 
       {data && data.pairs.length === 0 && (

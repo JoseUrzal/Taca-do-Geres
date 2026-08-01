@@ -33,6 +33,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "ja_votaste" }, { status: 409 });
   }
 
+  // limite de cumplicidade: 3 ✅ à mesma pessoa são grátis no fim de
+  // semana; do 4.º em diante, quem vota perde 3 pontos (público no feed)
+  if (vote) {
+    const { data: myYes } = await db()
+      .from("approvals")
+      .select("id, assignment:assignment_id(player_id)")
+      .eq("player_id", playerId)
+      .eq("vote", true);
+    const owner = assignment.player_id;
+    const n = ((myYes ?? []) as unknown as { assignment: { player_id: string } | null }[]).filter(
+      (r) => r.assignment?.player_id === owner
+    ).length;
+    if (n > 3) {
+      const { data: ownerRow } = await db()
+        .from("players")
+        .select("name")
+        .eq("id", owner)
+        .single();
+      await addScore(
+        playerId,
+        -3,
+        `Cumplicidade: ${n}.º ✅ a ${ownerRow?.name ?? "?"} (limite: 3 grátis)`,
+        "manual"
+      );
+    }
+  }
+
   const { data: votes } = await db()
     .from("approvals")
     .select("vote")

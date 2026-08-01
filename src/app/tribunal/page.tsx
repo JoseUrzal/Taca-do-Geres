@@ -18,6 +18,7 @@ type Tribunal = {
     no_names: string[];
     my_vote: boolean | null;
     is_mine: boolean;
+    my_yes_to_owner: number;
   }[];
 };
 
@@ -77,6 +78,13 @@ export default function TribunalPage() {
                 Votaste {c.my_vote ? "✅" : "❌"}
               </p>
             ) : (
+              <>
+                {c.my_yes_to_owner >= 3 && (
+                  <p className="mt-3 rounded-md border border-coral p-2 text-xs text-coral">
+                    ⚠️ Já deste {c.my_yes_to_owner} ✅ a {c.player.name} — o
+                    próximo custa <b>−3</b> (limite de cumplicidade: 3 grátis).
+                  </p>
+                )}
               <div className="mt-3 flex gap-2">
                 <button
                   onClick={() => votar(c.id, true)}
@@ -91,6 +99,7 @@ export default function TribunalPage() {
                   <X size={22} strokeWidth={3} /> Chumbo
                 </button>
               </div>
+              </>
             )}
           </li>
         ))}

@@ -28,12 +28,14 @@ type Voting = {
   me: string | null;
 };
 
+type StyleDraw = { player: { id: string; name: string; emoji: string }; style: string };
+
 export default function EventosPage() {
-  const { data, mutate } = useSWR<{ events: Evento[]; voting: Voting | null }>(
-    "/api/eventos",
-    fetcher,
-    POLL
-  );
+  const { data, mutate } = useSWR<{
+    events: Evento[];
+    voting: Voting | null;
+    styles: StyleDraw[] | null;
+  }>("/api/eventos", fetcher, POLL);
   const [busy, setBusy] = useState(false);
   // escolhas locais por slot; null = ainda por preencher nesta sessão
   const [picks, setPicks] = useState<{ 1: string | null; 2: string | null; 3: string | null } | null>(null);
@@ -87,6 +89,42 @@ export default function EventosPage() {
           <li key={e.id} className="rounded-xl border-l-4 border-indigo bg-surface p-4">
             <p className="display">{e.name}</p>
             {e.when_hint && <p className="text-sm text-muted">{e.when_hint}</p>}
+
+            {/* dança: estilos sorteados pela app, iguais em todos os ecrãs */}
+            {data?.styles && voting && voting.event_id === e.id && (
+              <div className="mt-3 rounded-lg border-2 border-indigo p-3">
+                <p className="display text-sm font-bold text-indigo">
+                  🎭 Sorteio de estilos
+                </p>
+                <p className="mt-0.5 text-xs text-muted">
+                  Cada um dança 30–45 segundos o estilo que a app lhe deu. Sem
+                  trocas, sem choraminguices — comprometer-se vale mais que
+                  dançar bem.
+                </p>
+                <ul className="mt-2 space-y-1">
+                  {data.styles.map((s) => {
+                    const mine = s.player.id === voting.me;
+                    return (
+                      <li
+                        key={s.player.id}
+                        className={`flex items-center gap-2 rounded-md px-2 py-1.5 ${
+                          mine ? "bg-indigo text-white" : ""
+                        }`}
+                      >
+                        <Avatar name={s.player.name} emoji={s.player.emoji} size={22} />
+                        <span className="display text-sm font-bold">
+                          {s.player.name}
+                          {mine ? " (tu!)" : ""}
+                        </span>
+                        <span className={`ml-auto text-sm ${mine ? "" : "text-muted"}`}>
+                          {s.style}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
 
             {/* votação do evento ativo: top 3 por ordem, podes mudar até fechar */}
             {voting && voting.event_id === e.id && (
