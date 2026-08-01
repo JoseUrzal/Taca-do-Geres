@@ -63,10 +63,24 @@ function useShortScreen() {
   return short;
 }
 
+// ecrã grande a sério (televisão) — para os tamanhos que o CSS não cobre
+function useBigScreen() {
+  const [big, setBig] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px) and (min-height: 500px)");
+    const update = () => setBig(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return big;
+}
+
 export default function TvPage() {
   const { data } = useSWR<TvData>("/api/tv", fetcher, POLL);
   const [panel, setPanel] = useState(0);
   const shortScreen = useShortScreen();
+  const bigScreen = useBigScreen();
 
   // telemóvel-TV: nunca deixar o ecrã adormecer (Wake Lock, quando existir)
   useEffect(() => {
@@ -143,24 +157,28 @@ export default function TvPage() {
         ) : current === "marcador" ? (
           <section className="flex min-h-0 flex-col justify-center">
             <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">🏆 Classificação</h2>
-            <ol className="grid grid-flow-col grid-rows-5 gap-x-10 short:gap-x-6 tv:gap-x-16 gap-y-2 short:gap-y-1">
+            <ol className="grid grid-flow-col grid-rows-5 gap-x-10 short:gap-x-6 tv:gap-x-20 gap-y-2 short:gap-y-1 tv:gap-y-6">
               {data.board.map((r) => {
                 const gold = r.rank === 1 && r.points > 0;
                 return (
                   <li
                     key={r.player.id}
-                    className="flex items-center gap-3 short:gap-2 border-b border-line pb-2 short:pb-1"
+                    className="flex items-center gap-3 short:gap-2 tv:gap-5 border-b border-line pb-2 short:pb-1 tv:pb-5"
                   >
                     <span
-                      className={`num w-8 shrink-0 text-right text-lg short:text-sm tv:text-3xl ${
+                      className={`num w-8 tv:w-14 shrink-0 text-right text-lg short:text-sm tv:text-4xl ${
                         gold ? "font-bold text-gold" : "text-muted"
                       }`}
                     >
                       {r.rank}
                     </span>
-                    <Avatar name={r.player.name} emoji={r.player.emoji} size={shortScreen ? 26 : 40} />
+                    <Avatar
+                      name={r.player.name}
+                      emoji={r.player.emoji}
+                      size={shortScreen ? 26 : bigScreen ? 64 : 40}
+                    />
                     <span
-                      className={`display min-w-0 flex-1 truncate text-xl short:text-base tv:text-3xl font-bold ${
+                      className={`display min-w-0 flex-1 truncate text-xl short:text-base tv:text-5xl font-bold ${
                         gold ? "text-gold" : ""
                       }`}
                     >
@@ -168,7 +186,7 @@ export default function TvPage() {
                     </span>
                     <FlipNumber
                       value={r.points}
-                      className={`shrink-0 text-2xl short:text-lg tv:text-4xl font-bold ${
+                      className={`shrink-0 text-2xl short:text-lg tv:text-5xl font-bold ${
                         gold ? "text-gold" : ""
                       }`}
                     />
