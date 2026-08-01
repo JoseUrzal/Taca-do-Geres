@@ -130,15 +130,15 @@ export default function TvPage() {
   }, [takeover, panels.length]);
 
   return (
-    <div className="dark flex min-h-dvh flex-col bg-page p-4 tv:p-10 text-ink">
-      <header className="flex items-baseline justify-between border-b-2 border-line pb-4 short:pb-2">
+    <div className="dark flex h-dvh flex-col overflow-hidden bg-page p-4 tv:p-10 text-ink">
+      <header className="flex shrink-0 items-baseline justify-between border-b-2 border-line pb-4 short:pb-2">
         <h1 className="display text-3xl short:text-2xl tv:text-6xl font-bold">
           Taça do <span className="text-indigo">Gerês</span>
         </h1>
         <p className="num text-xl short:text-base tv:text-3xl text-muted">Dia {data?.day ?? "—"}</p>
       </header>
 
-      <main className="flex flex-1 flex-col justify-center py-8 short:py-3">
+      <main className="flex min-h-0 flex-1 flex-col justify-center overflow-hidden py-8 short:py-3">
         {!data ? null : data.round ? (
           <TvRoundView round={data.round} canControl={data.can_control} />
         ) : current === "top5" ? (
@@ -150,7 +150,7 @@ export default function TvPage() {
           <section>
             <h2 className="display mb-6 short:mb-2 text-2xl short:text-lg tv:text-4xl font-bold text-coral">Últimas atividades</h2>
             <ul className="space-y-4 short:space-y-2">
-              {data.activity.slice(0, 6).map((f) => (
+              {data.activity.slice(0, shortScreen ? 4 : 6).map((f) => (
                 <li key={f.id} className="flex items-baseline gap-6 short:gap-4 border-b border-line pb-4 short:pb-2">
                   <span
                     className={`num w-24 short:w-14 shrink-0 text-right text-2xl short:text-lg tv:text-4xl font-bold ${
@@ -188,7 +188,7 @@ export default function TvPage() {
               </p>
             ) : (
               <ul className="space-y-4 short:space-y-2">
-                {data.stats.map((s) => (
+                {data.stats.slice(0, shortScreen ? 4 : 6).map((s) => (
                   <li
                     key={s.label}
                     className="flex items-center gap-5 rounded-xl bg-surface p-4 short:p-2.5 tv:p-6"
@@ -227,7 +227,7 @@ export default function TvPage() {
               ⚖️ Tribunal — vota no telemóvel!
             </h2>
             <ul className="space-y-4 short:space-y-2">
-              {data.tribunal.map((c) => (
+              {data.tribunal.slice(0, shortScreen ? 3 : 4).map((c) => (
                 <li key={c.id} className="flex items-center gap-4 rounded-xl bg-surface p-4 short:p-2.5 tv:p-6">
                   <Avatar name={c.player.name} emoji={c.player.emoji} size={56} />
                   <p className="text-lg short:text-base tv:text-3xl leading-snug">
@@ -254,7 +254,7 @@ export default function TvPage() {
               </p>
             ) : (
               <ul className="space-y-4 short:space-y-2">
-                {data.moments.map((m) => (
+                {data.moments.slice(0, shortScreen ? 3 : 5).map((m) => (
                   <li key={m.id} className="rounded-xl bg-surface p-4 short:p-2.5 tv:p-6">
                     <p className="text-lg short:text-base tv:text-3xl leading-snug">«{m.text}»</p>
                     <p className="display mt-1 flex items-center gap-2 text-base tv:text-xl text-muted">
@@ -270,7 +270,7 @@ export default function TvPage() {
       </main>
 
       {!takeover && (
-        <footer className="flex items-center justify-between pb-2">
+        <footer className="flex shrink-0 items-center justify-between pb-2">
           <span className="flex w-40 justify-start">
             {!isFullscreen && (
               <button

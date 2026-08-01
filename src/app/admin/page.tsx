@@ -315,6 +315,49 @@ function Eventos({
   const [busy, setBusy] = useState(false);
   const [playing, setPlaying] = useState<string | null>(null);
   const [podium, setPodium] = useState<{ first?: string; second?: string; third?: string }>({});
+  const [editing, setEditing] = useState<{ id: string; name: string; when: string } | null>(null);
+  const [deleteArmed, setDeleteArmed] = useState<string | null>(null);
+
+  async function subir(eventId: string) {
+    if (busy) return;
+    setBusy(true);
+    const res = await post("/api/admin/eventos/subir", { event_id: eventId });
+    setBusy(false);
+    if (res.ok) mutate();
+  }
+
+  async function guardarEdicao() {
+    if (busy || !editing || !editing.name.trim()) return;
+    setBusy(true);
+    const res = await post("/api/admin/eventos/editar", {
+      event_id: editing.id,
+      name: editing.name,
+      when_hint: editing.when,
+    });
+    setBusy(false);
+    if (res.ok) {
+      setEditing(null);
+      flash("Evento atualizado.");
+      mutate();
+    }
+  }
+
+  async function apagar(eventId: string) {
+    if (busy) return;
+    if (deleteArmed !== eventId) {
+      setDeleteArmed(eventId);
+      setTimeout(() => setDeleteArmed(null), 3000);
+      return;
+    }
+    setBusy(true);
+    const res = await post("/api/admin/eventos/apagar", { event_id: eventId });
+    setBusy(false);
+    setDeleteArmed(null);
+    if (res.ok) {
+      flash("Evento apagado.");
+      mutate();
+    }
+  }
 
   async function anunciar() {
     if (busy || !name.trim()) return;
@@ -390,25 +433,94 @@ function Eventos({
 
       {data.events.length > 0 && (
         <ul className="mt-4 space-y-2">
-          {data.events.map((e) => (
+          {data.events.map((e, idx) => (
             <li key={e.id} className="rounded-md border border-line p-3">
-              <div className="flex items-center justify-between gap-2">
-                <p className="display">
-                  {e.name}
-                  {e.when_hint && (
-                    <span className="ml-2 text-xs font-normal text-muted">{e.when_hint}</span>
-                  )}
+              {idx === 0 && (
+                <p className="display mb-1 text-xs font-bold tracking-widest text-coral">
+                  📣 PRÓXIMO — está na TV e na Casa de todos
                 </p>
-                <button
-                  onClick={() => {
-                    setPlaying(playing === e.id ? null : e.id);
-                    setPodium({});
-                  }}
-                  className="display min-h-11 shrink-0 rounded-md bg-coral px-3 text-sm font-bold text-white"
-                >
-                  {playing === e.id ? "Fechar" : "Registar pódio"}
-                </button>
-              </div>
+              )}
+              {editing?.id === e.id ? (
+                <div className="space-y-2">
+                  <input
+                    value={editing.name}
+                    onChange={(ev) => setEditing({ ...editing, name: ev.target.value })}
+                    className="min-h-12 w-full rounded-md border border-line bg-page px-3 text-ink"
+                  />
+                  <input
+                    value={editing.when}
+                    onChange={(ev) => setEditing({ ...editing, when: ev.target.value })}
+                    placeholder="Quando? (ex.: hoje às 17h)"
+                    className="min-h-12 w-full rounded-md border border-line bg-page px-3 text-ink"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={guardarEdicao}
+                      disabled={busy || !editing.name.trim()}
+                      className="display min-h-12 flex-1 rounded-md bg-coral font-bold text-white disabled:opacity-40"
+                    >
+                      Guardar
+                    </button>
+                    <button
+                      onClick={() => setEditing(null)}
+                      className="display min-h-12 rounded-md border border-line px-4 font-bold text-muted"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="display">
+                      {e.name}
+                      {e.when_hint && (
+                        <span className="ml-2 text-xs font-normal text-muted">{e.when_hint}</span>
+                      )}
+                    </p>
+                    <button
+                      onClick={() => {
+                        setPlaying(playing === e.id ? null : e.id);
+                        setPodium({});
+                      }}
+                      className="display min-h-11 shrink-0 rounded-md bg-coral px-3 text-sm font-bold text-white"
+                    >
+                      {playing === e.id ? "Fechar" : "Registar pódio"}
+                    </button>
+                  </div>
+                  <div className="mt-2 flex gap-1.5">
+                    {idx > 0 && (
+                      <button
+                        onClick={() => subir(e.id)}
+                        disabled={busy}
+                        className="display min-h-10 rounded-md border border-line px-3 text-sm font-bold text-muted disabled:opacity-50"
+                      >
+                        ⬆ Subir
+                      </button>
+                    )}
+                    <button
+                      onClick={() =>
+                        setEditing({ id: e.id, name: e.name, when: e.when_hint ?? "" })
+                      }
+                      disabled={busy}
+                      className="display min-h-10 rounded-md border border-line px-3 text-sm font-bold text-muted disabled:opacity-50"
+                    >
+                      ✏️ Editar
+                    </button>
+                    <button
+                      onClick={() => apagar(e.id)}
+                      disabled={busy}
+                      className={`display min-h-10 rounded-md px-3 text-sm font-bold disabled:opacity-50 ${
+                        deleteArmed === e.id
+                          ? "bg-coral text-white"
+                          : "border border-line text-muted"
+                      }`}
+                    >
+                      {deleteArmed === e.id ? "De certeza?" : "🗑 Apagar"}
+                    </button>
+                  </div>
+                </>
+              )}
               {playing === e.id && (
                 <div className="mt-2">
                   {places.map(({ key, label, colour }) => (
