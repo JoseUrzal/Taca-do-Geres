@@ -21,6 +21,7 @@ type TvData = {
   next_event: { name: string; when_hint: string | null } | null;
   round: TvRound;
   can_control: boolean;
+  v: string;
 };
 
 type TvRound =
@@ -126,6 +127,15 @@ export default function TvPage() {
       // iPhone/Safari não suporta — a página funciona na mesma
     }
   }
+
+  // TV sempre ligada: quando sai um deploy novo, a página recarrega-se
+  // sozinha (fora de rondas, para não interromper o quizz)
+  const [firstV, setFirstV] = useState<string | null>(null);
+  useEffect(() => {
+    if (!data?.v) return;
+    if (firstV === null) setFirstV(data.v);
+    else if (data.v !== firstV && !data.round) window.location.reload();
+  }, [data?.v, data?.round, firstV]);
 
   const panels = [
     ...BASE_PANELS,

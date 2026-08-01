@@ -53,5 +53,7 @@ export async function GET() {
     // o /tv também serve de segundo ecrã nos telemóveis: os botões de
     // avançar a revelação do quizz só aparecem a quem tem sessão de admin
     can_control: await isAdmin(),
+    // versão do deploy — a TV recarrega sozinha quando isto muda
+    v: process.env.VERCEL_GIT_COMMIT_SHA ?? "dev",
   });
 }
