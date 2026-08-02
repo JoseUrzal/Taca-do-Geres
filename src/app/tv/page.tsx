@@ -163,7 +163,9 @@ export default function TvPage() {
         <p className="num text-xl short:text-base tv:text-3xl text-muted">Dia {data?.day ?? "—"}</p>
       </header>
 
-      <main className="flex min-h-0 flex-1 flex-col justify-center overflow-hidden py-8 short:py-3">
+      {/* na TV o conteúdo cabe sempre (sem scroll visível); num telemóvel
+          ao alto, o excesso desliza — senão o botão «Próxima» fica cortado */}
+      <main className="flex min-h-0 flex-1 flex-col justify-center overflow-y-auto overflow-x-hidden py-8 short:py-3">
         {!data ? null : data.round ? (
           <TvRoundView round={data.round} canControl={data.can_control} />
         ) : current === "marcador" ? (
